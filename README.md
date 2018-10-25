@@ -2,6 +2,6 @@
 
 Programa de Imobiliaria para Projeto de POO da UFRPE - UAG
 
-Alunos: Ezequias Silva
+Alunos: Ezequias Silva,
         Rômulo Pereira
 
