@@ -27,6 +27,7 @@ public class Schedule {
         year = gCalendar.get(Calendar.YEAR);
         month = gCalendar.get(Calendar.MONTH);
         updateCalendar();
+        elfoCalendar = new ElfoCalendar(year,month,monthDay);
     }
 
     /**
@@ -40,11 +41,17 @@ public class Schedule {
         return schedule;
     }
 
-    private GregorianCalendar createGCalendar(int month, int year) {
+    /**
+     * Create a new GregorianCalendar and configurate
+     * @param year
+     * @return
+     */
+    private GregorianCalendar createGCalendar(int year) {
         GregorianCalendar cal = new GregorianCalendar();
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.MONTH, 1);
         cal.set(Calendar.YEAR, year);
+
         return cal;
     }
 
@@ -56,8 +63,7 @@ public class Schedule {
         weekDay = gCalendar.get(Calendar.DAY_OF_WEEK);
         monthSize = CalendarTools.monthSize(month,year);
         weekMonth = CalendarTools.weekMonthSize(month,year);
-        gCalendar = createGCalendar(month,year);
-        elfoCalendar = new ElfoCalendar(year);
+        gCalendar = createGCalendar(year);
     }
 
     /**
@@ -79,11 +85,16 @@ public class Schedule {
         gCalendar.add(Calendar.YEAR,y);
         updateCalendar();
     }
-    public void createNewEvent(int year,int month, int day, int[] ){
-
+    public void createNewEvent(String text,int monthNumber, int dayNumber,int hour, int minutes, DeltaTime deltaTime){
+        Day day = elfoCalendar.getDayOfDate(monthNumber,dayNumber);
+        CalendarEvent ce = new CalendarEvent(text,hour,minutes,deltaTime);
+        day.addEvents(ce);
     }
-    public void seeCalendar(){
-        elfoCalendar.seeCalendar();
+    public void seeThisCalendar(){
+        System.out.print(elfoCalendar.getVisualYear());
+    }
+    public void seeThisMonth(){
+        System.out.print(elfoCalendar.getVisualMonth(month));
     }
     public ElfoCalendar getElfoCalendar(){
         return elfoCalendar;

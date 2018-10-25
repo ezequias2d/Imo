@@ -1,13 +1,18 @@
+import elfo.calendar.Day;
+import elfo.calendar.DeltaTime;
 import elfo.calendar.Schedule;
 import elfo.console.Menu;
 public class ElfoConsoleTest {
     static public void main(String[] argv){
         ElfoConsoleTest elfoConsoleTest = new ElfoConsoleTest();
         Schedule schedule = Schedule.getSchedule();
-        schedule.seeCalendar();
-        schedule.changeYear(1);
-        System.out.println("oii");
-        schedule.seeCalendar();
+        schedule.createNewEvent("Evento teste",9,25,5,20,new DeltaTime(1,1));
+        schedule.createNewEvent("Evento teste2",9,25,6,21,new DeltaTime(1,1));
+        Day[] days = schedule.getElfoCalendar().getNextWeekDays(9,24);
+        for(int i = 0; i < days.length; i++){
+            System.out.printf("%s",days[i].getVisualEvents());
+        }
+        schedule.seeThisMonth();
        /* Scanner sc = new Scanner(System.in);
         Menu menu = new Menu();
         int m1 = menu.creatMenu();

@@ -1,17 +1,25 @@
 package elfo.calendar;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class CalendarTools {
     private static GregorianCalendar cg;
+    private static DecimalFormat dc;
 
     static private void cgCreat(){
         if(cg == null){
             cg = new GregorianCalendar();
         }
     }
+    static private void dcCreat(){
+        if(dc == null){
+            dc = new DecimalFormat();
+        }
+    }
     static public int weekDay(int day,int month,int year){
+        cgCreat();
         cg.set(Calendar.DAY_OF_MONTH,day);
         cg.set(Calendar.MONTH,month);
         cg.set(Calendar.YEAR,year);
@@ -19,6 +27,7 @@ public class CalendarTools {
     }
 
     static public int daysOfWeek(int week,int month,int year){
+        cgCreat();
         cg.set(Calendar.MONTH,month);
         cg.set(Calendar.YEAR,year);
         cg.set(Calendar.WEEK_OF_MONTH,week+1);
@@ -44,11 +53,17 @@ public class CalendarTools {
         return cg.get(Calendar.WEEK_OF_MONTH);
     }
     static public int dayYearSize(int year){
+        cgCreat();
         int days = 0;
         for(int i = 0; i < 12; i++){
             days += monthSize(i,year);
         }
         return days;
+    }
+    static public String formatOfTime(int hour, int minute){
+        dcCreat();
+        dc.applyPattern("##00");
+        return "("+hour + ":" + dc.format(minute)+")";
     }
     static public String monthName(int number){
         String [] weekNames = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"};

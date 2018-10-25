@@ -29,16 +29,43 @@ public class Day {
     public int getWeekDay(){
         return weekDay;
     }
-    private ArrayList<CalendarEvent> getEvents(){
+    public ArrayList<CalendarEvent> getEvents(){
         return events;
     }
 
-    private void addEvents(CalendarEvent calendarEvent){
+    public void addEvents(CalendarEvent calendarEvent){
         events.add(calendarEvent);
     }
 
-    private void addEvents(int hour, int minutes, int time[]){
-        CalendarEvent calendarEvent = new CalendarEvent(hour,minutes,time);
+    public String getVisualEvents(){
+        String ret = String.format("(%d/%d/%d) | ", day,month + 1,year);
+        int sizeDate = ret.length();
+        boolean isNone = true;
+        for(int i = 0; i < events.size(); i++){
+            CalendarEvent event = events.get(i);
+            if(i > 0){
+                for(int j = 0; j < sizeDate - 2; j++){
+                    ret += " ";
+                }
+                ret += "| ";
+            }
+            ret += CalendarTools.formatOfTime(event.getHour(),event.getMinutes()) +
+                    " ---" +
+                    CalendarTools.formatOfTime(event.getTime().getDeltaHours(),event.getTime().getDeltaMinutes()) +
+                    "---> " +
+                    CalendarTools.formatOfTime(event.getEndHour(),event.getEndMinutes()) +
+                    " | " + event.getText() +
+                    String.format("\n");
+            isNone = false;
+        }
+        if(isNone == true){
+            ret += String.format("None\n");
+        }
+        return ret;
+    }
+
+    public void addEvents(String text,int hour, int minutes, DeltaTime time){
+        CalendarEvent calendarEvent = new CalendarEvent(text,hour,minutes,time);
         events.add(calendarEvent);
     }
 }
