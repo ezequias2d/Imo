@@ -87,8 +87,7 @@ public class Schedule {
     }
     public void createNewEvent(String text,int monthNumber, int dayNumber,int hour, int minutes, DeltaTime deltaTime){
         Day day = elfoCalendar.getDayOfDate(monthNumber,dayNumber);
-        CalendarEvent ce = new CalendarEvent(text,hour,minutes,deltaTime);
-        day.addEvents(ce);
+        day.addEvents(text,hour,minutes,deltaTime);
     }
     public void seeThisCalendar(){
         System.out.print(elfoCalendar.getVisualYear());

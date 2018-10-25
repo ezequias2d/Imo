@@ -25,17 +25,21 @@ public class CalendarEvent {
                 (ce.getTime().getDeltaMinutes() == time.getDeltaMinutes()));
     }
 
-    public boolean isInEvent(int[] time){
-        return (time[0] > hour &&
-                time[1] > minutes &&
-                time[0] < hour + this.time.getDeltaHours() &&
-                time[1] < minutes + this.time.getDeltaMinutes());
-    }
-    public boolean isInEvent(int hour, int minutes){
-        int[] time = {hour,minutes};
-        return isInEvent(time);
+    public boolean isInEvent(double absoluteTime){
+        return (getAbsoluteTime() < absoluteTime &&
+                getFinalAbsoluteTime() > absoluteTime);
     }
 
+    public double getAbsoluteTime(){
+        double out = hour;
+        out += minutes / 60;
+        return out;
+    }
+    public double getFinalAbsoluteTime(){
+        double out = endHour;
+        out += endMinutes / 60;
+        return out;
+    }
     public int getHour(){
         return hour;
     }

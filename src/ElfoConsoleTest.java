@@ -7,7 +7,8 @@ public class ElfoConsoleTest {
         ElfoConsoleTest elfoConsoleTest = new ElfoConsoleTest();
         Schedule schedule = Schedule.getSchedule();
         schedule.createNewEvent("Evento teste",9,25,5,20,new DeltaTime(1,1));
-        schedule.createNewEvent("Evento teste2",9,25,6,21,new DeltaTime(1,1));
+        schedule.createNewEvent("Evento teste2",9,25,5,50,new DeltaTime(1,1));
+        schedule.createNewEvent("Evento teste2",9,25,5,50,new DeltaTime(1,1));
         Day[] days = schedule.getElfoCalendar().getNextWeekDays(9,24);
         for(int i = 0; i < days.length; i++){
             System.out.printf("%s",days[i].getVisualEvents());

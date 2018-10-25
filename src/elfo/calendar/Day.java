@@ -64,8 +64,18 @@ public class Day {
         return ret;
     }
 
-    public void addEvents(String text,int hour, int minutes, DeltaTime time){
+    public boolean addEvents(String text,int hour, int minutes, DeltaTime time){
         CalendarEvent calendarEvent = new CalendarEvent(text,hour,minutes,time);
+        for(CalendarEvent ce : events){
+            if(!(ce.isInEvent(calendarEvent.getAbsoluteTime())              ||
+                    ce.isInEvent(calendarEvent.getFinalAbsoluteTime())      ||
+                    calendarEvent.isInEvent(ce.getAbsoluteTime())           ||
+                    calendarEvent.isInEvent(ce.getFinalAbsoluteTime()))){
+                System.out.printf("\nthe time is busy");
+                return false;
+            }
+        }
         events.add(calendarEvent);
+        return true;
     }
 }
