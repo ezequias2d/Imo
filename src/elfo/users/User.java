@@ -7,7 +7,6 @@ public class User {
     private int typeUser;
     private int[] cpf;
     private String password;
-    private int cpfTam;
 
     public User(String name, String lastName, String fullName, int[] cpf, String password){
         this.name = name;
@@ -16,7 +15,6 @@ public class User {
         this.cpf = cpf;
         this.password = password;
         this.typeUser = -1;
-        this.cpfTam = 11;
     }
     public boolean isCpf(int[] cpf){
         if(cpf.length != this.cpf.length){

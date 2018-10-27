@@ -10,8 +10,7 @@ import java.util.GregorianCalendar;
  */
 public class Schedule {
     private GregorianCalendar gCalendar;
-    static ElfoCalendar elfoCalendar;
-    static Schedule schedule;
+    private ElfoCalendar elfoCalendar;
     private int year;
     private int month;
     private int monthDay;
@@ -22,23 +21,12 @@ public class Schedule {
     /**
      * Constructor Private of Schedule
      */
-    private Schedule(){
+    public Schedule(){
         gCalendar = new GregorianCalendar();
         year = gCalendar.get(Calendar.YEAR);
         month = gCalendar.get(Calendar.MONTH);
         updateCalendar();
         elfoCalendar = new ElfoCalendar(year,month,monthDay);
-    }
-
-    /**
-     * Create a single Schedule and return
-     * @return Single Schedule
-     */
-    public static Schedule getSchedule(){
-        if(schedule == null){
-            schedule = new Schedule();
-        }
-        return schedule;
     }
 
     /**
@@ -85,16 +73,38 @@ public class Schedule {
         gCalendar.add(Calendar.YEAR,y);
         updateCalendar();
     }
+
+    /**
+     * Create a new Event
+     * @param text Description of the event
+     * @param monthNumber Month of the event
+     * @param dayNumber Day in month of the event
+     * @param hour Hour of event initialization time
+     * @param minutes Minutes of event initialization time
+     * @param deltaTime Time variation in deltatime
+     */
     public void createNewEvent(String text,int monthNumber, int dayNumber,int hour, int minutes, DeltaTime deltaTime){
         Day day = elfoCalendar.getDayOfDate(monthNumber,dayNumber);
         day.addEvents(text,hour,minutes,deltaTime);
     }
+
+    /**
+     * Prints the entire calendar for the current year
+     */
     public void seeThisCalendar(){
         System.out.print(elfoCalendar.getVisualYear());
     }
+
+    /**
+     *Prints the current month
+     */
     public void seeThisMonth(){
         System.out.print(elfoCalendar.getVisualMonth(month));
     }
+
+    /**
+     * @return ElfoCalendar of Schedule
+     */
     public ElfoCalendar getElfoCalendar(){
         return elfoCalendar;
     }

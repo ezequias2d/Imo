@@ -5,7 +5,7 @@ import elfo.console.Menu;
 public class ElfoConsoleTest {
     static public void main(String[] argv){
         ElfoConsoleTest elfoConsoleTest = new ElfoConsoleTest();
-        Schedule schedule = Schedule.getSchedule();
+        Schedule schedule = new Schedule();
         schedule.createNewEvent("Evento teste",9,25,5,20,new DeltaTime(1,1));
         schedule.createNewEvent("Evento teste2",9,25,5,50,new DeltaTime(1,1));
         schedule.createNewEvent("Evento teste2",9,25,5,50,new DeltaTime(1,1));

@@ -51,6 +51,17 @@ public class UserTools {
             return false;
         }
     }
+    static public int[] getCpfNull(){
+        return new int[cpfTam];
+    }
+    static public int[] stringToCpf(String s){
+        int[] cpf = new int[cpfTam];
+        char[] cpfChar = s.toCharArray();
+        for(int i = 0; i < cpfTam; i++){
+            cpf[i] = Character.getNumericValue(cpfChar[i]);
+        }
+        return cpf;
+    }
     static public boolean authenticateCpf(int... cpf){
         if(cpf.length != cpfTam){
             return false;
