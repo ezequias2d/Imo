@@ -1,22 +1,21 @@
 package elfo.calendar;
 
+import elfo.number.DeltaNumber;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.3
- * @
+ * @version 0.0.6
  */
 public class Schedule {
     private GregorianCalendar gCalendar;
     private ElfoCalendar elfoCalendar;
+    private String identifier;
     private int year;
     private int month;
     private int monthDay;
-    private int monthSize;
-    private int weekDay;
-    private int weekMonth;
 
     /**
      * Constructor Private of Schedule
@@ -43,14 +42,20 @@ public class Schedule {
         return cal;
     }
 
+    public void setIdentifier(String identifier){
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier(){
+        return identifier;
+    }
+
+
     /**
      * Update the ElfoCalendar
      */
     private void updateCalendar(){
         monthDay = gCalendar.get(Calendar.DAY_OF_MONTH);
-        weekDay = gCalendar.get(Calendar.DAY_OF_WEEK);
-        monthSize = CalendarTools.monthSize(month,year);
-        weekMonth = CalendarTools.weekMonthSize(month,year);
         gCalendar = createGCalendar(year);
     }
 
@@ -82,10 +87,11 @@ public class Schedule {
      * @param hour Hour of event initialization time
      * @param minutes Minutes of event initialization time
      * @param deltaTime Time variation in deltatime
+     * @return
      */
-    public void createNewEvent(String text,int monthNumber, int dayNumber,int hour, int minutes, DeltaTime deltaTime){
+    public boolean createNewEvent(String text,int monthNumber, int dayNumber,int hour, int minutes, DeltaTime deltaTime){
         Day day = elfoCalendar.getDayOfDate(monthNumber,dayNumber);
-        day.addEvents(text,hour,minutes,deltaTime);
+        return day.addEvents(text,hour,minutes,deltaTime);
     }
 
     /**
@@ -107,5 +113,13 @@ public class Schedule {
      */
     public ElfoCalendar getElfoCalendar(){
         return elfoCalendar;
+    }
+
+    public int getNumberOfEventInDay(int month, int day){
+        return elfoCalendar.getDayOfDate(month,day).getEvents().size();
+    }
+
+    public boolean isDisponible(int month, int day,int hour, int minutes, DeltaTime deltaTime){
+        return elfoCalendar.getDayOfDate(month,day).isDisponible(hour,minutes,deltaTime);
     }
 }

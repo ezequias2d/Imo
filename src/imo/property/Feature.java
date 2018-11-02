@@ -7,6 +7,8 @@ public class Feature {
     public static final int DOOR = 3;
     public static final int WINDOW = 4;
 
+    public static final String[] TYPE_NAME = {"Roof","Elevator","Stairway","Door","Window"};
+
     private int type;
 
     public Feature(int type){

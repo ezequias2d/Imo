@@ -1,7 +1,7 @@
 package imo.property;
 
 import elfo.number.DeltaNumber;
-import imo.cashier.Money;
+import elfo.number.Number;
 
 import java.util.ArrayList;
 
@@ -22,10 +22,14 @@ public class PropertyControl {
     public void addProperty(Property property){
         properties.add(property);
     }
-    public Property createNewProperty(float area, Money price){
+    public Property createNewProperty(double area, Number price){
         Property property = new Property(area,price);
         properties.add(property);
         return property;
+    }
+
+    public int getPropertyCode(Property property){
+        return properties.indexOf(property);
     }
     
     public boolean removeProperty(Property property){
@@ -45,7 +49,8 @@ public class PropertyControl {
             if(property.isInPrice(moneyLimit) &&
                     property.isInArea(areaLimit) &&
                     property.isInNumberFloor(floorsLimit) &&
-                    property.isInNumberRooms(roomsLimit)){
+                    property.isInNumberRooms(roomsLimit) &&
+                    property.isAvailability()){
                 propertiesOut.add(property);
             }
         }

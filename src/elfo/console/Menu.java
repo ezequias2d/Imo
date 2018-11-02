@@ -3,6 +3,10 @@ package elfo.console;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.6
+ */
 public class Menu {
     public static Menu menu;
     public int current = 0;

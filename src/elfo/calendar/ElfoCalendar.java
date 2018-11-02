@@ -2,14 +2,34 @@ package elfo.calendar;
 
 import java.util.ArrayList;
 
-public class ElfoCalendar extends ArrayList<ArrayList<Day>> {
+
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.6
+ */
+public class ElfoCalendar {
+    private ArrayList<ArrayList<Day>> array;
     private int year;
     private int month;
     private int day;
+
+    /**
+     * @param year Year
+     * @param month Month
+     * @param day Day
+     */
     public ElfoCalendar(int year,int month, int day){
+        this.array = new ArrayList<ArrayList<Day>>();
         setDate(year,month,day);
         updateCalendar();
     }
+
+    /**
+     * @param year Year
+     * @param month Month
+     * @param day Day
+     * @return Success
+     */
     public boolean setDate(int year, int month, int day){
         if(year > 1536 &&
                 month > 0 && month <= 12 &&
@@ -21,6 +41,22 @@ public class ElfoCalendar extends ArrayList<ArrayList<Day>> {
         }
         return false;
     }
+
+    /**
+     * @param obj Day
+     * @return
+     */
+    private boolean add(ArrayList<Day> obj){
+        return array.add(obj);
+    }
+
+    /**
+     * @param index
+     * @return
+     */
+    public ArrayList<Day> get(int index){
+        return array.get(index);
+    }
     private void updateCalendar(){
         for(int i = 0; i < 12; i++){
             ArrayList<Day> days = new ArrayList<Day>();
@@ -31,25 +67,38 @@ public class ElfoCalendar extends ArrayList<ArrayList<Day>> {
         }
     }
     public Day getDayOfDate(int month, int day){
-        while (day > CalendarTools.monthSize(month) - 1 || month > 11){
+        while (day > CalendarTools.monthSize(month) - 1 || month > 11 || day < 0 || month < 0){
             if(day > CalendarTools.monthSize(month) - 1){
                 day -= CalendarTools.monthSize(month);
                 month += 1;
+            }else if(day <= 0){
+                day = CalendarTools.monthSize(month) - 1;
+                month -= 1;
             }
             if(month > 11){
                 year += 1;
                 month -= 11;
+            }else if(month < 0){
+                year -= 1;
+                month = 11;
             }
         }
         return this.get(month).get(day);
     }
     public Day getDay(){
-        return this.get(month).get(day);
+        return this.get(month).get(day-1);
     }
     public Day[] getNextWeekDays(int month, int day){
         Day[] ret = new Day[7];
         for(int i = day ; i < day + 7; i++){
             ret[i - day] = this.getDayOfDate(month,i);
+        }
+        return ret;
+    }
+    public Day[] getBeforeDays(int days){
+        Day[] ret = new Day[days];
+        for(int i = 0; i < 30; i++){
+            ret[i] = this.getDayOfDate(month - 1,day + i);
         }
         return ret;
     }
@@ -68,8 +117,10 @@ public class ElfoCalendar extends ArrayList<ArrayList<Day>> {
                 ret += String.format("%s",day.getDay());
                 if(day.getDay() == this.day){
                     ret += "| ";
-                }else if(day.getDay() == this.day - 1){
+                }else if(day.getDay() == this.day - 1) {
                     ret += " |";
+                }else if(day.getEvents().size() > 0){
+                    ret += "<-";
                 }else{
                     ret += "  ";
                 }

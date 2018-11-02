@@ -3,11 +3,15 @@ package elfo.users;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.6
+ */
 public class UserControl {
-    static final int LEVEL_ADM1 = 0;
-    static final int LEVEL_ADM2 = 1;
-    static final int LEVEL_NORMAL = 2;
-    static final int LEVEL_NOT_LOGGED = 3;
+    public static final int LEVEL_ADM1 = 0;
+    public static final int LEVEL_ADM2 = 1;
+    public static final int LEVEL_NORMAL = 2;
+    public static final int LEVEL_NOT_LOGGED = 3;
     static private UserControl userControl;
 
     private ArrayList<User> users;
@@ -17,8 +21,11 @@ public class UserControl {
         this.users = new ArrayList<User>();
 
         User admin = new User("Admin","Admin","Admin",UserTools.getCpfNull(),"admin");
+        User admin2 = new User("Admin","Admin","Admin",UserTools.getCpfNull(),"admin2");
         admin.setTypeUser(LEVEL_ADM1);
+        admin2.setTypeUser(LEVEL_ADM2);
         this.users.add(admin);
+        this.users.add(admin2);
 
         notLoggedAccount = new User("","","",UserTools.getCpfNull(),"");
         notLoggedAccount.setTypeUser(LEVEL_NOT_LOGGED);
@@ -46,8 +53,22 @@ public class UserControl {
     }
 
     public boolean changeYourPassword(String password, String newPassword){
-        if(this.loadedAccount.isPassword(password) && UserTools.authenticatePassword(password)){
+        if(this.loadedAccount.isPassword(password) && UserTools.authenticatePassword(newPassword)){
             this.loadedAccount.setPassword(newPassword);
+            return true;
+        }
+        return false;
+    }
+    public boolean changeYourName(String password, String newFullName){
+        if(this.loadedAccount.isPassword(password)){
+            this.loadedAccount.setName(newFullName);
+            return true;
+        }
+        return false;
+    }
+    public boolean changeYourFormalName(String password, String name, String lastName){
+        if(this.loadedAccount.isPassword(password)){
+            this.loadedAccount.setFormalName(name,lastName);
             return true;
         }
         return false;
@@ -59,6 +80,7 @@ public class UserControl {
             System.out.printf("'%s' %s(y/n)",name,msg);
             Scanner sc = UserTools.getScanner();
             char c = sc.next().charAt(0);
+            sc.nextLine();
             if (c == 'y') {
                 return name;
             } else if (c == 'n') {
@@ -68,6 +90,9 @@ public class UserControl {
             }
         }
         return "";
+    }
+    public int getTypeOfUser(){
+        return loadedAccount.getTypeUser();
     }
     private int inserType(){
         if(isADM1()){
@@ -98,6 +123,7 @@ public class UserControl {
                 user.setTypeUser(inserType());
             }
             users.add(user);
+            System.out.println("User registred");
             return true;
         }else{
             return false;
@@ -119,8 +145,50 @@ public class UserControl {
         }
         return false;
     }
-
-
+    public boolean changeCpf(User user, String ADM1Password, int[] newCpf){
+        if(this.isADM1() && this.loadedAccount.isPassword(ADM1Password)){
+            user.setCpf(newCpf);
+            return true;
+        }
+        return false;
+    }
+    public int[] getCpfCurrent(){
+        return loadedAccount.getCpf();
+    }
+    public String getFormalNameCurrent(){
+        return loadedAccount.getFormalName();
+    }
+    public ArrayList<User> getUsers(int type){
+        ArrayList<User> usersType = new ArrayList<User>();
+        for(User u: users){
+            if(u.getTypeUser() == type){
+                usersType.add(u);
+            }
+        }
+        return usersType;
+    }
+    public User getUserOfCpfAndType(int[] cpf, int type){
+        for(User u : getUsers(type)){
+            if(u.isCpf(cpf)){
+                return u;
+            }
+        }
+        return null;
+    }
+    public User getUser(int[] cpf){
+        for(User u : users){
+            if(u.isCpf(cpf)){
+                return u;
+            }
+        }
+        return null;
+    }
+    public boolean getPermission(String password){
+        if(this.loadedAccount != this.notLoggedAccount){
+            return loadedAccount.isPassword(password);
+        }
+        return false;
+    }
     public boolean login(int[] cpf, String password){
         for(User user : users){
             if(user.isCpf(cpf) && user.isPassword(password)){
@@ -130,5 +198,9 @@ public class UserControl {
             }
         }
         return false;
+    }
+    public void logout(){
+        loadedAccount = notLoggedAccount;
+        System.out.printf("\nLogout successfully\n");
     }
 }

@@ -1,6 +1,11 @@
 package elfo.number;
 
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.6
+ */
 public class Number {
+    public static final int NULL = -1;
     double value;
 
     public Number(){
@@ -11,6 +16,9 @@ public class Number {
     }
     public double getValue(){
         return value;
+    }
+    public int getIntValue(){
+        return (int)(value - (value % 1.0));
     }
     public void setValue(double value){
         if(value < 0){
@@ -26,12 +34,19 @@ public class Number {
         setValue(getValue() + value);
     }
     public void increase(){
-        setValue(getValue()+1);
+        increase(1);
     }
     public boolean inDeltaNumber(DeltaNumber deltaNumber){
         return deltaNumber.isInDeltaNumber(this);
     }
-    public boolean equals(Number number){
-        return number.value == number.value;
+    public boolean isNull(){
+        return value == NULL;
+    }
+    public boolean equals(Object obj){
+        if(obj instanceof Number){
+            Number number = (Number)obj;
+            return value == number.value;
+        }
+        return false;
     }
 }

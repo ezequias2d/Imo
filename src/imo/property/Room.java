@@ -13,6 +13,11 @@ public class Room {
     public static final int BALCONY = 9;
     public static final int LOBBY = 10;
 
+    public static final String[] TYPE_NAME = {"Bedroom","Living Room","Dining Room",
+                                                "Kitchen","Closet","Bathroom",
+                                                    "Garage","Office","Garden",
+                                                            "Balcony","Lobby"};
+
     private int type;
     private Number area;
     private Number width;
@@ -37,7 +42,7 @@ public class Room {
         this.type = type;
     }
     public double getArea(){
-        return type;
+        return area.getValue();
     }
     public void setArea(double area){
         this.area.setValue(area);

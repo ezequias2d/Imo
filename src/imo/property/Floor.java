@@ -5,12 +5,23 @@ import elfo.number.Number;
 
 public class Floor {
     private ArrayList<Room> rooms;
+    private ArrayList<Feature> features;
     int numberFloor;
 
     public Floor(int numberFloor){
         this.numberFloor = numberFloor;
         rooms = new ArrayList<Room>();
+        features = new ArrayList<Feature>();
     }
+
+    public double getArea(){
+        double out = 0;
+        for(Room r : rooms){
+            out += r.getArea();
+        }
+        return out;
+    }
+
     public int getNumberFloor(){
         return numberFloor;
     }
@@ -19,11 +30,17 @@ public class Floor {
         floor.numberFloor = this.numberFloor;
         this.numberFloor  = antNumber;
     }
-    public boolean addRoom(Room room){
+    public boolean add(Room room){
         return rooms.add(room);
+    }
+    public boolean add(Feature feature){
+        return features.add(feature);
     }
     public ArrayList<Room> getRooms(){
         return rooms;
+    }
+    public ArrayList<Feature> getFeatures(){
+        return features;
     }
     public Number getNumberOfRooms(){
         return new Number(rooms.size());

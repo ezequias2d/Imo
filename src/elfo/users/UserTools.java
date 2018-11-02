@@ -2,6 +2,10 @@ package elfo.users;
 
 import java.util.Scanner;
 
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.6
+ */
 public class UserTools {
     static private final int cpfTam = 11;
     static private Scanner scanner;
@@ -45,7 +49,7 @@ public class UserTools {
                 totalPoints += 1;
             }
         }
-        if(totalPoints >= 3){
+        if(totalPoints >= 2){
             return true;
         }else{
             return false;
@@ -57,9 +61,10 @@ public class UserTools {
     static public int[] stringToCpf(String s){
         int[] cpf = new int[cpfTam];
         char[] cpfChar = s.toCharArray();
-        for(int i = 0; i < cpfTam; i++){
+        for(int i = 0; i < cpfTam && cpfChar.length >= cpfTam; i++){
             cpf[i] = Character.getNumericValue(cpfChar[i]);
         }
+        if(cpfChar.length < cpfTam) return new int[0];
         return cpf;
     }
     static public boolean authenticateCpf(int... cpf){
@@ -100,5 +105,12 @@ public class UserTools {
             out += i * (s[j]);
         }
         return out;
+    }
+    static public String convertCpfToString(int... cpf){
+        String cpfString = "";
+        for(int n : cpf){
+            cpfString += String.valueOf(n);
+        }
+        return cpfString;
     }
 }

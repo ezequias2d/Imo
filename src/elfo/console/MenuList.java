@@ -3,6 +3,10 @@ package elfo.console;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.6
+ */
 public class MenuList {
     Menu menuHome;
     ArrayList<Consumer<Menu>> actions;
@@ -25,10 +29,16 @@ public class MenuList {
     public void remove(){
         remove(actions.size() - 1);
     }
+
+    public void removeAll(){
+        actions.removeAll(actions);
+        labels.removeAll(labels);
+        menus.removeAll(menus);
+    }
     public void addOption(String label, Consumer<Menu> action){
         actions.add(action);
         labels.add(label);
-        menus.add(-1);
+        menus.add(-2);
     }
 
     public void addOption(String label, int menu){
@@ -39,10 +49,10 @@ public class MenuList {
     public void enter(int key){
         if(key == -1){
             back(menuHome);
-        }else if(actions.get(key) != null) {
+        }else if(key < actions.size() && actions.get(key) != null) {
             actions.get(key).accept((menuHome));
         }else{
-            if(menuHome.getClass() == Menu.class){
+            if(key < menus.size() && (key < actions.size() && actions.get(key) == null) && menuHome.getClass() == Menu.class){
                 int current = menuHome.current;
                 menuHome.current = menus.get(key);
                 MenuList currentList = menuHome.menuLists.get(menuHome.current);
@@ -53,6 +63,7 @@ public class MenuList {
 
     public void back(Menu m){
         m.current = back.get(back.size() - 1);
+        back.remove((Integer) m.current);
     }
     public void seeMenu(){
         if(back.size() > 0){

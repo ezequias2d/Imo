@@ -1,28 +1,30 @@
 package imo.property;
 
-import imo.cashier.Money;
-
 import java.util.ArrayList;
 import elfo.number.Number;
 import elfo.number.DeltaNumber;
 
 public class Property {
     private Number area;
-    private double width;
-    private double length;
+    private Number width;
+    private Number length;
     private ArrayList<Room> rooms;
     private ArrayList<Floor> floors;
-    private Money price;
+    private Number price;
     private String name;
     private boolean availability;
     
-    public Property(double area, Money price) {
+    public Property(double area, Number price) {
         this.area = new Number(area);
         this.floors = new ArrayList<Floor>();
+        this.width = new Number(-1);
+        this.length = new Number(-1);
+        this.availability = true;
+        setPrice(price);
     }
 
-    public double getArea() {
-        return area.getValue();
+    public Number getArea() {
+        return area;
     }
     public Number getNumberOfFloor(){
         return new Number(floors.size());
@@ -41,7 +43,7 @@ public class Property {
         }
         return count;
     }
-    public Money getPrice() {
+    public Number getPrice() {
         return price;
     }
     public String getName() {
@@ -55,19 +57,33 @@ public class Property {
         this.availability = b;
     }
 
-    public void setArea(double area) {
+    public void setArea(double area){
         this.area.setValue(area);
+        this.length.setValue(-1);
+        this.width.setValue(-1);
     }
-    public int addFloor(Floor floor){
+    public void setArea(double width, double lenght){
+        this.area.setValue(width*lenght);
+        this.width.setValue(width);
+        this.length.setValue(lenght);
+    }
+    public double getWidth(){
+        return width.getValue();
+    }
+    public double getLength(){
+        return length.getValue();
+    }
+    public boolean isMeasured(){
+        return !(length.isNull() && width.isNull());
+    }
+
+    public Floor createFloor(){
+        Floor floor = new Floor(floors.size() + 1);
         floors.add(floor);
-        return floors.indexOf(floor);
+        return floor;
     }
-    public int addRoom(int index, Room room){
-        floors.get(index).addRoom(room);
-        return floors.get(index).getRooms().indexOf(room);
-    }
-    public void setPrice(double price) {
-        this.price = new Money(price);
+    public void setPrice(Number price) {
+        this.price = price;
     }
     public void setName(String name) {
         this.name = name;
