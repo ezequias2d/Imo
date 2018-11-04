@@ -122,12 +122,12 @@ public class CalendarTools {
     static public User[] lessUserLoadedWithEvents(ArrayList<User> users, int month, int day){
         User[] user = new User[users.size()];
         int tam = users.size();
-        ScheduleControl scheduleControl = ScheduleControl.getInstance();
+        ScheduleDepot scheduleDepot = ScheduleDepot.getInstance();
         for (int i = 0; i < tam; i++){
             int k = tam-1;
-            Schedule schedule1 = scheduleControl.getScheleduleOfCpf(users.get(i).getCpf());
+            Schedule schedule1 = scheduleDepot.getScheleduleOfCpf(users.get(i).getCpf());
             for (int j = 0; j < tam; j++){
-                Schedule schedule2 = scheduleControl.getScheleduleOfCpf(users.get(j).getCpf());
+                Schedule schedule2 = scheduleDepot.getScheleduleOfCpf(users.get(j).getCpf());
                 if((schedule1.getNumberOfEventInDay(month,day) < schedule2.getNumberOfEventInDay(month,day)) ||
                         (schedule1.getNumberOfEventInDay(month,day) == schedule2.getNumberOfEventInDay(month,day) && i > j)){
                     k-=1;

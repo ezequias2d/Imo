@@ -35,7 +35,7 @@ public class Sale {
         this.price = price;
         this.method = method;
         this.productCode = productCode;
-        this.buyDay = SaleControl.getInstace().getDay();
+        this.buyDay = SaleDepot.getInstace().getDay();
         this.buyDay.addSave(this);
         saleCode = totalSale;
         totalSale += 1;
@@ -77,7 +77,7 @@ public class Sale {
      */
     public void setAproved(boolean bool){
         if(bool){
-            saleDay = SaleControl.getInstace().getDay();
+            saleDay = SaleDepot.getInstace().getDay();
         }else{
             saleDay = null;
         }

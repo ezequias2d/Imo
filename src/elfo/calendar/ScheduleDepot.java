@@ -8,22 +8,22 @@ import java.util.ArrayList;
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
-public class ScheduleControl {
-    private static ScheduleControl scheduleControl;
+public class ScheduleDepot {
+    private static ScheduleDepot scheduleDepot;
     private ArrayList<Schedule> schedules;
 
-    private ScheduleControl(){
+    private ScheduleDepot(){
         schedules = new ArrayList<Schedule>();
     }
 
     /**
-     * @return ScheduleControl
+     * @return ScheduleDepot
      */
-    public static ScheduleControl getInstance(){
-        if(scheduleControl == null){
-            scheduleControl = new ScheduleControl();
+    public static ScheduleDepot getInstance(){
+        if(scheduleDepot == null){
+            scheduleDepot = new ScheduleDepot();
         }
-        return scheduleControl;
+        return scheduleDepot;
     }
 
     /**

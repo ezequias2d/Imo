@@ -3,7 +3,7 @@ package imo.menu.actions;
 import elfo.calendar.CalendarTools;
 import elfo.calendar.DeltaTime;
 import elfo.calendar.Schedule;
-import elfo.calendar.ScheduleControl;
+import elfo.calendar.ScheduleDepot;
 import elfo.console.Menu;
 import elfo.users.User;
 import elfo.users.UserControl;
@@ -21,7 +21,7 @@ public class MakeEventAction {
     private UserControl  userControl;
     private Scanner sc;
     private Schedule schedule;
-    private ScheduleControl scheduleControl;
+    private ScheduleDepot scheduleDepot;
     private DeltaTime deltaTime;
 
     /**
@@ -30,7 +30,7 @@ public class MakeEventAction {
     public MakeEventAction(){
         userControl = UserControl.getInstance();
         sc = UserTools.getScanner();
-        scheduleControl = ScheduleControl.getInstance();
+        scheduleDepot = ScheduleDepot.getInstance();
         deltaTime = new DeltaTime(0,30);
         scheduleUpdate();
     }
@@ -39,7 +39,7 @@ public class MakeEventAction {
      * Get Schedule of current cpf
      */
     private void scheduleUpdate(){
-        schedule = scheduleControl.getScheleduleOfCpf(userControl.getCpfCurrent());
+        schedule = scheduleDepot.getScheleduleOfCpf(userControl.getCpfCurrent());
     }
 
     /**
@@ -75,7 +75,7 @@ public class MakeEventAction {
 
         if(this.schedule.isDisponible(date[1],date[0],hour,minutes,deltaTime)){
             for(User user : CalendarTools.lessUserLoadedWithEvents(users,date[1],date[0])){
-                Schedule schedule = scheduleControl.getScheleduleOfCpf(user.getCpf());
+                Schedule schedule = scheduleDepot.getScheleduleOfCpf(user.getCpf());
                 if(schedule.createNewEvent(textEvent  + userFormalName,date[1],date[0],hour,minutes,deltaTime)){
                     String ADM2FormalName = user.getFormalName();
                     this.schedule.createNewEvent(textEvent + ADM2FormalName,date[1],date[0],hour,minutes,deltaTime);

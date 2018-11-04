@@ -3,7 +3,7 @@ package imo.menu.screens;
 import elfo.console.Menu;
 import elfo.console.MenuList;
 import elfo.sale.Sale;
-import elfo.sale.SaleControl;
+import elfo.sale.SaleDepot;
 import elfo.users.UserControl;
 import elfo.users.UserTools;
 import imo.menu.actions.SaleAction;
@@ -21,7 +21,7 @@ public class SaleScreen extends MenuList{
     private int menuListIndex;
     private Scanner sc;
     private UserControl userControl;
-    private SaleControl saleControl;
+    private SaleDepot saleDepot;
     private PropertyControl propertyControl;
     private SaleAction saleAction;
 
@@ -33,7 +33,7 @@ public class SaleScreen extends MenuList{
         menuListIndex = menuHome.addMenu(this);
         sc = UserTools.getScanner();
         userControl = UserControl.getInstance();
-        saleControl = SaleControl.getInstace();
+        saleDepot = SaleDepot.getInstace();
         propertyControl = PropertyControl.getInstance();
         saleAction = new SaleAction();
     }
@@ -71,7 +71,7 @@ public class SaleScreen extends MenuList{
      * @param menu MenuHome
      */
     public void seeSales(Menu menu){
-        ArrayList<Sale> sales = saleControl.getSalesOfCpf(userControl.getCpfCurrent());
+        ArrayList<Sale> sales = saleDepot.getSalesOfCpf(userControl.getCpfCurrent());
         for(Sale s: sales) {
             System.out.printf("%s\n", s);
         }
@@ -89,7 +89,7 @@ public class SaleScreen extends MenuList{
         if(property != null){
             System.out.printf("0 - CASH\n 1 - FINANSE\n>");
             int method = sc.nextInt();
-            Sale sale = saleControl.newSale(userControl.getCpfCurrent(),property.getPrice().getValue(),method,code);
+            Sale sale = saleDepot.newSale(userControl.getCpfCurrent(),property.getPrice().getValue(),method,code);
             System.out.println(sale);
             System.out.println("Sale create! Confirm with ADM1");
         }

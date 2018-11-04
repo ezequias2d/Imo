@@ -3,7 +3,7 @@ package imo.menu.screens;
 import elfo.calendar.CalendarTools;
 import elfo.calendar.Day;
 import elfo.calendar.Schedule;
-import elfo.calendar.ScheduleControl;
+import elfo.calendar.ScheduleDepot;
 import elfo.console.Menu;
 import elfo.console.MenuList;
 import elfo.users.UserControl;
@@ -51,13 +51,13 @@ public class CalendarScreen extends MenuList {
             System.out.printf("Cpf>");
             int[] cpf = UserTools.stringToCpf(sc.next());
             if(UserTools.authenticateCpf(cpf)){
-                schedule = ScheduleControl.getInstance().getScheleduleOfCpf(cpf);
+                schedule = ScheduleDepot.getInstance().getScheleduleOfCpf(cpf);
                 return true;
             }
-            schedule = ScheduleControl.getInstance().getScheleduleOfCpf(UserTools.getCpfNull());
+            schedule = ScheduleDepot.getInstance().getScheleduleOfCpf(UserTools.getCpfNull());
             return false;
         }else{
-            schedule = ScheduleControl.getInstance().getScheleduleOfCpf(UserControl.getInstance().getCpfCurrent());
+            schedule = ScheduleDepot.getInstance().getScheleduleOfCpf(UserControl.getInstance().getCpfCurrent());
             return true;
         }
     }
@@ -110,7 +110,7 @@ public class CalendarScreen extends MenuList {
             Day day = schedule.getElfoCalendar().getDay();
             int dayN = day.getDay();
             int month = day.getMonth();
-            for(Schedule s : ScheduleControl.getInstance().getSchedules()){
+            for(Schedule s : ScheduleDepot.getInstance().getSchedules()){
                 Day[] days = s.getElfoCalendar().getNextWeekDays(month,dayN);
                 for(int i = 0; i < days.length; i++){
                     if(out[i] == null){

@@ -12,15 +12,15 @@ import java.util.Scanner;
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
-public class SaleControl {
-    static Schedule scheduleSale;
-    private static SaleControl saleControl;
+public class SaleDepot {
+    private static Schedule scheduleSale;
+    private static SaleDepot saleDepot;
     private ArrayList<Sale> sales;
     private UserControl userControl;
     private Scanner sc;
     private Day today;
 
-    private SaleControl(){
+    private SaleDepot(){
         userControl = UserControl.getInstance();
         sales = new ArrayList<Sale>();
         sc = UserTools.getScanner();
@@ -45,13 +45,13 @@ public class SaleControl {
     }
 
     /**
-     * @return Instance of SaleControl
+     * @return Instance of SaleDepot
      */
-    public static SaleControl getInstace(){
-        if(saleControl == null){
-            saleControl = new SaleControl();
+    public static SaleDepot getInstace(){
+        if(saleDepot == null){
+            saleDepot = new SaleDepot();
         }
-        return saleControl;
+        return saleDepot;
     }
 
     /**
