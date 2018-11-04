@@ -1,5 +1,7 @@
-package elfo.sale;
+package imo.menu.actions;
 
+import elfo.sale.Sale;
+import elfo.sale.SaleControl;
 import elfo.users.UserControl;
 import elfo.users.UserTools;
 
@@ -7,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @author Jose Romulo Pereira
+ * @version 0.0.4
  */
 public class SaleView {
     private UserControl userControl;

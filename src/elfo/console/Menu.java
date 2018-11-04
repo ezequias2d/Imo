@@ -8,9 +8,9 @@ import java.util.Scanner;
  * @version 0.0.13
  */
 public class Menu {
-    public static Menu menu;
-    public int current = 0;
-    public ArrayList<MenuList> menuLists;
+    private static Menu menu;
+    int current = 0;
+    private ArrayList<MenuList> menuLists;
     
     private Menu(){
         menuLists = new ArrayList<MenuList>();

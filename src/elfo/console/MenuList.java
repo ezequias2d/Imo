@@ -83,7 +83,7 @@ public class MenuList {
             if(key < menus.size() && (key < actions.size() && actions.get(key) == null) && menuHome.getClass() == Menu.class){
                 int current = menuHome.current;
                 menuHome.current = menus.get(key);
-                MenuList currentList = menuHome.menuLists.get(menuHome.current);
+                MenuList currentList = menuHome.getMenuList(menuHome.current);
                 currentList.back.add(current);
             }
         }

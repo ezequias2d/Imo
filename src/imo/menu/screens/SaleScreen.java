@@ -4,9 +4,9 @@ import elfo.console.Menu;
 import elfo.console.MenuList;
 import elfo.sale.Sale;
 import elfo.sale.SaleControl;
-import elfo.sale.SaleView;
 import elfo.users.UserControl;
 import elfo.users.UserTools;
+import imo.menu.actions.SaleView;
 import imo.property.Property;
 import imo.property.PropertyControl;
 
@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.0.4
  */
 public class SaleScreen extends MenuList{
     private int menuListIndex;
