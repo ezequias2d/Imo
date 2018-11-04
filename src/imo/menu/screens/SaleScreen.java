@@ -6,7 +6,7 @@ import elfo.sale.Sale;
 import elfo.sale.SaleControl;
 import elfo.users.UserControl;
 import elfo.users.UserTools;
-import imo.menu.actions.SaleView;
+import imo.menu.actions.SaleAction;
 import imo.property.Property;
 import imo.property.PropertyControl;
 
@@ -23,7 +23,7 @@ public class SaleScreen extends MenuList{
     private UserControl userControl;
     private SaleControl saleControl;
     private PropertyControl propertyControl;
-    private SaleView saleView;
+    private SaleAction saleAction;
 
     /**
      * Constructor
@@ -35,7 +35,7 @@ public class SaleScreen extends MenuList{
         userControl = UserControl.getInstance();
         saleControl = SaleControl.getInstace();
         propertyControl = PropertyControl.getInstance();
-        saleView = new SaleView();
+        saleAction = new SaleAction();
     }
 
     /**
@@ -101,8 +101,8 @@ public class SaleScreen extends MenuList{
      * @param menu MenuHome
      */
     public void confirmSale(Menu menu){
-        System.out.printf(saleView.getVisualPendingPurchases() + "\n");
-        Sale confirmedSale = saleView.confirmSale();
+        System.out.printf(saleAction.getVisualPendingPurchases() + "\n");
+        Sale confirmedSale = saleAction.confirmSale();
         if(confirmedSale != null){
             confirmedSale.setAproved(true);
             Property property = propertyControl.getProperty(confirmedSale.getProductCode());
@@ -116,7 +116,7 @@ public class SaleScreen extends MenuList{
      * @param menu MenuHome
      */
     public void relatory30Days(Menu menu){
-        System.out.printf(saleView.getVisualRelatory(30)+ "\n");
+        System.out.printf(saleAction.getVisualRelatory(30)+ "\n");
     }
 
     /**
@@ -125,7 +125,7 @@ public class SaleScreen extends MenuList{
      * @param menu MenuHome
      */
     public void pendingPurchases(Menu menu){
-        System.out.printf(saleView.getVisualPendingPurchases() + "\n");
+        System.out.printf(saleAction.getVisualPendingPurchases() + "\n");
     }
 
     /**
@@ -134,7 +134,7 @@ public class SaleScreen extends MenuList{
      * @param menu MenuHome
      */
     public void showAllConfirmedSales(Menu menu){
-        System.out.printf(saleView.getVisualAprovedPurchases());
+        System.out.printf(saleAction.getVisualAprovedPurchases());
     }
 
 }

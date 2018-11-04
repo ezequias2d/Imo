@@ -12,13 +12,13 @@ import java.util.Scanner;
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
-public class SaleView {
+public class SaleAction {
     private UserControl userControl;
     private Scanner sc;
     private SaleControl saleControl;
 
 
-    public SaleView(){
+    public SaleAction(){
         userControl = UserControl.getInstance();
         sc = UserTools.getScanner();
         saleControl = SaleControl.getInstace();
