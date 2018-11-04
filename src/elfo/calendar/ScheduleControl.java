@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class ScheduleControl {
     private static ScheduleControl scheduleControl;
@@ -16,6 +16,9 @@ public class ScheduleControl {
         schedules = new ArrayList<Schedule>();
     }
 
+    /**
+     * @return ScheduleControl
+     */
     public static ScheduleControl getInstance(){
         if(scheduleControl == null){
             scheduleControl = new ScheduleControl();
@@ -23,6 +26,10 @@ public class ScheduleControl {
         return scheduleControl;
     }
 
+    /**
+     * @param cpf CPF in int[11]
+     * @return Schedule of CPF
+     */
     public Schedule getScheleduleOfCpf(int[] cpf){
         String cpfString = UserTools.convertCpfToString(cpf);
         int index = -1;
@@ -41,6 +48,10 @@ public class ScheduleControl {
             return schedule;
         }
     }
+
+    /**
+     * @return ArrayList of Schedule
+     */
     public ArrayList<Schedule> getSchedules(){
         return schedules;
     }

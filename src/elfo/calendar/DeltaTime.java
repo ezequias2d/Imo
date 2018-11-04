@@ -2,7 +2,7 @@ package elfo.calendar;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class DeltaTime {
     private int[] time;

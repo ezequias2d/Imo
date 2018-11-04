@@ -1,46 +1,58 @@
 package elfo.sale;
 
 import elfo.calendar.Day;
-import elfo.calendar.Schedule;
-import elfo.calendar.ScheduleControl;
 import elfo.users.User;
 import elfo.users.UserControl;
 import elfo.users.UserTools;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class Sale {
 
     public static final int IN_CASH = 0;
     public static final int IN_FINANCE = 1;
-    private static int saleCode;
+    private static int totalSale;
     private int productCode;
+    private int saleCode;
     private int method;
     private double price;
     private boolean aproved;
-    private UserControl userControl;
     private Day buyDay;
     private Day saleDay;
-    User buyer;
+    private User buyer;
 
+    /**
+     * @param buyerCpf Buyer CPF in int[]
+     * @param price Price value
+     * @param method Payment method
+     * @param productCode Product Code
+     */
     private Sale(int[] buyerCpf,double price, int method, int productCode){
-        this.userControl = UserControl.getUserControl();
-        this.buyer = userControl.getUserOfCpfAndType(buyerCpf,UserControl.LEVEL_NORMAL);
+        UserControl userControl = UserControl.getInstance();
+        this.buyer = userControl.getUser(buyerCpf,UserControl.LEVEL_NORMAL);
         this.price = price;
         this.method = method;
         this.productCode = productCode;
         this.buyDay = SaleControl.getInstace().getDay();
         this.buyDay.addSave(this);
-        saleCode += 1;
+        saleCode = totalSale;
+        totalSale += 1;
     }
 
+    /**
+     * @return Sale Code
+     */
     public int getSaleCode(){
         return saleCode;
     }
 
-    public String getInfo(){
+    /**
+     * @return String Form
+     */
+    @Override
+    public String toString(){
         String out = "";
         out = String.format("Buyer:%s - %s, Product Code:%d, Price:$%.2f, Aproved:",
                 buyer.getFormalName(), UserTools.convertCpfToString(buyer.getCpf()),
@@ -52,9 +64,17 @@ public class Sale {
         out += ", Sale CODE:" + saleCode;
         return out;
     }
+
+    /**
+     * @return if aproved
+     */
     public boolean isAproved(){
         return aproved;
     }
+
+    /**
+     * @param bool Boolean
+     */
     public void setAproved(boolean bool){
         if(bool){
             saleDay = SaleControl.getInstace().getDay();
@@ -63,22 +83,44 @@ public class Sale {
         }
         aproved = bool;
     }
+
+    /**
+     * @return Price
+     */
     public double getPrice(){
         return price;
     }
-    public String toString(){
-        return getInfo();
-    }
+
+    /**
+     * @param cpf CPF
+     * @return if Cpf buyer
+     */
     public boolean isCpfBuyer(int[] cpf){
         return buyer.isCpf(cpf);
     }
+
+    /**
+     * @return Product Code
+     */
     public int getProductCode(){
         return productCode;
     }
+
+    /**
+     * @return Method
+     */
     public int getMethod(){
         return method;
     }
-    static public Sale newSale(int[] buyerCpf,double price, int method, int productCode){
+
+    /**
+     * @param buyerCpf Buyer CPF
+     * @param price Price
+     * @param method Method
+     * @param productCode Product Code
+     * @return A New Sale or null
+     */
+    static public Sale create(int[] buyerCpf,double price, int method, int productCode){
         if(UserTools.authenticateCpf(buyerCpf)){
             return new Sale(buyerCpf,price,method,productCode);
         }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class Day {
     private int day;

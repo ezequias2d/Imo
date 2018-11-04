@@ -3,17 +3,23 @@ package imo.property;
 import java.util.ArrayList;
 import elfo.number.Number;
 
+/**
+ * @author Jose Romulo Pereira
+ * @version 0.0.4
+ */
 public class Floor {
     private ArrayList<Room> rooms;
-    private ArrayList<Feature> features;
-    int numberFloor;
 
-    public Floor(int numberFloor){
-        this.numberFloor = numberFloor;
+    /**
+     * Constructor
+     */
+    public Floor(){
         rooms = new ArrayList<Room>();
-        features = new ArrayList<Feature>();
     }
 
+    /**
+     * @return Floor Area
+     */
     public double getArea(){
         double out = 0;
         for(Room r : rooms){
@@ -22,32 +28,40 @@ public class Floor {
         return out;
     }
 
-    public int getNumberFloor(){
-        return numberFloor;
-    }
-    public void changeNumberFloor(Floor floor){
-        int antNumber = floor.numberFloor;
-        floor.numberFloor = this.numberFloor;
-        this.numberFloor  = antNumber;
-    }
+    /**
+     * @param room Room
+     * @return if added
+     */
     public boolean add(Room room){
         return rooms.add(room);
     }
-    public boolean add(Feature feature){
-        return features.add(feature);
-    }
+
+    /**
+     * @return Rooms
+     */
     public ArrayList<Room> getRooms(){
         return rooms;
     }
-    public ArrayList<Feature> getFeatures(){
-        return features;
-    }
+
+    /**
+     * @return Number of Rooms
+     */
     public Number getNumberOfRooms(){
         return new Number(rooms.size());
     }
+
+    /**
+     * @param index Index
+     * @return room of index
+     */
     public Room getRoom(int index){
         return rooms.get(index);
     }
+
+    /**
+     * @param type Type
+     * @return Number of Rooms of type
+     */
     public Number getNumberOfRooms(int type){
         Number count = new Number();
         for(int i = 0; i < rooms.size(); i++){

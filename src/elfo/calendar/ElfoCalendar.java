@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class ElfoCalendar {
     private ArrayList<ArrayList<Day>> array;
@@ -44,19 +44,22 @@ public class ElfoCalendar {
 
     /**
      * @param obj Day
-     * @return
+     * @return if added
      */
     private boolean add(ArrayList<Day> obj){
         return array.add(obj);
     }
 
     /**
-     * @param index
-     * @return
+     * @param index Month
+     * @return ArraList of 'Day's
      */
     public ArrayList<Day> get(int index){
         return array.get(index);
     }
+    /**
+        Update Calendar
+     */
     private void updateCalendar(){
         for(int i = 0; i < 12; i++){
             ArrayList<Day> days = new ArrayList<Day>();
@@ -66,6 +69,12 @@ public class ElfoCalendar {
             add(days);
         }
     }
+
+    /**
+     * @param month Month
+     * @param day Day
+     * @return Day of date
+     */
     public Day getDayOfDate(int month, int day){
         while (day > CalendarTools.monthSize(month) - 1 || month > 11 || day < 0 || month < 0){
             if(day > CalendarTools.monthSize(month) - 1){
@@ -85,9 +94,19 @@ public class ElfoCalendar {
         }
         return this.get(month).get(day);
     }
+
+    /**
+     * @return Current day
+     */
     public Day getDay(){
         return this.get(month).get(day-1);
     }
+
+    /**
+     * @param month Month
+     * @param day Day
+     * @return Returns Day[7] with next seven days
+     */
     public Day[] getNextWeekDays(int month, int day){
         Day[] ret = new Day[7];
         for(int i = day ; i < day + 7; i++){
@@ -95,13 +114,23 @@ public class ElfoCalendar {
         }
         return ret;
     }
-    public Day[] getBeforeDays(int days){
-        Day[] ret = new Day[days];
-        for(int i = 0; i < 30; i++){
+
+    /**
+     * @param n n Days
+     * @return Returns Day[n] with before 'n' days
+     */
+    public Day[] getBeforeDays(int n){
+        Day[] ret = new Day[n];
+        for(int i = 0; i < n; i++){
             ret[i] = this.getDayOfDate(month - 1,day + i);
         }
         return ret;
     }
+
+    /**
+     * @param month Month
+     * @return Returns calendar mounted in standard form
+     */
     public String getVisualMonth(int month){
         String ret = "";
         int con = -1;
@@ -138,6 +167,10 @@ public class ElfoCalendar {
         }
         return ret;
     }
+
+    /**
+     * @return Returns year mounted in standard form
+     */
     public String getVisualYear(){
         String ret = "";
         for (int i = 0; i < 12; i++){

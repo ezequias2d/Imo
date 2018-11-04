@@ -1,7 +1,7 @@
 package elfo.calendar;
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class CalendarEvent {
     private int hour;
@@ -15,9 +15,9 @@ public class CalendarEvent {
     /**
      * Event of Calendar
      * @param text desciption of event
-     * @param hour
-     * @param minutes
-     * @param time
+     * @param hour Hour
+     * @param minutes Minutes
+     * @param time Time
      */
     public CalendarEvent(String text,int hour, int minutes,DeltaTime time){
         this.text = text;
@@ -40,7 +40,7 @@ public class CalendarEvent {
     }
 
     /**
-     * @param absoluteTime
+     * @param absoluteTime Absolute Time
      * @return returns true if the given time is between the event
      */
     public boolean isInEvent(double absoluteTime){

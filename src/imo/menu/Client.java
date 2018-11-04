@@ -5,59 +5,71 @@ import elfo.console.MenuList;
 import elfo.users.UserControl;
 import elfo.users.UserScreen;
 import elfo.users.UserTools;
-import imo.menu.actions.AccountScreen;
-import imo.menu.actions.SaleScreen;
-import imo.menu.actions.SearchScreen;
-import imo.menu.actions.CalendarScreen;
+import imo.menu.screens.AccountScreen;
+import imo.menu.screens.SaleScreen;
+import imo.menu.screens.SearchScreen;
+import imo.menu.screens.CalendarScreen;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
-public class Client {
-    UserControl userControl;
-    UserScreen userScreen;
-    SearchScreen searchScreen;
-    CalendarScreen calendarScreen;
-    SaleScreen saleScreen;
-    AccountScreen accountScreen;
-    Menu menu;
-    MenuList menuList;
-    int menuListIndex;
-    String identifier;
+public class Client extends MenuList {
+    private UserControl userControl;
+    private UserScreen userScreen;
+    private int menuListIndex;
+    private String identifier;
     static private Client client;
-    Client(){
-        userControl = UserControl.getUserControl();
+
+    /**
+     * Constructor
+     */
+    private Client(){
+        super(Menu.getInstance());
+
+        SearchScreen searchScreen = new SearchScreen();
+        CalendarScreen calendarScreen = new CalendarScreen();
+        SaleScreen saleScreen = new SaleScreen();
+        AccountScreen accountScreen = new AccountScreen();
+
+        userControl = UserControl.getInstance();
         userScreen = UserScreen.getInstace();
-        menu = Menu.getMenu();
-        searchScreen = new SearchScreen();
-        calendarScreen = new CalendarScreen();
-        saleScreen = new SaleScreen();
-        accountScreen = new AccountScreen();
         accountScreen.genericChangePasswordScreen();
         saleScreen.saleScreenClient();
-        menuListIndex = menu.creatMenu();
-        menuList = menu.getMenuList(menuListIndex);
+        menuListIndex = menuHome.addMenu(this);
 
-        menuList.addOption("Search", searchScreen.getMenuListIndex());
-        menuList.addOption("Calendar", calendarScreen.getMenuListIndex());
-        menuList.addOption("Sales", saleScreen.getMenuListIndex());
-        menuList.addOption("Account", accountScreen.getMenuListIndex());
-        menuList.addOption("Logout",this::logout);
+        this.addOption("Search", searchScreen.getMenuListIndex());
+        this.addOption("Calendar", calendarScreen.getMenuListIndex());
+        this.addOption("Sales", saleScreen.getMenuListIndex());
+        this.addOption("Account", accountScreen.getMenuListIndex());
+        this.addOption("Logout",this::logout);
 
         identifier = UserTools.convertCpfToString(userControl.getCpfCurrent());
     }
+
+    /**
+     * @return Instace of Client
+     */
     static public Client getInstace(){
         if(client == null || client.identifier != UserTools.convertCpfToString(client.userControl.getCpfCurrent())){
             client = new Client();
         }
         return client;
     }
+
+    /**
+     * @return Index of Client MenuList in Menu
+     */
     public int getMenuListIndex(){
         return menuListIndex;
     }
+
+    /**
+     * Logout
+     * @param menu MenuHome
+     */
     private void logout(Menu menu){
-        userControl.logout();
+        userScreen.logout(menu);
         menu.setMenuIndex(userScreen.getIndexMenu());
     }
 }

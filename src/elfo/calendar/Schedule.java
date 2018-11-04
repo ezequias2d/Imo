@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class Schedule {
     private GregorianCalendar gCalendar;
@@ -30,8 +30,8 @@ public class Schedule {
 
     /**
      * Create a new GregorianCalendar and configurate
-     * @param year
-     * @return
+     * @param year Year
+     * @return GregorianCalendar
      */
     private GregorianCalendar createGCalendar(int year) {
         GregorianCalendar cal = new GregorianCalendar();
@@ -87,7 +87,7 @@ public class Schedule {
      * @param hour Hour of event initialization time
      * @param minutes Minutes of event initialization time
      * @param deltaTime Time variation in deltatime
-     * @return
+     * @return if created
      */
     public boolean createNewEvent(String text,int monthNumber, int dayNumber,int hour, int minutes, DeltaTime deltaTime){
         Day day = elfoCalendar.getDayOfDate(monthNumber,dayNumber);
@@ -115,10 +115,23 @@ public class Schedule {
         return elfoCalendar;
     }
 
+    /**
+     * @param month Month
+     * @param day Day
+     * @return Number of events in day
+     */
     public int getNumberOfEventInDay(int month, int day){
         return elfoCalendar.getDayOfDate(month,day).getEvents().size();
     }
 
+    /**
+     * @param month Month
+     * @param day Day
+     * @param hour Hour
+     * @param minutes Minutes
+     * @param deltaTime DeltaTime
+     * @return true if disponible
+     */
     public boolean isDisponible(int month, int day,int hour, int minutes, DeltaTime deltaTime){
         return elfoCalendar.getDayOfDate(month,day).isDisponible(hour,minutes,deltaTime);
     }

@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.6
+ * @version 0.0.13
  */
 public class CalendarTools {
     private static GregorianCalendar cg;
@@ -27,9 +27,9 @@ public class CalendarTools {
     }
 
     /**
-     * @param day
-     * @param month
-     * @param year
+     * @param day Day
+     * @param month Month
+     * @param year Year
      * @return take the day of the day provided
      */
     static public int weekDay(int day,int month,int year){
@@ -42,7 +42,7 @@ public class CalendarTools {
 
     /**
      * @param number month number
-     * @param year
+     * @param year Year
      * @return  returns size of month
      */
     static public int monthSize(int number,int year){
@@ -66,7 +66,7 @@ public class CalendarTools {
 
 
     /**
-     * @param year
+     * @param year Year
      * @return days of year
      */
     static public int dayYearSize(int year){
@@ -80,8 +80,8 @@ public class CalendarTools {
 
     /**
      *
-     * @param hour
-     * @param minute
+     * @param hour Hour
+     * @param minute Minute
      * @return formated time
      */
     static public String formatOfTime(int hour, int minute){
@@ -91,7 +91,7 @@ public class CalendarTools {
     }
 
     /**
-     * @param number
+     * @param number Number
      * @return month name
      */
     static public String monthName(int number){
