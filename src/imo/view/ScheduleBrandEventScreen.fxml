@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="256.0" maxWidth="224.0" minHeight="256.0" minWidth="224.0" prefHeight="256.0" prefWidth="224.0" spacing="16.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imo.view.ScheduleBrandEventScreen">
+   <children>
+      <Label text="Date" />
+      <DatePicker promptText="11/12/2018" />
+      <Label text="Hour" />
+      <TextField promptText="00:00" />
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+         <children>
+            <Label text="Label" />
+            <Button mnemonicParsing="false" text="Ok!" />
+            <Button mnemonicParsing="false" text="Cancel" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+   </padding>
+</VBox>

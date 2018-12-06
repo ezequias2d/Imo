@@ -139,7 +139,7 @@ public class UserTools {
      * |10|9|8|7|6|5|4|3|2| = vector starting with two, arranged in reverse order to multiply
      * | 1*10 | 5*9 | 6*8 | 7*7 | 2*6 | 4*5 | 6*4 | 8*3 | 1*2 |
      *  1* 10 + 5*9 + 6*8 + 7*7 + 2*6 + 4*5 + 6*4 + 8*3 + 1*2 = Return
-     * @param ignore Number of numbers at the end ignore
+     * @param ignore ElfoNumber of numbers at the end ignore
      * @param s Array of Numbers
      * @return Internal product of the vector not ignored by another that ends with 2 and is decreasing
      */

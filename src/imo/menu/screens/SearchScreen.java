@@ -4,7 +4,7 @@ import elfo.console.MenuList;
 import elfo.number.DeltaNumber;
 import elfo.users.UserTools;
 import imo.menu.actions.MakeEventAction;
-import imo.property.PropertyControl;
+import imo.property.PropertyRepository;
 import imo.property.Property;
 
 import java.util.ArrayList;
@@ -16,34 +16,34 @@ import java.util.Scanner;
  */
 public class SearchScreen extends MenuList {
 
-    private PropertyControl propertyControl;
+    private PropertyRepository propertyRepository;
     private Scanner sc;
 
     private int menuListIndex;
 
-    private int menuListIndexFilter;
-    private MenuList menuListFilter;
+
 
     private DeltaNumber moneyLimit;
     private DeltaNumber areaLimit;
     private DeltaNumber floorsLimit;
     private DeltaNumber roomsLimit;
 
-    private MakeEventAction makeEventAction;
-
     /**
      * Constructor
      */
     public SearchScreen(){
         super(Menu.getInstance());
+        int menuListIndexFilter;
+        MenuList menuListFilter;
+
         moneyLimit = new DeltaNumber();
         areaLimit = new DeltaNumber();
         floorsLimit = new DeltaNumber();
         roomsLimit = new DeltaNumber();
-        makeEventAction = new MakeEventAction();
+        MakeEventAction makeEventAction = new MakeEventAction();
 
         sc = UserTools.getScanner();
-        propertyControl = PropertyControl.getInstance();
+        propertyRepository = PropertyRepository.getInstance();
 
         menuListIndex = menuHome.addMenu(this);
 
@@ -75,7 +75,7 @@ public class SearchScreen extends MenuList {
      * @param menu MenuHome
      */
     private void ShowSearch(Menu menu){
-        ArrayList<Property> filterList = propertyControl.filterProperties(moneyLimit,areaLimit,floorsLimit,roomsLimit);
+        ArrayList<Property> filterList = propertyRepository.filterProperties(moneyLimit,areaLimit,floorsLimit,roomsLimit);
         String out = "";
         for(int i = 0; i < filterList.size(); i++){
             Property property = filterList.get(i);

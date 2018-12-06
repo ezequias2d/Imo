@@ -1,16 +1,17 @@
 package imo.menu.actions;
 
 import elfo.calendar.CalendarTools;
-import elfo.calendar.DeltaTime;
-import elfo.calendar.Schedule;
-import elfo.calendar.ScheduleDepot;
+import elfo.calendar.schedule.DeltaTime;
+import elfo.calendar.schedule.Schedule;
+import elfo.calendar.schedule.ScheduleRepository;
 import elfo.console.Menu;
+import elfo.exception.calendar.EventInvalidException;
+import elfo.exception.calendar.HourNotExistException;
 import elfo.users.User;
-import elfo.users.UserControl;
+import elfo.users.UserController;
 import elfo.users.UserTools;
 
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -18,28 +19,28 @@ import java.util.Scanner;
  * @version 0.0.4
  */
 public class MakeEventAction {
-    private UserControl  userControl;
+    private UserController userController;
     private Scanner sc;
     private Schedule schedule;
-    private ScheduleDepot scheduleDepot;
+    private ScheduleRepository scheduleRepository;
     private DeltaTime deltaTime;
 
     /**
      * Constructor
      */
     public MakeEventAction(){
-        userControl = UserControl.getInstance();
+        userController = UserController.getInstance();
         sc = UserTools.getScanner();
-        scheduleDepot = ScheduleDepot.getInstance();
+        scheduleRepository = ScheduleRepository.getInstance();
         deltaTime = new DeltaTime(0,30);
         scheduleUpdate();
     }
 
     /**
-     * Get Schedule of current cpf
+     * Get schedule of current cpf
      */
     private void scheduleUpdate(){
-        schedule = scheduleDepot.getScheleduleOfCpf(userControl.getCpfCurrent());
+        schedule = scheduleRepository.getScheleduleOfCpf(userController.getCpfCurrent());
     }
 
     /**
@@ -49,7 +50,7 @@ public class MakeEventAction {
      */
     public void makeEvent(Menu menu){
         String textEvent;
-        String userFormalName = userControl.getFormalNameCurrent();
+        String userFormalName = userController.getFormalNameCurrent();
         scheduleUpdate();
         System.out.printf("Enter Propriety code>");
         int code = sc.nextInt();
@@ -58,7 +59,7 @@ public class MakeEventAction {
                 code);
 
         System.out.printf("Enter date in format (Example:'04/11')\n>");
-        int[] date = CalendarTools.convertDate(sc.next());
+        int[] date = CalendarTools.convertToDate(sc.next());
 
         date[0]--;
         date[1]--;
@@ -71,21 +72,26 @@ public class MakeEventAction {
         System.out.printf("Enter the minutes of the event\n>");
         int minutes = sc.nextInt();
 
-        ArrayList<User> users = userControl.getUsers(UserControl.LEVEL_ADM2);
+        User[] users = userController.getUsers(User.LEVEL_ADM2);
 
-        if(this.schedule.isDisponible(date[1],date[0],hour,minutes,deltaTime)){
-            for(User user : CalendarTools.lessUserLoadedWithEvents(users,date[1],date[0])){
-                Schedule schedule = scheduleDepot.getScheleduleOfCpf(user.getCpf());
-                if(schedule.createNewEvent(textEvent  + userFormalName,date[1],date[0],hour,minutes,deltaTime)){
+        try {
+            if(this.schedule.isDisponible(date[1],date[0],hour,minutes,deltaTime)){
+                for(User user : CalendarTools.lessUserLoadedWithEvents(users,date[1],date[0])){
+                    Schedule schedule = scheduleRepository.getScheleduleOfCpf(user.getCpf());
+                    schedule.createNewEvent(textEvent  + userFormalName,date[1],date[0],hour,minutes,deltaTime);
                     String ADM2FormalName = user.getFormalName();
                     this.schedule.createNewEvent(textEvent + ADM2FormalName,date[1],date[0],hour,minutes,deltaTime);
                     System.out.printf("Scheduled event!\nRealtor:%s\n",user.getFormalName());
-                    System.out.printf(this.schedule.getElfoCalendar().getDayOfDate(date[1],date[0]).getVisualEvents());
+                    System.out.printf(this.schedule.getDayOfDate(date[1],date[0]).getVisualEvents());
                     System.out.printf("Code1:%s\nCode2:%s\n",schedule.getIdentifier(),this.schedule.getIdentifier());
+                    scheduleRepository.save();
                     break;
+                    }
+                } else {
+                    System.out.printf("\nunmarked event!\n");
                 }
+            } catch (EventInvalidException | HourNotExistException e1) {
+                e1.printStackTrace();
             }
-        }
-        System.out.printf("\nunmarked event!\n");
     }
 }

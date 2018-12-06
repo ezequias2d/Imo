@@ -2,7 +2,7 @@ package imo.menu;
 
 import elfo.console.Menu;
 import elfo.console.MenuList;
-import elfo.users.UserControl;
+import elfo.users.UserController;
 import elfo.users.UserScreen;
 import elfo.users.UserTools;
 import imo.menu.screens.AccountScreen;
@@ -15,7 +15,7 @@ import imo.menu.screens.CalendarScreen;
  * @version 0.0.4
  */
 public class Client extends MenuList {
-    private UserControl userControl;
+    private UserController userController;
     private UserScreen userScreen;
     private int menuListIndex;
     private String identifier;
@@ -32,9 +32,9 @@ public class Client extends MenuList {
         SaleScreen saleScreen = new SaleScreen();
         AccountScreen accountScreen = new AccountScreen();
 
-        userControl = UserControl.getInstance();
+        userController = UserController.getInstance();
         userScreen = UserScreen.getInstace();
-        accountScreen.genericChangePasswordScreen();
+        accountScreen.genericChangeInfoScreen();
         saleScreen.saleScreenClient();
         menuListIndex = menuHome.addMenu(this);
 
@@ -44,14 +44,14 @@ public class Client extends MenuList {
         this.addOption("Account", accountScreen.getMenuListIndex());
         this.addOption("Logout",this::logout);
 
-        identifier = UserTools.convertCpfToString(userControl.getCpfCurrent());
+        identifier = UserTools.convertCpfToString(userController.getCpfCurrent());
     }
 
     /**
      * @return Instace of Client
      */
     static public Client getInstace(){
-        if(client == null || client.identifier != UserTools.convertCpfToString(client.userControl.getCpfCurrent())){
+        if(client == null || client.identifier != UserTools.convertCpfToString(client.userController.getCpfCurrent())){
             client = new Client();
         }
         return client;

@@ -2,9 +2,11 @@ package imo.menu.screens;
 
 import elfo.console.Menu;
 import elfo.console.MenuList;
-import elfo.users.UserControl;
+import elfo.exception.user.UserInvalidPermissionException;
+import elfo.users.UserController;
 import elfo.users.UserTools;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Scanner;
 public class AccountScreen extends MenuList {
     private int menuListIndex;
     private Scanner sc;
-    private UserControl userControl;
+    private UserController userController;
 
     /**
      * Constructor
@@ -23,7 +25,7 @@ public class AccountScreen extends MenuList {
         super(Menu.getInstance());
         menuListIndex = menuHome.addMenu(this);
         sc = UserTools.getScanner();
-        userControl = UserControl.getInstance();
+        userController = UserController.getInstance();
     }
 
     /**
@@ -36,7 +38,7 @@ public class AccountScreen extends MenuList {
     /**
      * Sets the menu generically
      */
-    public void genericChangePasswordScreen(){
+    public void genericChangeInfoScreen(){
         this.addOption("Show Account",this::showAccount);
         this.addOption("Change Your Password",this::changePassword);
         this.addOption("Change Your Full Name", this::changeFullName);
@@ -46,8 +48,9 @@ public class AccountScreen extends MenuList {
     /**
      * sets the menu for ADM1
      */
-    public void ADM1ChangePasswordScreen(){
-        genericChangePasswordScreen();
+    public void adm1ChangeInfoScreen(){
+        this.addOption("Delete Account",this::deleteAccount);
+        genericChangeInfoScreen();
         this.addOption("Change Password",this::changePasswordADM1);
         this.addOption("Change Cpf", this::changeCpfADM1);
     }
@@ -58,9 +61,9 @@ public class AccountScreen extends MenuList {
      */
     private void showAccount(Menu menu){
         System.out.printf("Full Name:%s\nFormal Name:%s\nCpf:%s\n",
-                userControl.getFullNameCurrent(),
-                userControl.getFormalNameCurrent(),
-                UserTools.convertCpfToString(userControl.getCpfCurrent()));
+                userController.getFullNameCurrent(),
+                userController.getFormalNameCurrent(),
+                UserTools.convertCpfToString(userController.getCpfCurrent()));
     }
 
     /**
@@ -73,10 +76,15 @@ public class AccountScreen extends MenuList {
         String pass = sc.nextLine();
         System.out.printf("New password>");
         String newPass = sc.nextLine();
-        if(userControl.changeYourPassword(pass,newPass)){
-            System.out.printf("\nchanged successfully!\n");
-        }else{
-            System.out.printf("\nno change\n");
+
+        try {
+            if(userController.changeYourPassword(pass,newPass)){
+                System.out.printf("\nchanged successfully!\n");
+            }else{
+                System.out.printf("\nno change\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -90,10 +98,14 @@ public class AccountScreen extends MenuList {
         String pass = sc.nextLine();
         System.out.printf("New FullName>");
         String fullname = sc.nextLine();
-        if(userControl.changeYourName(pass,fullname)){
-            System.out.printf("\nchanged successfully!\n");
-        }else{
-            System.out.printf("\nno change\n");
+        try {
+            if(userController.changeYourName(pass,fullname)){
+                System.out.printf("\nchanged successfully!\n");
+            }else{
+                System.out.printf("\nno change\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -109,10 +121,14 @@ public class AccountScreen extends MenuList {
         String name = sc.nextLine();
         System.out.printf("New Last Name>");
         String last = sc.nextLine();
-        if(userControl.changeYourFormalName(pass,name,last)){
-            System.out.printf("\nchanged successfully!\n");
-        }else{
-            System.out.printf("\nno change\n");
+        try {
+            if(userController.changeYourFormalName(pass,name,last)){
+                System.out.printf("\nchanged successfully!\n");
+            }else{
+                System.out.printf("\nno change\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     /**
@@ -127,10 +143,12 @@ public class AccountScreen extends MenuList {
         int[] cpf = UserTools.stringToCpf(sc.next());
         System.out.printf("New password>");
         String newPass = sc.next();
-        if(userControl.changePassword(userControl.getUser(cpf),pass,newPass)){
+        try{
+            userController.changePassword(userController.getUser(cpf),pass,newPass);
             System.out.printf("\nchanged successfully!\n");
-        }else{
+        } catch (UserInvalidPermissionException | IOException e) {
             System.out.printf("\nno change\n");
+
         }
     }
     /**
@@ -144,10 +162,30 @@ public class AccountScreen extends MenuList {
         int[] cpf = UserTools.stringToCpf(sc.next());
         System.out.printf("New CPF>");
         int[] newCpf = UserTools.stringToCpf(sc.next());
-        if(userControl.changeCpf(userControl.getUser(cpf),pass,newCpf)){
+        try{
+            userController.changeCpf(userController.getUser(cpf),pass,newCpf);
             System.out.printf("\nchanged successfully!\n");
-        }else{
+        } catch (UserInvalidPermissionException e) {
             System.out.printf("\nno change\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param menu MenuHome
+     */
+    private void deleteAccount(Menu menu){
+        System.out.printf("CPF to delete>");
+        int[] cpf = UserTools.stringToCpf(sc.next());
+        System.out.printf("ADM1 Password>");
+        String pass = sc.next();
+        try {
+            if(userController.deleteAccount(pass,cpf)){
+                System.out.printf("\nDeleted!\n");
+            }
+        } catch (UserInvalidPermissionException e) {
+            e.printStackTrace();
         }
     }
 }

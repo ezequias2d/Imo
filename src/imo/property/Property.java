@@ -1,89 +1,92 @@
 package imo.property;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import elfo.number.Number;
+import java.util.Collection;
+
+import elfo.calendar.schedule.Schedule;
 import elfo.number.DeltaNumber;
+import imo.exception.ParameterOutOfTypeException;
 
 /**
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
-public class Property {
-    private Number area;
-    private Number width;
-    private Number length;
+public class Property implements Serializable {
+
+    private double area;
+    private double width;
+    private double length;
     private ArrayList<Room> rooms;
-    private ArrayList<Floor> floors;
-    private Number price;
+    private int floors;
+    private double buyPrice;
+    private double rentPrice;
     private String name;
     private boolean availability;
+    private Schedule schedule;
+
+
+    private PropertyType propertyType;
 
     /**
      * Constructor
      * @param area Area
-     * @param price Price
      */
-    public Property(double area, double price) {
-        this.area = new Number(area);
-        this.floors = new ArrayList<Floor>();
-        this.width = new Number(-1);
-        this.length = new Number(-1);
+    public Property(double area, double buyPrice, double rentPrice, PropertyType propertyType) {
+        this.propertyType = propertyType;
+        this.area = area;
+        this.rooms = new ArrayList<Room>();
+        this.width = -1;
+        this.length = -1;
         this.availability = true;
-        setPrice(new Number(price));
+        this.floors = 0;
+        this.buyPrice = buyPrice;
+        this.rentPrice = rentPrice;
+        this.schedule = new Schedule();
+    }
+
+    public Schedule getSchedule(){
+        schedule.upgradeToCurrentDay();
+        return schedule;
     }
 
     /**
-     * Create Floor
-     * @return New Floor
+     * @return ElfoNumber Area
      */
-    public Floor createFloor(){
-        Floor floor = new Floor();
-        floors.add(floor);
-        return floor;
-    }
-
-    /**
-     * @return Number Area
-     */
-    public Number getArea() {
+    public double getArea() {
         return area;
     }
 
     /**
-     * @return Number Floor
+     * @return ElfoNumber Rooms
      */
-    public Number getNumberOfFloor(){
-        return new Number(floors.size());
-    }
-
-    /**
-     * @return Number Rooms
-     */
-    public Number getNumberOfRooms() {
-        Number count = new Number();
-        for(Floor floor : floors){
-            count.increase(floor.getNumberOfRooms());
-        }
-        return count;
+    public double getNumberOfRooms() {
+        return rooms.size();
     }
 
     /**
      * @param type Type
-     * @return Number Rooms Type
+     * @return ElfoNumber Rooms Type
      */
-    public Number getNumberOfRooms(int type){
-        Number count = new Number();
-        for(Floor floor: floors){
-            count.increase(floor.getNumberOfRooms(type));
+    public double getNumberOfRooms(String type){
+        double count = 0;
+        for(Room r : rooms){
+            if(r.isType(type)){
+                count++;
+            }
         }
         return count;
     }
 
     /**
-     * @return Number Price
+     * @return ElfoNumber Price
      */
-    public Number getPrice() {
-        return price;
+    public double getBuyPrice() {
+        return buyPrice;
+    }
+
+    public double getRentPrice() {
+        return rentPrice;
     }
 
     /**
@@ -112,21 +115,14 @@ public class Property {
      * Set Area
      * @param area Area
      */
-    public void setArea(double area){
-        this.area.setValue(area);
-        this.length.setValue(-1);
-        this.width.setValue(-1);
-    }
-
-    /**
-     * Set Area
-     * @param width Width
-     * @param lenght Lenght
-     */
-    public void setArea(double width, double lenght){
-        this.area.setValue(width*lenght);
-        this.width.setValue(width);
-        this.length.setValue(lenght);
+    public void setArea(double area) throws ParameterOutOfTypeException {
+        if(propertyType.isInArea(area)){
+            this.area = area;
+            this.length = -1;
+            this.width = -1;
+        }else{
+            throw new ParameterOutOfTypeException("Area",propertyType.getArea());
+        }
     }
 
     /**
@@ -134,7 +130,7 @@ public class Property {
      * @return Width
      */
     public double getWidth(){
-        return width.getValue();
+        return width;
     }
 
     /**
@@ -142,22 +138,34 @@ public class Property {
      * @return Lenght
      */
     public double getLength(){
-        return length.getValue();
+        return length;
     }
 
     /**
      * @return if it has square dimensions
      */
     public boolean isMeasured(){
-        return !(length.isNull() && width.isNull());
+        return !(length == -1 && width == -1);
     }
 
     /**
      * Set Price
-     * @param price Number Price
+     * @param price ElfoNumber Price
      */
-    public void setPrice(Number price) {
-        this.price = price;
+    public void setRentPrice(double price) throws ParameterOutOfTypeException {
+        if(propertyType.isInRentPrice(price)){
+            this.rentPrice = price;
+        }else{
+            throw new ParameterOutOfTypeException("Rent Price",propertyType.getRentPrice());
+        }
+    }
+
+    public void setBuyPrice(double price) throws ParameterOutOfTypeException {
+        if(propertyType.isInBuyPrice(price)){
+            this.buyPrice = price;
+        }else{
+            throw new ParameterOutOfTypeException("Buy Price",propertyType.getBuyPrice());
+        }
     }
 
     /**
@@ -168,6 +176,22 @@ public class Property {
         this.name = name;
     }
 
+    public void setFloors(int floors) throws ParameterOutOfTypeException {
+        this.floors = floors;
+        if(propertyType.isInFloors(floors)){
+            this.floors = floors;
+        }else{
+            throw new ParameterOutOfTypeException("Floors",propertyType.getFloor());
+        }
+    }
+
+    public void addRoom(Room r){
+       rooms.add(r);
+    }
+
+    public void addRooms(Collection<Room> rooms){
+        rooms.addAll(rooms);
+    }
     /**
      * @param deltaNumber Limit(DeltaNumber)
      * @return if the area is in the area boundary
@@ -180,7 +204,14 @@ public class Property {
      * @return if the price is in the price boundary
      */
     public boolean isInPrice(DeltaNumber deltaNumber){
-        return deltaNumber.isInDeltaNumber(price);
+        return deltaNumber.isInDeltaNumber(buyPrice);
+    }
+    /**
+     * @param deltaNumber Limit(DeltaNumber)
+     * @return if the price is in the price boundary
+     */
+    public boolean isInFloors(DeltaNumber deltaNumber){
+        return deltaNumber.isInDeltaNumber(floors);
     }
     /**
      * @param deltaNumber Limit(DeltaNumber)
@@ -194,30 +225,47 @@ public class Property {
      * @param type Type
      * @return if the roomsType is in the roomsType boundary
      */
-    public boolean isInNumberRooms(DeltaNumber deltaNumber, int type){
+    public boolean isInNumberRooms(DeltaNumber deltaNumber, String type){
         return deltaNumber.isInDeltaNumber(getNumberOfRooms(type));
     }
-    /**
-     * @param deltaNumber Limit(DeltaNumber)
-     * @return if the floors is in the floors boundary
-     */
-    public boolean isInNumberFloor(DeltaNumber deltaNumber){
-        return deltaNumber.isInDeltaNumber(getNumberOfFloor());
+
+    public String getPropertyTypeName(){
+        return propertyType.getName();
     }
-    public String toString(Property property){
-        String out = property.getName();
-        Number area = property.getArea();
-        Number price = property.getPrice();
+    public String getPropertyTypeDescription(){
+        return propertyType.getDescription();
+    }
+    public DeltaNumber getPropertyTypeArea(){
+        return propertyType.getArea().getClone();
+    }
+    public DeltaNumber getPropertyTypeBuyPrice(){
+        return propertyType.getBuyPrice().getClone();
+    }
+    public DeltaNumber getPropertyTypeFloor(){
+        return propertyType.getFloor().getClone();
+    }
+    public DeltaNumber getPropertyTypeRentPrice(){
+        return propertyType.getRentPrice().getClone();
+    }
+    public DeltaNumber getPropertyRoom(String roomType){
+        return propertyType.getRoom(roomType).getClone();
+    }
+
+    public int getFloors(){
+        return floors;
+    }
+    public String toString(){
+        String out = this.getName();
         out += String.format("\nFloors:%d" +
-                "\nArea:%.2f", property.getNumberOfFloor().getIntValue(), area.getValue());
-        if(property.isMeasured()){
-            out += String.format("\nWidth:%.2f\nLength:%.2f", property.getWidth(),property.getLength());
+                "\nArea:%.2f", floors, area);
+        if(this.isMeasured()){
+            out += String.format("\nWidth:%.2f\nLength:%.2f", this.getWidth(),this.getLength());
         }
         out += String.format("\nRooms:");
-        for(int i = 0; i < Room.TYPE_NAME.length; i++){
-            out += String.format("\n    %s - %d",Room.TYPE_NAME[i],property.getNumberOfRooms(i).getIntValue());
+        for(Room r : Room.values()){
+            out += String.format("\n    %s - %.0f",r.getType(),this.getNumberOfRooms(r.getType()));
         }
-        out += String.format("\nPrice:$%.2f\n",price.getValue());
+        out += String.format("\nRent Price:$%.2f\nBuy Price::$.2f\n",rentPrice,buyPrice);
         return out;
     }
 }

@@ -1,10 +1,19 @@
 package elfo.users;
 
+import elfo.data.DataBasic;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
+
 /**
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
 public class User {
+    public static final int LEVEL_ADM1 = 0;
+    public static final int LEVEL_ADM2 = 1;
+    public static final int LEVEL_NORMAL = 2;
+    public static final int LEVEL_NOT_LOGGED = 3;
+
     private String name;
     private String lastName;
     private String fullName;
@@ -19,13 +28,47 @@ public class User {
      * @param cpf CPF
      * @param password Password
      */
-    public User(String name, String lastName, String fullName, int[] cpf, String password){
+    public User(String name, String lastName, String fullName, int[] cpf, String password) throws UserInvalidException, UserIsRegistredException {
+        boolean flag = false;
+        int[] nullCPF = UserTools.getCpfNull();
+        for(int i = 0; i < nullCPF.length; i++){
+            if(nullCPF[i] != cpf[i]){
+                flag = true;
+                break;
+            }
+        }
+        if(flag) {
+            if (UserController.getInstance().getUser(cpf) == null) {
+                throw new UserIsRegistredException(cpf);
+            }
+            if (UserTools.authenticateCpf(cpf) || UserTools.authenticatePassword(password)) {
+                throw new UserInvalidException();
+            }
+        }
         this.name = name;
         this.lastName = lastName;
         this.fullName = fullName;
         this.cpf = cpf;
         this.password = password;
         this.typeUser = -1;
+    }
+
+    public User() throws UserInvalidException, UserIsRegistredException, UserIsRegistredException{
+        this("","","",UserTools.getCpfNull(),"");
+    }
+
+    User(String[] detail){
+        //String[] splitDetail = detail.split(getRegex());
+        this.name = detail[0];
+        this.lastName = detail[1];
+        this.fullName = detail[2];
+        this.typeUser = Integer.valueOf(detail[3]);
+        this.cpf = UserTools.stringToCpf(detail[4]);
+        this.password = detail[5];
+    }
+
+    public String getCpfString(){
+        return UserTools.convertCpfToString(cpf);
     }
 
     /**
@@ -63,7 +106,7 @@ public class User {
      */
     void setFormalName(String name, String lastName){
         this.name = name;
-        this.lastName = name;
+        this.lastName = lastName;
     }
 
     /**
@@ -138,5 +181,16 @@ public class User {
      */
     public String getName(){
         return name;
+    }
+
+    String getDetail(){
+        String regex = "▮▮";
+        return regex +
+                name + regex +
+                lastName + regex +
+                fullName + regex +
+                typeUser + regex +
+                UserTools.convertCpfToString(cpf) + regex +
+                password;
     }
 }

@@ -12,7 +12,7 @@ public class MenuList {
     private ArrayList<Consumer<Menu>> actions;
     private ArrayList<String> labels;
     private ArrayList<Integer> menus;
-    public ArrayList<Integer> back;
+    private ArrayList<Integer> back;
 
     /**
      * @param menuHome Menu Class

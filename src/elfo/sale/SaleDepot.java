@@ -1,8 +1,11 @@
 package elfo.sale;
 
+import elfo.calendar.CalendarTools;
 import elfo.calendar.Day;
-import elfo.calendar.Schedule;
-import elfo.users.UserControl;
+import elfo.calendar.schedule.Schedule;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
+import elfo.users.UserController;
 import elfo.users.UserTools;
 
 import java.util.ArrayList;
@@ -16,26 +19,26 @@ public class SaleDepot {
     private static Schedule scheduleSale;
     private static SaleDepot saleDepot;
     private ArrayList<Sale> sales;
-    private UserControl userControl;
+    private UserController userController;
     private Scanner sc;
     private Day today;
 
-    private SaleDepot(){
-        userControl = UserControl.getInstance();
+    private SaleDepot() {
+        userController = UserController.getInstance();
         sales = new ArrayList<Sale>();
         sc = UserTools.getScanner();
-        today = getScheduleSale().getElfoCalendar().getDay();
+        today = getScheduleSale().getDay();
     }
 
     /**
-     * @return Today Day
+     * @return Today ScheduleDay
      */
     public Day getDay(){
         return today;
     }
 
     /**
-     * @return Schedule Sale
+     * @return schedule Sale
      */
     public static Schedule getScheduleSale() {
         if(scheduleSale == null){
@@ -47,7 +50,7 @@ public class SaleDepot {
     /**
      * @return Instance of SaleDepot
      */
-    public static SaleDepot getInstace(){
+    public static SaleDepot getInstace() {
         if(saleDepot == null){
             saleDepot = new SaleDepot();
         }
@@ -61,7 +64,7 @@ public class SaleDepot {
      * @param productCode Product Code
      * @return A New Sale
      */
-    public Sale newSale(int[] buyerCpf, double price, int method, int productCode){
+    public Sale newSale(int[] buyerCpf, double price, int method, int productCode) throws UserInvalidException, UserIsRegistredException {
         Sale sale = Sale.create(buyerCpf,price,method,productCode);
         sales.add(sale);
         return sale;
@@ -80,8 +83,6 @@ public class SaleDepot {
         }
         return out;
     }
-
-
 
     /**
      * @param code Sale Code
@@ -102,19 +103,12 @@ public class SaleDepot {
      */
     public ArrayList<Sale> getAprovedPurchases(int days){
         ArrayList<Sale> out = new ArrayList<Sale>();
-        Day[] relatorySales = scheduleSale.getElfoCalendar().getBeforeDays(days);
-        if(userControl.getPermission(sc.next()) && userControl.isADM1()) {
-            for (int i = 0; i < relatorySales.length; i++) {
-                ArrayList<Object> sales = relatorySales[i].getSave();
-                for(int j = 0; j < sales.size(); j++){
-                    Sale sale = (Sale)sales.get(i);
-                    if(sale.isAproved()){
-                        out.add(sale);
-                    }
-                }
-                if(sales.size() == 0){
-                    out.add(null);
-                }
+        int date[] = CalendarTools.dateChanger(- days,today.getDay(),today.getMonth(),today.getYear());
+        if(userController.getPermission(sc.next()) && userController.isADM1()) {
+            int i = 0;
+            while (sales.get(i).isAfter(date[0],date[1],date[2]) && sales.get(i).isAproved()){
+                out.add(sales.get(i));
+                i++;
             }
         }
         return out;
@@ -125,7 +119,7 @@ public class SaleDepot {
      */
     public ArrayList<Sale> getAprovedPurchases(){
         ArrayList<Sale> out = new ArrayList<Sale>();
-        if(userControl.getPermission(sc.next()) && userControl.isADM1()){
+        if(userController.getPermission(sc.next()) && userController.isADM1()){
             for(int i = 0; i < sales.size(); i++){
                 Sale s = sales.get(i);
                 if(s.isAproved()){
@@ -142,7 +136,7 @@ public class SaleDepot {
      */
     public ArrayList<Sale> getPendingPurchases(){
         ArrayList<Sale> out = new ArrayList<Sale>();
-        if(userControl.getPermission(sc.next()) && userControl.isADM1()){
+        if(userController.getPermission(sc.next()) && userController.isADM1()){
             for(int i = 0; i < sales.size(); i++){
                 Sale s = sales.get(i);
                 if(!s.isAproved()){

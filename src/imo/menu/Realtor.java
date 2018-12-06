@@ -2,7 +2,9 @@ package imo.menu;
 
 import elfo.console.Menu;
 import elfo.console.MenuList;
-import elfo.users.UserControl;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
+import elfo.users.UserController;
 import elfo.users.UserScreen;
 import elfo.users.UserTools;
 import imo.menu.screens.CalendarScreen;
@@ -15,7 +17,7 @@ import imo.menu.screens.SearchScreen;
  * @version 0.0.4
  */
 public class Realtor extends MenuList{
-    private UserControl userControl;
+    private UserController userController;
     private UserScreen userScreen;
     private int menuListIndex;
     private String identifier;
@@ -26,13 +28,17 @@ public class Realtor extends MenuList{
      */
     private Realtor(){
         super(Menu.getInstance());
-        userControl = UserControl.getInstance();
+
+        userController = UserController.getInstance();
+
         userScreen = UserScreen.getInstace();
 
         SearchScreen searchScreen = new SearchScreen();
         CalendarScreen calendarScreen = new CalendarScreen();
         AccountScreen accountScreen = new AccountScreen();
         RegisterPropertyScreen registerPropertyScreen = new RegisterPropertyScreen();
+
+        accountScreen.genericChangeInfoScreen();
 
         menuListIndex = menuHome.addMenu(this);
 
@@ -42,14 +48,14 @@ public class Realtor extends MenuList{
         this.addOption("Account", accountScreen.getMenuListIndex());
         this.addOption("Logout",this::logout);
 
-        identifier = UserTools.convertCpfToString(userControl.getCpfCurrent());
+        identifier = UserTools.convertCpfToString(userController.getCpfCurrent());
     }
 
     /**
      * @return Instace of Realtor
      */
     static public Realtor getInstace(){
-        if(realtor == null || realtor.identifier != UserTools.convertCpfToString(realtor.userControl.getCpfCurrent())){
+        if(realtor == null || realtor.identifier != UserTools.convertCpfToString(realtor.userController.getCpfCurrent())){
             realtor = new Realtor();
         }
         return realtor;
@@ -68,7 +74,7 @@ public class Realtor extends MenuList{
      * @param menu MenuHome
      */
     private void logout(Menu menu){
-        userControl.logout();
+        userController.logout();
         menu.setMenuIndex(userScreen.getIndexMenu());
     }
 }

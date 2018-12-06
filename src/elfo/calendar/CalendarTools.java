@@ -1,8 +1,11 @@
 package elfo.calendar;
 
+import elfo.calendar.schedule.Schedule;
+import elfo.calendar.schedule.ScheduleRepository;
 import elfo.users.User;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -27,7 +30,7 @@ public class CalendarTools {
     }
 
     /**
-     * @param day Day
+     * @param day ScheduleDay
      * @param month Month
      * @param year Year
      * @return take the day of the day provided
@@ -35,31 +38,31 @@ public class CalendarTools {
     static public int weekDay(int day,int month,int year){
         cgCreat();
         cg.set(Calendar.DAY_OF_MONTH,day);
-        cg.set(Calendar.MONTH,month);
+        cg.set(Calendar.MONTH,month - 1);
         cg.set(Calendar.YEAR,year);
         return cg.get(Calendar.DAY_OF_WEEK);
     }
 
     /**
-     * @param number month number
+     * @param month month number
      * @param year Year
      * @return  returns size of month
      */
-    static public int monthSize(int number,int year){
+    static public int monthSize(int month,int year){
         cgCreat();
         cg.set(Calendar.YEAR,year);
-        cg.set(Calendar.MONTH, number + 1);
+        cg.set(Calendar.MONTH, month - 1);
         cg.set(Calendar.DAY_OF_MONTH, -1);
         return cg.get(Calendar.DAY_OF_MONTH) + 1;
     }
 
     /**
-     * @param number month number
+     * @param month month number
      * @return returns size of month
      */
-    static public int monthSize(int number){
+    static public int monthSize(int month){
         cgCreat();
-        cg.set(Calendar.MONTH, number + 1);
+        cg.set(Calendar.MONTH, month - 1);
         cg.set(Calendar.DAY_OF_MONTH, -1);
         return cg.get(Calendar.DAY_OF_MONTH) + 1;
     }
@@ -91,27 +94,45 @@ public class CalendarTools {
     }
 
     /**
-     * @param number Number
+     * @param number ElfoNumber
      * @return month name
      */
     static public String monthName(int number){
         String [] weekNames = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"};
-        return weekNames[number];
+        return weekNames[number - 1];
     }
 
     /**
      * @param s String date "DD/MM/YYYY"
      * @return Convert string DD/MM/YYYY in int[] = {DD,MM,YYYY}
      */
-    static public int[] convertDate(String s){
-        String sp[] = s.split("/");
+    static public int[] convertToDate(String s, String regex){
+        String sp[] = s.split(regex);
         int[] date = new int[sp.length];
         for(int i = 0; i < sp.length; i++){
             date[i] = Integer.valueOf(sp[i]);
         }
         return date;
     }
+    static public int[] convertToDate(String s){
+        return convertToDate(s,"/");
+    }
+    static public int[] convertToDate(LocalDate date){
+        int[] dateOut = new int[3];
+        dateOut[0] = date.getDayOfMonth();
+        dateOut[1] = date.getMonthValue();
+        dateOut[2] = date.getYear();
+        return dateOut;
+    }
 
+    static public int[] convertToHour(String s){
+        String sp[] = s.split(":");
+        int[] hour = new int[sp.length];
+        for(int i = 0; i < sp.length; i++){
+            hour[i] = Integer.valueOf(sp[i]);
+        }
+        return hour;
+    }
     /**
      * orna list of users by less loaded users on top
      * @param users user list
@@ -119,22 +140,44 @@ public class CalendarTools {
      * @param day event day
      * @return ordered list of users
      */
-    static public User[] lessUserLoadedWithEvents(ArrayList<User> users, int month, int day){
-        User[] user = new User[users.size()];
-        int tam = users.size();
-        ScheduleDepot scheduleDepot = ScheduleDepot.getInstance();
+    static public User[] lessUserLoadedWithEvents(User[] users, int month, int day){
+        User[] user = new User[users.length];
+        int tam = users.length;
+        ScheduleRepository scheduleRepository = ScheduleRepository.getInstance();
         for (int i = 0; i < tam; i++){
             int k = tam-1;
-            Schedule schedule1 = scheduleDepot.getScheleduleOfCpf(users.get(i).getCpf());
+            Schedule schedule1 = scheduleRepository.getScheleduleOfCpf(users[i].getCpf());
             for (int j = 0; j < tam; j++){
-                Schedule schedule2 = scheduleDepot.getScheleduleOfCpf(users.get(j).getCpf());
+                Schedule schedule2 = scheduleRepository.getScheleduleOfCpf(users[j].getCpf());
                 if((schedule1.getNumberOfEventInDay(month,day) < schedule2.getNumberOfEventInDay(month,day)) ||
                         (schedule1.getNumberOfEventInDay(month,day) == schedule2.getNumberOfEventInDay(month,day) && i > j)){
                     k-=1;
                 }
             }
-            user[k] = users.get(i);
+            user[k] = users[i];
         }
         return user;
+    }
+
+
+    static public int[] dateChanger(int daysToChange, int day, int month, int year){
+        int[] newDate = {day + daysToChange, month, year};
+        while(newDate[1] > 12 || newDate[1] < 1 ||
+                newDate[0] < 1 || newDate[0] > monthSize(newDate[1],newDate[2])){
+            if(newDate[1] > 12){
+                newDate[1] -= 11;
+                newDate[2] += 1;
+            }else if(newDate[1] < 1){
+                newDate[1] += 12;
+                newDate[2] -= 1;
+            }else if(newDate[0] < 1){
+                newDate[1] -= 1;
+                newDate[0] += monthSize(newDate[1],newDate[2]);
+            }else if(newDate[0] > monthSize(newDate[1],newDate[2])){
+                newDate[1] += 1;
+                newDate[0] -= monthSize(newDate[1] - 1, newDate[2]);
+            }
+        }
+        return newDate;
     }
 }

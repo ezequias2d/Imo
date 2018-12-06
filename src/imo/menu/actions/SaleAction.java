@@ -1,8 +1,10 @@
 package imo.menu.actions;
 
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
 import elfo.sale.Sale;
 import elfo.sale.SaleDepot;
-import elfo.users.UserControl;
+import elfo.users.UserController;
 import elfo.users.UserTools;
 
 import java.util.ArrayList;
@@ -13,13 +15,13 @@ import java.util.Scanner;
  * @version 0.0.4
  */
 public class SaleAction {
-    private UserControl userControl;
+    private UserController userController;
     private Scanner sc;
     private SaleDepot saleDepot;
 
 
-    public SaleAction(){
-        userControl = UserControl.getInstance();
+    public SaleAction() {
+        userController = UserController.getInstance();
         sc = UserTools.getScanner();
         saleDepot = SaleDepot.getInstace();
     }
@@ -76,14 +78,18 @@ public class SaleAction {
      * @return Sale Confirmed
      */
     public Sale confirmSale(){
-        if(userControl.getPermission(sc.next()) && userControl.isADM1()){
+        if(userController.getPermission(sc.next()) && userController.isADM1()){
             System.out.printf("Enter the sales code\n>");
             int index = sc.nextInt();
             Sale sale = saleDepot.getSaleOfCode(index);
             System.out.println(sale);
             System.out.printf("Are you sure to confirm?(y/n):");
             if(sc.next().toCharArray()[0] == 'y'){
-                sale.setAproved(true);
+                try {
+                    sale.setAproved(true);
+                } catch (UserIsRegistredException | UserInvalidException e) {
+                    e.printStackTrace();
+                }
                 System.out.printf("Sale aproved!\n");
                 return sale;
             }

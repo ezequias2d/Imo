@@ -2,7 +2,9 @@ package imo.menu;
 
 import elfo.console.Menu;
 import elfo.console.MenuList;
-import elfo.users.UserControl;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
+import elfo.users.UserController;
 import elfo.users.UserScreen;
 import elfo.users.UserTools;
 import imo.menu.screens.*;
@@ -12,7 +14,7 @@ import imo.menu.screens.*;
  * @version 0.0.4
  */
 public class RealEstateManager extends MenuList{
-    private UserControl userControl;
+    private UserController userController;
     private UserScreen userScreen;
     private int menuListIndex;
     private String identifier;
@@ -23,16 +25,14 @@ public class RealEstateManager extends MenuList{
      */
     private RealEstateManager(){
         super(Menu.getInstance());
-        userControl = UserControl.getInstance();
+        userController = UserController.getInstance();
         userScreen = UserScreen.getInstace();
-
         SearchScreen searchScreen = new SearchScreen();
         CalendarScreen calendarScreen = new CalendarScreen();
         AccountScreen accountScreen = new AccountScreen();
         SaleScreen saleScreen = new SaleScreen();
         RegisterPropertyScreen registerPropertyScreen = new RegisterPropertyScreen();
-
-        accountScreen.ADM1ChangePasswordScreen();
+        accountScreen.adm1ChangeInfoScreen();
 
         saleScreen.saleScreenRealEstateManager();
 
@@ -46,14 +46,16 @@ public class RealEstateManager extends MenuList{
         this.addOption("Account", accountScreen.getMenuListIndex());
         this.addOption("Logout",this::logout);
 
-        identifier = UserTools.convertCpfToString(userControl.getCpfCurrent());
+        identifier = UserTools.convertCpfToString(userController.getCpfCurrent());
+
+
     }
 
     /**
      * @return Instace of RealEstateManager
      */
     static public RealEstateManager getInstace(){
-        if(realEstateManager == null || realEstateManager.identifier != UserTools.convertCpfToString(realEstateManager.userControl.getCpfCurrent())){
+        if(realEstateManager == null || realEstateManager.identifier != UserTools.convertCpfToString(realEstateManager.userController.getCpfCurrent())){
             realEstateManager = new RealEstateManager();
         }
         return realEstateManager;

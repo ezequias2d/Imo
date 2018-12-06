@@ -1,8 +1,10 @@
 package elfo.sale;
 
 import elfo.calendar.Day;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
 import elfo.users.User;
-import elfo.users.UserControl;
+import elfo.users.UserController;
 import elfo.users.UserTools;
 
 /**
@@ -29,14 +31,13 @@ public class Sale {
      * @param method Payment method
      * @param productCode Product Code
      */
-    private Sale(int[] buyerCpf,double price, int method, int productCode){
-        UserControl userControl = UserControl.getInstance();
-        this.buyer = userControl.getUser(buyerCpf,UserControl.LEVEL_NORMAL);
+    private Sale(int[] buyerCpf,double price, int method, int productCode) throws UserInvalidException, UserIsRegistredException {
+        UserController userController = UserController.getInstance();
+        this.buyer = userController.getUser(buyerCpf, User.LEVEL_NORMAL);
         this.price = price;
         this.method = method;
         this.productCode = productCode;
         this.buyDay = SaleDepot.getInstace().getDay();
-        this.buyDay.addSave(this);
         saleCode = totalSale;
         totalSale += 1;
     }
@@ -46,6 +47,29 @@ public class Sale {
      */
     public int getSaleCode(){
         return saleCode;
+    }
+
+    public Day getBuyDay(){
+        return buyDay;
+    }
+
+    public Day getSaleDay(){
+        return saleDay;
+    }
+
+    public boolean isBefore(int day, int month, int year){
+        if(this.saleDay != null){
+            return this.saleDay.isBefore(day,month,year);
+        }else{
+            return this.buyDay.isBefore(day,month,year);
+        }
+    }
+    public boolean isAfter(int day, int month, int year){
+        if(this.saleDay != null){
+            return this.saleDay.isAfter(day,month,year);
+        }else{
+            return this.buyDay.isAfter(day,month,year);
+        }
     }
 
     /**
@@ -75,7 +99,7 @@ public class Sale {
     /**
      * @param bool Boolean
      */
-    public void setAproved(boolean bool){
+    public void setAproved(boolean bool) throws UserInvalidException, UserIsRegistredException {
         if(bool){
             saleDay = SaleDepot.getInstace().getDay();
         }else{
@@ -120,7 +144,7 @@ public class Sale {
      * @param productCode Product Code
      * @return A New Sale or null
      */
-    static public Sale create(int[] buyerCpf,double price, int method, int productCode){
+    static public Sale create(int[] buyerCpf,double price, int method, int productCode) throws UserInvalidException, UserIsRegistredException {
         if(UserTools.authenticateCpf(buyerCpf)){
             return new Sale(buyerCpf,price,method,productCode);
         }

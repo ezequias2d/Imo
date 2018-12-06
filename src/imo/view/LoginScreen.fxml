@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="256.0" prefWidth="224.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imo.LoginScreenController">
+   <children>
+      <Button layoutX="146.0" layoutY="220.0" mnemonicParsing="false" onAction="#login" text="Log on" />
+      <Label layoutX="31.0" layoutY="107.0" text="CPF" />
+      <Label layoutX="31.0" layoutY="153.0" text="Password" />
+      <PasswordField id="passInput" fx:id="passInput" alignment="CENTER" layoutX="62.0" layoutY="176.0" prefHeight="25.0" prefWidth="100.0" promptText="password" />
+      <TextField fx:id="userInput" alignment="CENTER" layoutX="62.0" layoutY="122.0" prefHeight="25.0" prefWidth="100.0" promptText="00000000000" />
+      <Label layoutX="56.0" layoutY="22.0" text="Imo">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
+      <Label layoutX="80.0" layoutY="45.0" text="Project">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
+      <Button layoutX="20.0" layoutY="220.0" mnemonicParsing="false" text="Sig in" />
+   </children>
+</AnchorPane>

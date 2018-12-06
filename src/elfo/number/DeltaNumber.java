@@ -1,14 +1,19 @@
 package elfo.number;
 
+import sun.plugin2.message.Serializer;
+
+import java.io.Serializable;
+
 /**
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
-public class DeltaNumber {
-    private Number min;
-    private Number max;
+public class DeltaNumber implements Serializable, Cloneable {
+    private final int deltaNull;
+    private double min;
+    private double max;
     public DeltaNumber(){
-        setDelta(-1,-1);
+        this(-1,-1);
     }
 
     /**
@@ -16,6 +21,7 @@ public class DeltaNumber {
      * @param max Maximum
      */
     public DeltaNumber(double min, double max){
+        deltaNull = -1;
         setDelta(min,max);
     }
 
@@ -24,10 +30,11 @@ public class DeltaNumber {
      * @param min Minimum
      */
     public void setMin(double min){
-        if(this.min == null){
-            this.min = new Number();
+        if(min < 0){
+            this.min = - 1;
+        }else{
+            this.min = min;
         }
-        this.min.setValue(min);
     }
 
     /**
@@ -35,10 +42,11 @@ public class DeltaNumber {
      * @param max Maximum
      */
     public void setMax(double max){
-        if(this.max == null){
-            this.max = new Number();
+        if(max < 0){
+            this.max = - 1;
+        }else{
+            this.max = max;
         }
-        this.max.setValue(max);
     }
 
     /**
@@ -54,23 +62,31 @@ public class DeltaNumber {
     /**
      * @return Minimum
      */
-    public Number getMin(){
+    public double getMin(){
         return min;
     }
 
     /**
      * @return Maximum
      */
-    public Number getMax(){
+    public double getMax(){
         return max;
     }
 
     /**
-     * Checks whether the number is between the
-     * @param number Number
+     * Checks whether the elfoNumber is between the
+     * @param num ElfoNumber
      * @return true or false
      */
-    public boolean isInDeltaNumber(Number number){
-        return (number.value >= min.getValue() || min.isNull()) && (number.value <= max.getValue() || max.isNull());
+    public boolean isInDeltaNumber(double num){
+        return (num >= min || min == deltaNull) && (num <= max || max == deltaNull);
+    }
+
+    public DeltaNumber getClone() {
+        try{
+            return (DeltaNumber)this.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }

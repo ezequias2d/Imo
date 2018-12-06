@@ -2,6 +2,8 @@ package elfo.users;
 
 import elfo.console.Menu;
 import elfo.console.MenuList;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
 
 import java.util.Scanner;
 
@@ -10,15 +12,17 @@ import java.util.Scanner;
  * @version 0.0.13
  */
 public class UserScreen extends MenuList {
-    static UserScreen userScreen;
+
+    private static UserScreen userScreen;
     private int menuListIndex;
-    private UserControl userControl;
+    private UserController userController;
     private Scanner sc;
     private int[] nextScreen;
-    private UserScreen(){
+
+    private UserScreen() throws UserInvalidException, UserIsRegistredException {
         super(Menu.getInstance());
         sc = UserTools.getScanner();
-        userControl = UserControl.getInstance();
+        userController = UserController.getInstance();
         menuListIndex = menuHome.addMenu(this);
         nextScreen = new int[4];
         this.addOption("Login",this::login);
@@ -31,7 +35,11 @@ public class UserScreen extends MenuList {
      */
     public static UserScreen getInstace(){
         if(userScreen == null){
-            userScreen = new UserScreen();
+            try {
+                userScreen = new UserScreen();
+            } catch (UserIsRegistredException | UserInvalidException e) {
+                e.printStackTrace();
+            }
         }
         return userScreen;
     }
@@ -71,8 +79,12 @@ public class UserScreen extends MenuList {
                 System.out.printf("Confirm password:");
                 String confirmPass = sc.nextLine();
                 if(pass.equals(confirmPass)){
-                    registerNewUser(fullName,cpf,pass,true);
-                    menuHome.setMenuIndex(nextScreen[userControl.getTypeOfUser()]);
+                    try {
+                        registerNewUser(fullName, cpf, pass, true);
+                    } catch (UserIsRegistredException | UserInvalidException e) {
+                        e.printStackTrace();
+                    }
+                    menuHome.setMenuIndex(nextScreen[userController.getTypeOfUser()]);
                     break;
                 }
             }
@@ -123,8 +135,8 @@ public class UserScreen extends MenuList {
             }else{
                 System.out.printf("Password:");
                 String pass = sc.nextLine();
-                if(userControl.login(cpf,pass)){
-                    menuHome.setMenuIndex(nextScreen[userControl.getTypeOfUser()]);
+                if(userController.login(cpf,pass)){
+                    menuHome.setMenuIndex(nextScreen[userController.getTypeOfUser()]);
                     break;
                 }else{
                     if(countPassErrors >= 2){
@@ -141,11 +153,11 @@ public class UserScreen extends MenuList {
      * @return Type of User
      */
     private int insertType(){
-        if(userControl.isADM1()){
+        if(userController.isADM1()){
             System.out.printf("0-ADM1 Account\n1-ADM2 Account\n2-Normal account\n->");
             return UserTools.getScanner().nextInt();
         }
-        return UserControl.LEVEL_NORMAL;
+        return User.LEVEL_NORMAL;
     }
 
     /**
@@ -156,34 +168,21 @@ public class UserScreen extends MenuList {
      * @param ignoreConfirm Ignore Confirm
      * @return if will create
      */
-    public boolean registerNewUser(String fullName, int[] cpf, String password,boolean ignoreConfirm){
-        if(UserTools.authenticateCpf(cpf) && UserTools.authenticatePassword(password)){
-            for (User user: userControl.getUsers()) {
-                if(user.isCpf(cpf)){
-                    //the cpf is registred
-                    System.out.printf("\nThe user is registred!\n");
-                    return false;
-                }
-            }
-            String name = UserTools.getFirstName(fullName);
-            if(ignoreConfirm) name = confirmName("is your first name?",name);
-            String lastName = UserTools.getLastName(fullName);
-            if(ignoreConfirm) lastName = confirmName("is your last name?",lastName);
-            User user = new User(name,lastName,fullName,cpf,password);
-            if(userControl.isLevel(UserControl.LEVEL_NOT_LOGGED)){
-                user.setTypeUser(UserControl.LEVEL_NORMAL);
-            }else if(userControl.isADM2()){
-                System.out.printf("You should not be here!");
-                return false;
-            }else if(userControl.isADM1()){
-                user.setTypeUser(insertType());
-            }
-            userControl.add(user);
-            System.out.println("User registred");
-            return true;
-        }else{
+    private boolean registerNewUser(String fullName, int[] cpf, String password,boolean ignoreConfirm) throws UserIsRegistredException, UserInvalidException {
+        String name = UserTools.getFirstName(fullName);
+        if(ignoreConfirm) name = confirmName("is your first name?",name);
+        String lastName = UserTools.getLastName(fullName);
+        if(ignoreConfirm) lastName = confirmName("is your last name?",lastName);
+
+        if(userController.isLevel(User.LEVEL_NOT_LOGGED)){
+            return userController.registerNewUser(fullName,cpf,password,name,lastName,User.LEVEL_NORMAL);
+        }else if(userController.isADM2()){
+            System.out.printf("You should not be here!");
             return false;
+        }else if(userController.isADM1()){
+            return userController.registerNewUser(fullName,cpf,password,name,lastName,insertType());
         }
+        return false;
     }
 
     /**
@@ -217,7 +216,7 @@ public class UserScreen extends MenuList {
      * @param m MenuHome
      */
     public void logout(Menu m){
-        userControl.logout();
+        userController.logout();
         System.out.printf("\nLogout!\n");
     }
 

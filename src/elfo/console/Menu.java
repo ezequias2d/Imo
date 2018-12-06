@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.0.14
  */
 public class Menu {
     private static Menu menu;
@@ -79,11 +79,9 @@ public class Menu {
      * @param sc Scanner
      */
     public void run(Scanner sc){
-        for(int i = 0; i < menuLists.size(); i++){
-            MenuList m = menuLists.get(current);
-            m.seeMenu();
-            int f = sc.nextInt();
-            m.enter(f);
-        }
+        MenuList m = menuLists.get(current);
+        m.seeMenu();
+        int f = sc.nextInt();
+        m.enter(f);
     }
 }

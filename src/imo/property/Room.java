@@ -1,61 +1,34 @@
 package imo.property;
-import elfo.number.Number;
 
 /**
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
-public class Room {
-    public static final int BEDROOM = 0;
-    public static final int LIVING_ROOM = 1;
-    public static final int DINING_ROOM = 2;
-    public static final int KITCHEN = 3;
-    public static final int CLOSET = 4;
-    public static final int BATHROOM = 5;
-    public static final int GARAGE = 6;
-    public static final int OFFICE = 7;
-    public static final int GARDEN = 8;
-    public static final int BALCONY = 9;
-    public static final int LOBBY = 10;
+public enum Room {
+    BEDROOM("Bedroom"), LIVING_ROOM("Living Room"), DINING_ROOM("Dining Room"), KITCHEN("Kitchen"),
+    CLOSET("Closet"), BATHROOM("Bathroom"), GARAGE("Garage"), OFFICE("Office"), GARDEN("Garden"),
+    BALCONY("Balcony"), LOBBY("Lobby");
 
-    public static final String[] TYPE_NAME = {"Bedroom","Living Room","Dining Room",
-                                                "Kitchen","Closet","Bathroom",
-                                                    "Garage","Office","Garden",
-                                                            "Balcony","Lobby"};
-
-    private int type;
-    private Number area;
-    private Number width;
-    private Number lenght;
+    private String type;
+    private double area;
+    private double width;
+    private double lenght;
 
     /**
      * Constructor
      * @param type Type
-     * @param area Area
      */
-    public Room(int type, double area){
+    Room(String type){
         this.type = type;
-        this.area = new Number(area);
-        this.width = new Number(-1);
-        this.lenght = new Number(-1);
+        this.area = area;
+        this.width = -1;
+        this.lenght = -1;
     }
-    /**
-     * Constructor
-     * @param type Type
-     * @param width Width
-     * @param lenght Lenght
-     */
-    public Room(int type, double width, double lenght){
-        this(type,width*lenght);
-        this.width = new Number(width);
-        this.lenght = new Number(lenght);
-    }
-
     /**
      * Get Type
      * @return Type
      */
-    public int getType(){
+    public String getType(){
         return type;
     }
 
@@ -63,7 +36,7 @@ public class Room {
      * Set Type
      * @param type Type
      */
-    public void setType(int type){
+    public void setType(String type){
         this.type = type;
     }
 
@@ -71,7 +44,7 @@ public class Room {
      * @return Area
      */
     public double getArea(){
-        return area.getValue();
+        return area;
     }
 
     /**
@@ -79,9 +52,9 @@ public class Room {
      * @param area Area
      */
     public void setArea(double area){
-        this.area.setValue(area);
-        this.lenght.setValue(-1);
-        this.width.setValue(-1);
+        this.area = area;
+        this.lenght = -1;
+        this.width = -1;
     }
 
     /**
@@ -90,23 +63,23 @@ public class Room {
      * @param lenght Lenght
      */
     public void setArea(double width, double lenght){
-        this.area.setValue(width*lenght);
-        this.width.setValue(width);
-        this.lenght.setValue(lenght);
+        this.area = width*lenght;
+        this.width = width;
+        this.lenght = lenght;
     }
 
 
     /**
      * @return Width
      */
-    public Number getWidth(){
+    public double getWidth(){
         return width;
     }
 
     /**
      * @return Lenght
      */
-    public Number getLenght(){
+    public double getLenght(){
         return lenght;
     }
 
@@ -114,8 +87,8 @@ public class Room {
      * @param type Type
      * @return if it is type
      */
-    public boolean isType(int type){
-        return this.type == type;
+    public boolean isType(String type){
+        return this.type.equals(type);
     }
 
     /**
@@ -123,9 +96,9 @@ public class Room {
      * @return if the room is equivalent to another
      */
     public boolean equals(Room room){
-        return (this.type == room.getType() &&
-                this.area.equals(room.getArea()) &&
-                this.width.equals(room.getWidth()) &&
-                this.lenght.equals(room.getLenght()));
+        return (this.type.equals(room.getType()) &&
+                this.area == room.getArea() &&
+                this.width == room.getWidth() &&
+                this.lenght == room.getLenght());
     }
 }

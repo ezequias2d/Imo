@@ -2,13 +2,15 @@ package imo.menu.screens;
 
 import elfo.console.Menu;
 import elfo.console.MenuList;
+import elfo.exception.user.UserInvalidException;
+import elfo.exception.user.UserIsRegistredException;
 import elfo.sale.Sale;
 import elfo.sale.SaleDepot;
-import elfo.users.UserControl;
+import elfo.users.UserController;
 import elfo.users.UserTools;
 import imo.menu.actions.SaleAction;
 import imo.property.Property;
-import imo.property.PropertyControl;
+import imo.property.PropertyRepository;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -20,9 +22,9 @@ import java.util.Scanner;
 public class SaleScreen extends MenuList{
     private int menuListIndex;
     private Scanner sc;
-    private UserControl userControl;
+    private UserController userController;
     private SaleDepot saleDepot;
-    private PropertyControl propertyControl;
+    private PropertyRepository propertyRepository;
     private SaleAction saleAction;
 
     /**
@@ -32,9 +34,9 @@ public class SaleScreen extends MenuList{
         super(Menu.getInstance());
         menuListIndex = menuHome.addMenu(this);
         sc = UserTools.getScanner();
-        userControl = UserControl.getInstance();
+        userController = UserController.getInstance();
         saleDepot = SaleDepot.getInstace();
-        propertyControl = PropertyControl.getInstance();
+        propertyRepository = PropertyRepository.getInstance();
         saleAction = new SaleAction();
     }
 
@@ -71,7 +73,7 @@ public class SaleScreen extends MenuList{
      * @param menu MenuHome
      */
     public void seeSales(Menu menu){
-        ArrayList<Sale> sales = saleDepot.getSalesOfCpf(userControl.getCpfCurrent());
+        ArrayList<Sale> sales = saleDepot.getSalesOfCpf(userController.getCpfCurrent());
         for(Sale s: sales) {
             System.out.printf("%s\n", s);
         }
@@ -82,16 +84,21 @@ public class SaleScreen extends MenuList{
      * Create a New Sale
      * @param menu MenuHome
      */
-    public void newSale(Menu menu){
+    public void newSale(Menu menu) {
         System.out.printf("Property CODE>");
         int code = sc.nextInt();
-        Property property = propertyControl.getProperty(code);
+        Property property = propertyRepository.getProperty(code);
         if(property != null){
             System.out.printf("0 - CASH\n 1 - FINANSE\n>");
             int method = sc.nextInt();
-            Sale sale = saleDepot.newSale(userControl.getCpfCurrent(),property.getPrice().getValue(),method,code);
-            System.out.println(sale);
-            System.out.println("Sale create! Confirm with ADM1");
+            try {
+                Sale sale = saleDepot.newSale(userController.getCpfCurrent(), property.getBuyPrice(), method, code);
+                System.out.println(sale);
+                System.out.println("Sale create! Confirm with ADM1");
+            } catch (UserIsRegistredException | UserInvalidException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -100,12 +107,16 @@ public class SaleScreen extends MenuList{
      * Confim Sale
      * @param menu MenuHome
      */
-    public void confirmSale(Menu menu){
+    public void confirmSale(Menu menu) {
         System.out.printf(saleAction.getVisualPendingPurchases() + "\n");
         Sale confirmedSale = saleAction.confirmSale();
         if(confirmedSale != null){
-            confirmedSale.setAproved(true);
-            Property property = propertyControl.getProperty(confirmedSale.getProductCode());
+            try {
+                confirmedSale.setAproved(true);
+            } catch (UserIsRegistredException | UserInvalidException e) {
+                e.printStackTrace();
+            }
+            Property property = propertyRepository.getProperty(confirmedSale.getProductCode());
             property.setAvailability(false);
         }
     }
