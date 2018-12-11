@@ -1,6 +1,7 @@
 package elfo.calendar.schedule;
 
 /**
+ * Representa um intervalo de tempo, como a duraçao de um evento
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
@@ -8,6 +9,7 @@ public class DeltaTime {
     private int[] time;
 
     /**
+     * Incializa DeltaTime com uma variaçao de hora e de minutos
      * @param dHours Delta hours
      * @param dMinutes Delta minutes
      */
@@ -20,6 +22,7 @@ public class DeltaTime {
     }
 
     /**
+     * Pega a parte "hora" da variaçao de tempo
      * @return Delta hours
      */
     public int getDeltaHours(){
@@ -27,6 +30,7 @@ public class DeltaTime {
     }
 
     /**
+     * Pega a parte "minutos" da variaçao de tempo
      * @return Delta minutes
      */
     public int getDeltaMinutes(){
@@ -34,6 +38,12 @@ public class DeltaTime {
     }
 
     /**
+     * Pega variaçao de hora e minutos completa em um vetor
+     * Exemplo:
+     *          hora = 1
+     *          minutos = 30
+     *
+     *          Retorno = int[]{1, 30}
      * @return int[] = {Delta hours, Delta Minutes}
      */
     public int[] getTime(){
@@ -41,15 +51,40 @@ public class DeltaTime {
     }
 
     /**
+     * Pega tempo absoluto em minutos
+     * Exemplo:
+     *          hora = 1
+     *          minutos = 30
+     *
+     *          Retorno = 60(horas em minutos) + 30(minutos) = 90
      * @return Absolute Delta Time in Double
      */
     public double getDeltaTime(){
-        double dt = time[0];
-        dt += time[0] / 60;
+        double dt = time[1];
+        dt += time[0] * 60;
         return dt;
     }
 
+    /**
+     * Formata intevalo no formato padrao de hora "horas:minutos"
+     * @return
+     */
+    @Override
     public String toString(){
         return getDeltaHours() + ":" + getDeltaMinutes();
+    }
+
+    /**
+     * Compara equivalencia
+     * @param object
+     * @return if equals
+     */
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof DeltaTime){
+            DeltaTime deltaTime = (DeltaTime)object;
+            return deltaTime.getDeltaHours() == getDeltaHours() && deltaTime.getDeltaMinutes() == getDeltaMinutes();
+        }
+        return false;
     }
 }

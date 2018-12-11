@@ -1,5 +1,6 @@
 package imo.property;
 
+import elfo.data.IIdentifiable;
 import elfo.number.DeltaNumber;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.io.Serializable;
 /**
  * Classe destinada a definir, restringir ou limitar uma propriedade(Construçao)
  */
-public class PropertyType implements Serializable {
+public class PropertyType implements Serializable, IIdentifiable {
     /*
     public static String HOUSE = "House";
     public static String ROW_HOUSE = "Row House";
@@ -29,7 +30,7 @@ public class PropertyType implements Serializable {
         this.name = name;
         this.description = description;
         this.floor = new DeltaNumber();
-        this.room = new DeltaNumber[Room.values().length];
+        this.room = new DeltaNumber[Room.TYPE_NAME.length];
         for(int i = 0; i < room.length; i ++){
             this.room[i] = new DeltaNumber();
         }
@@ -44,7 +45,7 @@ public class PropertyType implements Serializable {
 
     public void setLimitRoom(String type,int min, int max){
         for(int i = 0; i < room.length; i ++){
-            if(Room.values()[i].getType().equals(type)){
+            if(Room.TYPE_NAME[i].equals(type)){
                 room[i].setDelta(min,max);
                 break;
             }
@@ -74,7 +75,7 @@ public class PropertyType implements Serializable {
     }
     public boolean isInRoom(String type,int num){
         for(int i = 0; i < room.length; i ++){
-            if(Room.values()[i].getType().equals(type)){
+            if(Room.TYPE_NAME[i].equals(type)){
                 return room[i].isInDeltaNumber(num);
             }
         }
@@ -97,7 +98,7 @@ public class PropertyType implements Serializable {
     }
     public DeltaNumber getRoom(String type){
         for(int i = 0; i < room.length; i ++){
-            if(Room.values()[i].getType().equals(type)){
+            if(Room.TYPE_NAME[i].equals(type)){
                 return room[i].getClone();
             }
         }
@@ -110,6 +111,11 @@ public class PropertyType implements Serializable {
         return description;
     }
     public String toString(){
+        return name;
+    }
+
+    @Override
+    public String getIdentity() {
         return name;
     }
 }

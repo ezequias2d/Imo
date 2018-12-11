@@ -64,7 +64,7 @@ public class ElfoCalendar<T extends Day> {
         Update Calendar
      */
     @SuppressWarnings ( "unchecked" )
-    private void updateCalendar(){
+    protected void updateCalendar(){
         for(int i = 1; i <= 12; i++){
             ArrayList<T> days = new ArrayList<T>();
             for(int j = 1; j <= CalendarTools.monthSize(i,year);j++){

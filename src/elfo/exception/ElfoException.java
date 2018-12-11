@@ -1,5 +1,10 @@
 package elfo.exception;
 
+/**
+ * Representa exceçao geral da ELFO API.
+ * @author Ezequias Moises dos Santos Silva
+ * @Version 0.0.1
+ */
 public class ElfoException extends Exception{
     protected String message;
     public ElfoException(String message){

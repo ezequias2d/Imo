@@ -1,28 +1,41 @@
 package elfo.calendar.schedule;
 
-import elfo.data.BasicTypes.DataArrayList;
-import elfo.data.FileReg;
-import elfo.data.IRepositorio;
-import elfo.users.UserTools;
+import elfo.calendar.CalendarTools;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.1.27
  */
-public class ScheduleRepository implements IRepositorio<Schedule> {
-    public static final String URI_DEPOT = "src/resources/depot/calendars.edd";
+public class ScheduleRepository implements IScheduleRepository{
+    public static final String URI_DEPOT = "src/resources/depot/calendars.dat";
     private static ScheduleRepository scheduleRepository;
+
     private ArrayList<Schedule> schedules;
+    private Map<Integer, ArrayList<Schedule>> schedulePerYears;
 
-
+    /**
+     * Constructor of ScheduleRepository
+     */
     private ScheduleRepository(){
-
         System.out.printf("\nCarregamdo elementos..\n");
         this.schedules = new ArrayList<Schedule>();
+        this.schedulePerYears = new HashMap<Integer, ArrayList<Schedule>>();
         //this.schedules.addAll(dal.getElements());
+    }
+
+    /**
+     * Atualiza schedules para um ano especifico
+     * @param year Year
+     */
+    private void updateSchedulesForTheYear(int year){
+        if(!schedulePerYears.containsKey(year)){
+            schedulePerYears.put(year,new ArrayList<Schedule>());
+        }
+        schedules = schedulePerYears.get(year);
     }
 
     /**
@@ -36,14 +49,19 @@ public class ScheduleRepository implements IRepositorio<Schedule> {
     }
 
     /**
-     * @param cpf CPF in int[11]
-     * @return schedule of CPF
+     * Pega um calendario por identificador e ano
+     * Criando um automaticamente se nao existir
+     *
+     * @param identify Identify
+     * @param year Year
+     * @return Schedule
      */
-    public Schedule getScheleduleOfCpf(int[] cpf){
-        String cpfString = UserTools.convertCpfToString(cpf);
+    @Override
+    public Schedule get(String identify, int year){
+        updateSchedulesForTheYear(year);
         int index = -1;
         for(int i = 0; i < schedules.size(); i++){
-            if(schedules.get(i).getIdentifier().equals(cpfString)){
+            if(schedules.get(i).getIdentifier().equals(identify)){
                 index = i;
                 break;
             }
@@ -51,71 +69,24 @@ public class ScheduleRepository implements IRepositorio<Schedule> {
         if(index != -1){
             return schedules.get(index);
         }else{
-            Schedule schedule = new Schedule();
-            schedule.setIdentifier(cpfString);
+            Schedule schedule = new Schedule(year,identify);
             schedules.add(schedule);
             return schedule;
         }
-    }
-
-    public void save(){
-
-    }
-
-    /**
-     * @return ArrayList of schedule
-     */
-    public ArrayList<Schedule> getSchedules(){
-        return schedules;
-    }
-
-    @Override
-    public boolean add(Schedule object) {
-        return schedules.add(object);
     }
 
     @Override
     public boolean remove(Schedule object) {
         return schedules.remove(object);
     }
-
-    @Override
-    public Schedule get(int index) {
-        return schedules.get(index);
-    }
-
     @Override
     public Schedule get(String indent) {
-        int index = -1;
-        for(int i = 0; i < schedules.size(); i++){
-            if(schedules.get(i).getIdentifier().equals(indent)){
-                index = i;
-                break;
-            }
-        }
-        if(index != -1){
-            return schedules.get(index);
-        }else{
-            Schedule schedule = new Schedule();
-            schedule.setIdentifier(indent);
-            schedules.add(schedule);
-
-            return schedule;
-        }
+        return get(indent,CalendarTools.getCurrentYear());
     }
-
     @Override
     public int get(Schedule object) {
         return schedules.indexOf(object);
     }
 
-    @Override
-    public Schedule[] toArray() {
-        return (Schedule[]) schedules.toArray();
-    }
 
-    @Override
-    public void update() throws IOException {
-
-    }
 }

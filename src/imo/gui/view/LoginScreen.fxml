@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_CENTER" maxWidth="402.0" minHeight="319.0" prefHeight="319.0" prefWidth="202.0" spacing="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imo.gui.controls.LoginScreenController">
+   <children>
+      <Label text="Imo Project">
+         <font>
+            <Font size="28.0" />
+         </font>
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin>
+      </Label>
+      <Accordion>
+        <panes>
+          <TitledPane animated="false" text="Log on">
+            <content>
+                  <VBox alignment="BOTTOM_LEFT" spacing="5.0">
+                     <children>
+                        <Label text="CPF" />
+                        <TextField fx:id="cpfLogOnTextField" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" promptText="00000000000" />
+                        <Label text="Password" />
+                        <PasswordField id="passInput" fx:id="passwordLogOnTextField" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" promptText="password" />
+                        <Button mnemonicParsing="false" onAction="#logOn" text="Log on">
+                           <VBox.margin>
+                              <Insets left="122.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Sig in">
+            <content>
+                  <VBox alignment="CENTER_LEFT" spacing="5.0">
+                     <children>
+                        <Label text="Full Name" />
+                        <TextField fx:id="fullNameTextField" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" promptText="Full Name" />
+                        <Label text="CPF" />
+                        <TextField fx:id="cpfSigInTextField" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" promptText="00000000000" />
+                        <Label text="Password" />
+                        <PasswordField id="passInput" fx:id="passwordSigInTextField" alignment="CENTER" prefHeight="25.0" prefWidth="100.0" promptText="password" />
+                        <Button mnemonicParsing="false" onAction="#sigIn" text="Sig in">
+                           <VBox.margin>
+                              <Insets left="129.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+            </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+   </children>
+</VBox>

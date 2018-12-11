@@ -1,13 +1,16 @@
 package imo.property;
 
+import java.io.Serializable;
+
 /**
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
-public enum Room {
-    BEDROOM("Bedroom"), LIVING_ROOM("Living Room"), DINING_ROOM("Dining Room"), KITCHEN("Kitchen"),
-    CLOSET("Closet"), BATHROOM("Bathroom"), GARAGE("Garage"), OFFICE("Office"), GARDEN("Garden"),
-    BALCONY("Balcony"), LOBBY("Lobby");
+public class Room implements Serializable {
+    public static final String[] TYPE_NAME = {"Bedroom","Living Room","Dining Room",
+            "Kitchen","Closet","Bathroom",
+            "Garage","Office","Garden",
+            "Balcony","Lobby"};
 
     private String type;
     private double area;
@@ -18,7 +21,7 @@ public enum Room {
      * Constructor
      * @param type Type
      */
-    Room(String type){
+    public Room(String type){
         this.type = type;
         this.area = area;
         this.width = -1;
@@ -101,4 +104,5 @@ public enum Room {
                 this.width == room.getWidth() &&
                 this.lenght == room.getLenght());
     }
+
 }

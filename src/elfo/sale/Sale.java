@@ -1,52 +1,56 @@
 package elfo.sale;
 
+import elfo.calendar.CalendarTools;
 import elfo.calendar.Day;
-import elfo.exception.user.UserInvalidException;
-import elfo.exception.user.UserIsRegistredException;
+import elfo.data.IIdentifiable;
+import elfo.exception.sale.SaleIsCanceledException;
 import elfo.users.User;
-import elfo.users.UserController;
 import elfo.users.UserTools;
 
 /**
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
-public class Sale {
+public class Sale implements IIdentifiable {
 
     public static final int IN_CASH = 0;
     public static final int IN_FINANCE = 1;
+    public static final int IN_RENT = 2;
+    public static final String[] METHODS = new String[]{"Full Payment Purchase","Finance Purchase","Rent"};
     private static int totalSale;
-    private int productCode;
-    private int saleCode;
+    private ISellable product;
+    private final String identity;
     private int method;
-    private double price;
     private boolean aproved;
+    private boolean canceled;
     private Day buyDay;
     private Day saleDay;
     private User buyer;
 
     /**
-     * @param buyerCpf Buyer CPF in int[]
-     * @param price Price value
+     * @param buyer Buyer
      * @param method Payment method
-     * @param productCode Product Code
+     * @param product Product
      */
-    private Sale(int[] buyerCpf,double price, int method, int productCode) throws UserInvalidException, UserIsRegistredException {
-        UserController userController = UserController.getInstance();
-        this.buyer = userController.getUser(buyerCpf, User.LEVEL_NORMAL);
-        this.price = price;
+    public Sale(User buyer,int method, ISellable product) {
+        this.buyer = buyer;
         this.method = method;
-        this.productCode = productCode;
-        this.buyDay = SaleDepot.getInstace().getDay();
-        saleCode = totalSale;
+        this.product = product;
+        this.canceled = false;
+        buyDay = new Day(CalendarTools.getCurrentDate());
+        identity = String.valueOf(totalSale);
         totalSale += 1;
     }
 
     /**
      * @return Sale Code
      */
-    public int getSaleCode(){
-        return saleCode;
+    public String getIdentity(){
+        return identity;
+    }
+
+    public void cancel(){
+        this.canceled = true;
     }
 
     public Day getBuyDay(){
@@ -57,19 +61,15 @@ public class Sale {
         return saleDay;
     }
 
-    public boolean isBefore(int day, int month, int year){
-        if(this.saleDay != null){
-            return this.saleDay.isBefore(day,month,year);
-        }else{
-            return this.buyDay.isBefore(day,month,year);
-        }
-    }
     public boolean isAfter(int day, int month, int year){
         if(this.saleDay != null){
             return this.saleDay.isAfter(day,month,year);
         }else{
             return this.buyDay.isAfter(day,month,year);
         }
+    }
+    public boolean isAfter(int[] date){
+        return isAfter(date[0],date[1],date[2]);
     }
 
     /**
@@ -78,40 +78,54 @@ public class Sale {
     @Override
     public String toString(){
         String out = "";
-        out = String.format("Buyer:%s - %s, Product Code:%d, Price:$%.2f, Aproved:",
+        out = String.format("Buyer:%s - %s, Product Code:%s, Price:$%.2f, Aproved:",
                 buyer.getFormalName(), UserTools.convertCpfToString(buyer.getCpf()),
-                productCode, price);
+                product.getIdentity(), getPrice());
         out += aproved + ", Buy:" + buyDay.toString();
         if(saleDay != null){
             out += ", Sale:" + saleDay.toString();
         }
-        out += ", Sale CODE:" + saleCode;
+        out += ", Sale CODE:" + identity;
         return out;
     }
 
     /**
      * @return if aproved
      */
-    public boolean isAproved(){
+    public boolean isAproved() throws SaleIsCanceledException {
+        cheakCancel();
         return aproved;
     }
 
     /**
      * @param bool Boolean
      */
-    public void setAproved(boolean bool) throws UserInvalidException, UserIsRegistredException {
+    public void setAproved(boolean bool) throws SaleIsCanceledException {
+        cheakCancel();
+        aproved = bool;
         if(bool){
-            saleDay = SaleDepot.getInstace().getDay();
-        }else{
+            saleDay = new Day(CalendarTools.getCurrentDate());
+        } else{
             saleDay = null;
         }
-        aproved = bool;
+    }
+
+    private void cheakCancel() throws SaleIsCanceledException {
+        if(canceled){
+            throw new SaleIsCanceledException(this);
+        }
     }
 
     /**
      * @return Price
      */
     public double getPrice(){
+        double price;
+        if(method == 2){
+            price = product.getRentPrice();
+        }else{
+            price = product.getBuyPrice();
+        }
         return price;
     }
 
@@ -126,8 +140,8 @@ public class Sale {
     /**
      * @return Product Code
      */
-    public int getProductCode(){
-        return productCode;
+    public String getProductIdentity(){
+        return product.getIdentity();
     }
 
     /**
@@ -137,17 +151,4 @@ public class Sale {
         return method;
     }
 
-    /**
-     * @param buyerCpf Buyer CPF
-     * @param price Price
-     * @param method Method
-     * @param productCode Product Code
-     * @return A New Sale or null
-     */
-    static public Sale create(int[] buyerCpf,double price, int method, int productCode) throws UserInvalidException, UserIsRegistredException {
-        if(UserTools.authenticateCpf(buyerCpf)){
-            return new Sale(buyerCpf,price,method,productCode);
-        }
-        return null;
-    }
 }

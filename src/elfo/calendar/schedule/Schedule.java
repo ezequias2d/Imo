@@ -10,56 +10,44 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
+ * Representa uma agenda de eventos
+ * Esta agenda so pode ser criada pelo repositorio de Schedule
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.13
  */
 public class Schedule extends ElfoCalendar<ScheduleDay>{
-    private GregorianCalendar gCalendar;
-    private String identifier;
 
+    private final String identifier;
     /**
-     * Constructor Private of schedule
+     *  Constroi um Schedule de um ano especifico
+     * @param identifier Identificador unico
+     * @param year Ano do schedule
      */
-    public Schedule(){
-        super(0,0,0, new ScheduleDay(0,0,0));
-        upgradeToCurrentDay();
+    Schedule(int year, String identifier){
+        super(year,1,1, new ScheduleDay(0,0,0));
+        updateCalendar();
+        this.identifier = identifier;
     }
 
+    /**
+     * Constroi um Schedule do ano atual
+     */
+    Schedule(String identifier){
+        this(CalendarTools.getCurrentYear(),identifier);
+    }
+
+    /**
+     * Muda para dia atual
+     */
     public void upgradeToCurrentDay(){
+        GregorianCalendar gCalendar;
         gCalendar = new GregorianCalendar();
-        year = gCalendar.get(Calendar.YEAR);
         month = gCalendar.get(Calendar.MONTH) + 1;
         day = gCalendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    /**
-     * Create a new GregorianCalendar and configurate
-     * @param year Year
-     * @return GregorianCalendar
-     */
-    private GregorianCalendar createGCalendar(int year) {
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.MONTH, 1);
-        cal.set(Calendar.YEAR, year);
-        return cal;
-    }
-
-    public void setIdentifier(String identifier){
-        this.identifier = identifier;
-    }
-
     public String getIdentifier(){
         return identifier;
-    }
-
-
-    /**
-     * Update the ElfoCalendar
-     */
-    private void updateCalendar(){
-        gCalendar = createGCalendar(year);
-        day = gCalendar.get(Calendar.DAY_OF_MONTH);
     }
 
     /**
@@ -68,18 +56,6 @@ public class Schedule extends ElfoCalendar<ScheduleDay>{
      */
     public void changeMonth(int m){
         this.month += month;
-        gCalendar.add(Calendar.MONTH,m);
-        updateCalendar();
-    }
-
-    /**
-     * Increse year in "y" years
-     * @param y Years to increse
-     */
-    public void changeYear(int y){
-        this.year += y;
-        gCalendar.add(Calendar.YEAR,y);
-        updateCalendar();
     }
 
     /**
@@ -97,21 +73,7 @@ public class Schedule extends ElfoCalendar<ScheduleDay>{
     }
 
     /**
-     * Prints the entire calendar for the current year
-     */
-    public void seeThisCalendar(){
-        System.out.print(this.getVisualYear());
-    }
-
-    /**
-     *Prints the current month
-     */
-    public void seeThisMonth(){
-        System.out.print(this.getVisualMonth(month));
-    }
-
-
-    /**
+     * Pega numero de eventos no dia
      * @param month Month
      * @param day ScheduleDay
      * @return ElfoNumber of events in day
@@ -121,6 +83,7 @@ public class Schedule extends ElfoCalendar<ScheduleDay>{
     }
 
     /**
+     * verifica se esta disponivel uma parte de um dia especifico
      * @param month Month
      * @param day ScheduleDay
      * @param hour Hour

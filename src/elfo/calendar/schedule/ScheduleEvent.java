@@ -1,10 +1,13 @@
 package elfo.calendar.schedule;
 
+import elfo.calendar.CalendarTools;
+import elfo.calendar.Day;
 import elfo.exception.calendar.HourNotExistException;
 
 /**
+ * Representa um evento do Schedule
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.1.15
  */
 public class ScheduleEvent {
     private int hour;
@@ -14,6 +17,8 @@ public class ScheduleEvent {
     private int endMinutes;
     private String text;
 
+    private Day day;
+
     /**
      * Event of Calendar
      * @param text desciption of event
@@ -21,17 +26,24 @@ public class ScheduleEvent {
      * @param minutes Minutes
      * @param time Time
      */
-    public ScheduleEvent(String text, int hour, int minutes, DeltaTime time) throws HourNotExistException {
+    public ScheduleEvent(String text, int hour, int minutes, DeltaTime time, Day day) throws HourNotExistException {
         checkIfTimeExists(hour, minutes);
         this.text = text;
         this.hour = hour;
         this.minutes = minutes;
         this.time = time;
+        this.day = day;
         DeltaTime dtEnd = new DeltaTime(hour + time.getDeltaHours(),minutes+time.getDeltaMinutes());
         endHour = dtEnd.getDeltaHours();
         endMinutes = dtEnd.getDeltaMinutes();
     }
 
+    /**
+     * Verifica se horario existe
+     * @param hour Hora
+     * @param minutes Minutos
+     * @throws HourNotExistException Se nao existir lança exceçao
+     */
     private void checkIfTimeExists(int hour, int minutes) throws HourNotExistException{
         if((hour == 24 && minutes == 0) || (hour < 24 && minutes < 60)){
             return;
@@ -39,6 +51,12 @@ public class ScheduleEvent {
         throw new HourNotExistException(hour,minutes);
     }
 
+    /**
+     * Verifica equivalencia
+     * @param obj Objeto
+     * @return Se equivalente
+     */
+    @Override
     public boolean equals(Object obj){
         if(obj instanceof ScheduleEvent) {
             ScheduleEvent ce = (ScheduleEvent)obj;
@@ -51,12 +69,20 @@ public class ScheduleEvent {
     }
 
     /**
+     * Retorna dia mascado com esse evento
+     * @return
+     */
+    public Day getDay(){
+        return day;
+    }
+
+    /**
      * @param absoluteTime Absolute Time
      * @return returns true if the given time is between the event
      */
     public boolean isInEvent(double absoluteTime){
-        return (getAbsoluteTime() < absoluteTime &&
-                getFinalAbsoluteTime() > absoluteTime);
+        return (getAbsoluteTime() <= absoluteTime &&
+                getFinalAbsoluteTime() >= absoluteTime);
     }
 
     /**
@@ -77,28 +103,79 @@ public class ScheduleEvent {
         return out;
     }
 
+    /**
+     * Pega parte de "horas" do começo do horario do evento
+     * @return Hour of Event
+     */
     public int getHour(){
         return hour;
     }
 
+    /**
+     * Pega DeltaTime(variaçao do tempo/duraçao) do evento
+     * @return Time
+     */
     public DeltaTime getTime(){
         return time;
     }
 
+    /**
+     * Pega horario de começo formatado em String
+     * @return Start Horary
+     */
+    public String getHoraryString(){
+        return CalendarTools.formatOfTime(hour,minutes);
+    }
+
+    /**
+     * Pega horario de termino formatado em String
+     * @return End Horary
+     */
+    public String getEndHoraryString(){
+        return CalendarTools.formatOfTime(endHour,endMinutes);
+    }
+
+    /**
+     * Pega parte de "minutos" do começo do horario do evento
+     * @return Minutes
+     */
     public int getMinutes(){
         return minutes;
     }
 
+
+    /**
+     * Pega texto do evento com suas informaçoes detalhadas do evento
+     * @return Text of event
+     */
     public String getText(){
         return text;
     }
 
+    /**
+     * Pega parte de "horas" do fim do horario do evento
+     * @return End hour
+     */
     public int getEndHour(){
         return endHour;
     }
 
+    /**
+     * Pega parte de "minutos" do fim do horario do evento
+     * @return End minutes
+     */
     public int getEndMinutes(){
         return endMinutes;
     }
 
+    @Override
+    public String toString(){
+        return CalendarTools.formatOfTime(hour,minutes) +
+                " ---" +
+                CalendarTools.formatOfTime(time.getDeltaHours(),time.getDeltaMinutes()) +
+                "---> " +
+                CalendarTools.formatOfTime(endHour,endMinutes) +
+                " | " + text +
+                String.format("\n");
+    }
 }

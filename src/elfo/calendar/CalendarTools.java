@@ -6,7 +6,6 @@ import elfo.users.User;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -15,17 +14,17 @@ import java.util.GregorianCalendar;
  * @version 0.0.13
  */
 public class CalendarTools {
-    private static GregorianCalendar cg;
-    private static DecimalFormat dc;
+    private static GregorianCalendar gregorianCalendar;
+    private static DecimalFormat decimalFormat;
 
-    static private void cgCreat(){
-        if(cg == null){
-            cg = new GregorianCalendar();
+    static private void gregorianCalendarCreat(){
+        if(gregorianCalendar == null){
+            gregorianCalendar = new GregorianCalendar();
         }
     }
-    static private void dcCreat(){
-        if(dc == null){
-            dc = new DecimalFormat();
+    static private void decimalFormatCreat(){
+        if(decimalFormat == null){
+            decimalFormat = new DecimalFormat();
         }
     }
 
@@ -36,11 +35,11 @@ public class CalendarTools {
      * @return take the day of the day provided
      */
     static public int weekDay(int day,int month,int year){
-        cgCreat();
-        cg.set(Calendar.DAY_OF_MONTH,day);
-        cg.set(Calendar.MONTH,month - 1);
-        cg.set(Calendar.YEAR,year);
-        return cg.get(Calendar.DAY_OF_WEEK);
+        gregorianCalendarCreat();
+        gregorianCalendar.set(Calendar.DAY_OF_MONTH,day);
+        gregorianCalendar.set(Calendar.MONTH,month - 1);
+        gregorianCalendar.set(Calendar.YEAR,year);
+        return gregorianCalendar.get(Calendar.DAY_OF_WEEK);
     }
 
     /**
@@ -49,11 +48,11 @@ public class CalendarTools {
      * @return  returns size of month
      */
     static public int monthSize(int month,int year){
-        cgCreat();
-        cg.set(Calendar.YEAR,year);
-        cg.set(Calendar.MONTH, month - 1);
-        cg.set(Calendar.DAY_OF_MONTH, -1);
-        return cg.get(Calendar.DAY_OF_MONTH) + 1;
+        gregorianCalendarCreat();
+        gregorianCalendar.set(Calendar.YEAR,year);
+        gregorianCalendar.set(Calendar.MONTH, month - 1);
+        gregorianCalendar.set(Calendar.DAY_OF_MONTH, -1);
+        return gregorianCalendar.get(Calendar.DAY_OF_MONTH) + 1;
     }
 
     /**
@@ -61,10 +60,10 @@ public class CalendarTools {
      * @return returns size of month
      */
     static public int monthSize(int month){
-        cgCreat();
-        cg.set(Calendar.MONTH, month - 1);
-        cg.set(Calendar.DAY_OF_MONTH, -1);
-        return cg.get(Calendar.DAY_OF_MONTH) + 1;
+        gregorianCalendarCreat();
+        gregorianCalendar.set(Calendar.MONTH, month - 1);
+        gregorianCalendar.set(Calendar.DAY_OF_MONTH, -1);
+        return gregorianCalendar.get(Calendar.DAY_OF_MONTH) + 1;
     }
 
 
@@ -73,7 +72,7 @@ public class CalendarTools {
      * @return days of year
      */
     static public int dayYearSize(int year){
-        cgCreat();
+        gregorianCalendarCreat();
         int days = 0;
         for(int i = 0; i < 12; i++){
             days += monthSize(i,year);
@@ -88,9 +87,9 @@ public class CalendarTools {
      * @return formated time
      */
     static public String formatOfTime(int hour, int minute){
-        dcCreat();
-        dc.applyPattern("##00");
-        return "("+dc.format(hour) + ":" + dc.format(minute)+")";
+        decimalFormatCreat();
+        decimalFormat.applyPattern("##00");
+        return "("+ decimalFormat.format(hour) + ":" + decimalFormat.format(minute)+")";
     }
 
     /**
@@ -146,9 +145,9 @@ public class CalendarTools {
         ScheduleRepository scheduleRepository = ScheduleRepository.getInstance();
         for (int i = 0; i < tam; i++){
             int k = tam-1;
-            Schedule schedule1 = scheduleRepository.getScheleduleOfCpf(users[i].getCpf());
+            Schedule schedule1 = scheduleRepository.get(users[i].getIdentity());
             for (int j = 0; j < tam; j++){
-                Schedule schedule2 = scheduleRepository.getScheleduleOfCpf(users[j].getCpf());
+                Schedule schedule2 = scheduleRepository.get(users[j].getIdentity());
                 if((schedule1.getNumberOfEventInDay(month,day) < schedule2.getNumberOfEventInDay(month,day)) ||
                         (schedule1.getNumberOfEventInDay(month,day) == schedule2.getNumberOfEventInDay(month,day) && i > j)){
                     k-=1;
@@ -179,5 +178,21 @@ public class CalendarTools {
             }
         }
         return newDate;
+    }
+
+    static public int[] dateChanger(int daysToChange, int[] date){
+        return dateChanger(daysToChange,date[0],date[1],date[2]);
+    }
+
+    static public int[] getCurrentDate(){
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        int[] date = new int[3];
+        date[0] = gregorianCalendar.get(Calendar.DAY_OF_MONTH);
+        date[1] = gregorianCalendar.get(Calendar.MONTH);
+        date[2] = gregorianCalendar.get(Calendar.YEAR);
+        return date;
+    }
+    public static int getCurrentYear(){
+        return (new GregorianCalendar()).get(Calendar.YEAR);
     }
 }

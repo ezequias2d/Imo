@@ -1,9 +1,8 @@
 package elfo.users;
 
-import elfo.data.BasicTypes.DataArrayList;
-import elfo.data.DataBasic;
-import elfo.data.FileReg;
 import elfo.data.IRepositorio;
+import elfo.data.Serializer;
+import elfo.exception.data.DataCannotBeAccessedException;
 import elfo.exception.user.UserInvalidException;
 import elfo.exception.user.UserIsRegistredException;
 
@@ -11,60 +10,93 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class UserRepository implements IRepositorio<User> {
-    public static final String URI_DEPOT = "src/resources/depot/users.edd";
-
+    private static final String URI_DEPOT = "src/resources/depot/users.dat";
     private ArrayList<User> users;
-    private User notLoggedAccount;
+    private Serializer serializer;
 
-    private DataArrayList<User,DataUser> dataUserDataArrayList;
-    private FileReg<DataArrayList> fileReg;
+    /**
+     * @throws UserInvalidException
+     * @throws UserIsRegistredException
+     * @throws ClassNotFoundException
+     * @throws DataCannotBeAccessedException
+     */
+    public UserRepository() throws ClassNotFoundException, DataCannotBeAccessedException {
+        try {
+            User notLoggedAccount = new User();
 
-    public UserRepository() throws UserInvalidException, UserIsRegistredException {
-        notLoggedAccount = new User();
-        notLoggedAccount.setTypeUser(User.LEVEL_NOT_LOGGED);
+            notLoggedAccount.setTypeUser(User.LEVEL_NOT_LOGGED);
+            //System.out.print("\nCarregamdo elementos..\n");
+            serializer = Serializer.getInstance();
 
-        dataUserDataArrayList = new DataArrayList<User,DataUser>("users",new DataUser(notLoggedAccount));
-        fileReg = new FileReg<DataArrayList>(dataUserDataArrayList);
-        if(!fileReg.loadFile(URI_DEPOT)){
-            System.out.printf("\nSem banco de usuarios persistente!\nCriando novo...\n");
-            User admin = new User("Admin","Admin","Admin",UserTools.getCpfNull(),"admin");
-            admin.setTypeUser(User.LEVEL_ADM1);
-            dataUserDataArrayList.add(new DataUser(admin));
-            fileReg.loadMeta(dataUserDataArrayList);
-            fileReg.writeMeta(URI_DEPOT);
-        }
-        System.out.printf("\nCarregamdo elementos..\n");
-        this.users = dataUserDataArrayList.getElements();
-    }
-
-
-    @Override
-    public boolean add(User object) {
-        dataUserDataArrayList.add(new DataUser(object));
-        fileReg.writeMeta(URI_DEPOT);
-        return users.add(object);
-    }
-
-    @Override
-    public boolean remove(User object) {
-        for(DataBasic dataBasic : dataUserDataArrayList.toArrayDataBasic()){
-            if(dataBasic.getMeta() == object){
-                dataUserDataArrayList.remove((DataUser) dataBasic);
+            try {
+                this.users = (ArrayList<User>)serializer.open(URI_DEPOT);
+            } catch (IOException e) {
+                //System.out.print("\nSem banco de usuarios persistente!\nCriando novo...\n");
+                User admin = new User("Admin","Admin","Admin",UserTools.getCpfNull(),"admin");
+                admin.setTypeUser(User.LEVEL_ADM1);
+                users = new ArrayList<User>();
+                users.add(admin);
+                serializer.save(URI_DEPOT,users);
             }
+
+
+        } catch (UserInvalidException | UserIsRegistredException e) {
+            //Sem sentido continuar e impossivel de acontecer.
+            e.printStackTrace();
+            System.exit(0);
         }
-        fileReg.writeMeta(URI_DEPOT);
-        return users.remove(object);
     }
 
+
+    /**
+     * Adiciona objeto
+     * @param object Objeto
+     * @return Se adicionado
+     * @throws DataCannotBeAccessedException Data cannot be acessed
+     */
+    @Override
+    public boolean add(User object) throws DataCannotBeAccessedException {
+        boolean out = users.add(object);
+        if(out){
+               serializer.save(URI_DEPOT,users);
+        }
+        return out;
+    }
+
+    /**
+     * Remove objeto
+     * @param object Objeto
+     * @return Se removido
+     * @throws DataCannotBeAccessedException Data cannot be acessed
+     */
+    @Override
+    public boolean remove(User object) throws DataCannotBeAccessedException {
+        boolean out = users.remove(object);
+        if(out){
+            serializer.save(URI_DEPOT,users);
+        }
+        return out;
+    }
+
+    /**
+     * Pega objeto por index
+     * @param index
+     * @return
+     */
     @Override
     public User get(int index) {
         return users.get(index);
     }
 
+    /**
+     * Pega objeto por identificador
+     * @param indent
+     * @return
+     */
     @Override
     public User get(String indent) {
         for(User user : users){
-            String cpfUser = user.getCpfString();
+            String cpfUser = user.getIdentity();
             if(indent.equals(cpfUser)){
                 return user;
             }
@@ -72,11 +104,20 @@ public class UserRepository implements IRepositorio<User> {
         return null;
     }
 
+    /**
+     * Pega index do objeto
+     * @param object
+     * @return
+     */
     @Override
     public int get(User object) {
         return users.indexOf(object);
     }
 
+    /**
+     * Cria um array com objetos do repostorio
+     * @return array dos objetos
+     */
     @Override
     public User[] toArray(){
         User[] usersArray = new User[users.size()];
@@ -86,8 +127,12 @@ public class UserRepository implements IRepositorio<User> {
         return usersArray;
     }
 
+    /**
+     * Atualiza dados persistentes
+     * @throws DataCannotBeAccessedException
+     */
     @Override
-    public void update() throws IOException {
-        fileReg.writeMeta(URI_DEPOT);
+    public void update() throws DataCannotBeAccessedException {
+        serializer.save(URI_DEPOT, users);
     }
 }

@@ -1,5 +1,7 @@
 package elfo.data;
 
+import elfo.exception.data.DataCannotBeAccessedException;
+
 import java.io.*;
 
 public class Serializer{
@@ -25,14 +27,33 @@ public class Serializer{
         return out;
     }
 
-    public void save(String uri, Serializable meta) throws IOException  {
-        //tenta salvar arquivo
-        FileOutputStream fileOutput = new FileOutputStream(uri);
-        ObjectOutputStream outputStream = new ObjectOutputStream(fileOutput);
-        //salva objeto
-        outputStream.writeObject(meta);
-        //fecha
-        outputStream.close();
-        fileOutput.close();
+    public void save(String uri, Serializable meta) throws DataCannotBeAccessedException {
+        FileOutputStream fileOutput = null;
+        ObjectOutputStream outputStream = null;
+        try {
+            fileOutput = new FileOutputStream(uri);
+            outputStream = new ObjectOutputStream(fileOutput);
+            outputStream.writeObject(meta);
+            outputStream.close();
+            fileOutput.close();
+        } catch (IOException e) {
+            throw new DataCannotBeAccessedException(uri,e.getCause().getLocalizedMessage());
+        } finally {
+            if(fileOutput != null){
+                try{
+                    fileOutput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(fileOutput != null){
+                try {
+                    fileOutput.close();
+                } catch (IOException e) {
+                    System.exit(1);
+                }
+            }
+        }
+
     }
 }

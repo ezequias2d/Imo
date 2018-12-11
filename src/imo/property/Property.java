@@ -5,15 +5,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import elfo.calendar.schedule.Schedule;
+import elfo.calendar.schedule.ScheduleRepository;
+import elfo.data.IIdentifiable;
 import elfo.number.DeltaNumber;
+import elfo.sale.ISellable;
 import imo.exception.ParameterOutOfTypeException;
 
 /**
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
-public class Property implements Serializable {
+public class Property implements Serializable, ISellable, IIdentifiable {
 
+    private final String identity;
     private double area;
     private double width;
     private double length;
@@ -22,8 +26,7 @@ public class Property implements Serializable {
     private double buyPrice;
     private double rentPrice;
     private String name;
-    private boolean availability;
-    private Schedule schedule;
+    private boolean avaliable;
 
 
     private PropertyType propertyType;
@@ -32,28 +35,59 @@ public class Property implements Serializable {
      * Constructor
      * @param area Area
      */
-    public Property(double area, double buyPrice, double rentPrice, PropertyType propertyType) {
+    public Property(double area, double buyPrice, double rentPrice, PropertyType propertyType, String identity) {
         this.propertyType = propertyType;
         this.area = area;
+        this.identity = identity;
         this.rooms = new ArrayList<Room>();
         this.width = -1;
         this.length = -1;
-        this.availability = true;
+        this.avaliable = true;
         this.floors = 0;
         this.buyPrice = buyPrice;
         this.rentPrice = rentPrice;
-        this.schedule = new Schedule();
+        this.name = "";
+    }
+
+    public Property(ArrayList<Room> rooms, double buyPrice, double rentPrice, PropertyType propertyType,String identity){
+        this.propertyType = propertyType;
+        this.identity = identity;
+        this.rooms = new ArrayList<Room>();
+        this.rooms.addAll(rooms);
+        this.width = -1;
+        this.length = -1;
+        this.avaliable = true;
+        this.floors = 0;
+        this.buyPrice = buyPrice;
+        this.rentPrice = rentPrice;
+        this.name = "";
     }
 
     public Schedule getSchedule(){
-        schedule.upgradeToCurrentDay();
-        return schedule;
+        return ScheduleRepository.getInstance().get(identity);
     }
+
+    @Override
+    public String getIdentity(){
+        return this.identity;
+    }
+
+    public boolean isIdent(String ident){
+        return ident.equals(this.identity);
+    }
+
 
     /**
      * @return ElfoNumber Area
      */
     public double getArea() {
+        double area = 0;
+        for(Room room : rooms){
+            area += room.getArea();
+        }
+        return area;
+    }
+    public double getTerrainArea(){
         return area;
     }
 
@@ -78,6 +112,8 @@ public class Property implements Serializable {
         return count;
     }
 
+
+
     /**
      * @return ElfoNumber Price
      */
@@ -99,23 +135,38 @@ public class Property implements Serializable {
     /**
      * @return is Availability
      */
-    public boolean isAvailability() {
-        return availability;
+    @Override
+    public boolean isAvaliable() {
+        return avaliable;
     }
 
     /**
      * Set Availability
      * @param b Boolean
      */
-    public void setAvailability(boolean b) {
-        this.availability = b;
+    public void setAvaliable(boolean b) {
+        this.avaliable = b;
     }
 
     /**
      * Set Area
      * @param area Area
      */
-    public void setArea(double area) throws ParameterOutOfTypeException {
+    public void setTerrainArea(double area) throws ParameterOutOfTypeException {
+        if(propertyType.isInArea(area)){
+            this.area = area;
+            this.length = -1;
+            this.width = -1;
+        }else{
+            throw new ParameterOutOfTypeException("Area",propertyType.getArea());
+        }
+    }
+
+    /**
+     * Set Area
+     * @param area Area
+     */
+    public void getTerrainArea(double area) throws ParameterOutOfTypeException {
         if(propertyType.isInArea(area)){
             this.area = area;
             this.length = -1;
@@ -229,11 +280,26 @@ public class Property implements Serializable {
         return deltaNumber.isInDeltaNumber(getNumberOfRooms(type));
     }
 
+    public void replacingRooms(ArrayList<Room> rooms){
+        this.rooms.clear();
+        this.rooms.addAll(rooms);
+    }
+    public void setPropertyType(PropertyType propertyType){
+        this.propertyType = propertyType;
+    }
+
+    public ArrayList<Room> getRooms(){
+        return (ArrayList<Room>) rooms.clone();
+    }
+
     public String getPropertyTypeName(){
         return propertyType.getName();
     }
     public String getPropertyTypeDescription(){
         return propertyType.getDescription();
+    }
+    public PropertyType getPropertyType(){
+        return propertyType;
     }
     public DeltaNumber getPropertyTypeArea(){
         return propertyType.getArea().getClone();
@@ -262,10 +328,10 @@ public class Property implements Serializable {
             out += String.format("\nWidth:%.2f\nLength:%.2f", this.getWidth(),this.getLength());
         }
         out += String.format("\nRooms:");
-        for(Room r : Room.values()){
-            out += String.format("\n    %s - %.0f",r.getType(),this.getNumberOfRooms(r.getType()));
+        for(String type : Room.TYPE_NAME){
+            out += String.format("\n    %s - %.0f",type,this.getNumberOfRooms(type));
         }
-        out += String.format("\nRent Price:$%.2f\nBuy Price::$.2f\n",rentPrice,buyPrice);
+        out += String.format("\nRent Price:$%.2f\nBuy Price::$%.2f\n",rentPrice,buyPrice);
         return out;
     }
 }

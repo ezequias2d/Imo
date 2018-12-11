@@ -19,11 +19,19 @@ public class ScheduleDay extends Day {
      * @param month Month
      * @param year Year
      */
-    ScheduleDay(int day, int month, int year){
+    public ScheduleDay(int day, int month, int year){
         super(day,month,year);
         this.events = new ArrayList<ScheduleEvent>();
     }
 
+    /**
+     * Cria a si proprio
+     * @param day Dia
+     * @param month Mes
+     * @param year Ano
+     * @return
+     */
+    @Override
     public ScheduleDay newDay(int day, int month, int year){
         return new ScheduleDay(day,month,year);
     }
@@ -31,6 +39,7 @@ public class ScheduleDay extends Day {
 
 
     /**
+     * Pega eventos do dia
      * @return Events of the ScheduleDay
      */
     public ArrayList<ScheduleEvent> getEvents(){
@@ -43,7 +52,7 @@ public class ScheduleDay extends Day {
      * Get events of the day in string
      * @return Event String
      */
-    public String getVisualEvents(){
+    public String toStringEvents(){
         String ret = String.format("(%d/%d/%d) | ", getDay(),getMonth(),getYear());
         int sizeDate = ret.length();
         boolean isNone = true;
@@ -71,14 +80,14 @@ public class ScheduleDay extends Day {
     }
 
     /**
-     * Add Event
+     * Add and create Event
      * @param text Descpition of event
      * @param hour Hour
      * @param minutes Minutes
      * @param time variation of time
      */
     public void addEvents(String text,int hour, int minutes, DeltaTime time) throws EventInvalidException, HourNotExistException {
-        ScheduleEvent scheduleEvent = new ScheduleEvent(text,hour,minutes,time);
+        ScheduleEvent scheduleEvent = new ScheduleEvent(text,hour,minutes,time, this);
         addEvents(scheduleEvent);
     }
     /**
@@ -101,7 +110,7 @@ public class ScheduleDay extends Day {
      * @return True if disponible
      */
     public boolean isDisponible(int hour, int minutes, DeltaTime time) throws HourNotExistException {
-        ScheduleEvent scheduleEvent = new ScheduleEvent("",hour,minutes,time);
+        ScheduleEvent scheduleEvent = new ScheduleEvent("",hour,minutes,time,this);
         return isDisponible(scheduleEvent);
     }
     /**
@@ -110,15 +119,14 @@ public class ScheduleDay extends Day {
      * @return True if disponible
      */
     public boolean isDisponible(ScheduleEvent scheduleEvent){
-        for(ScheduleEvent ce : events){
-            if((ce.isInEvent(scheduleEvent.getAbsoluteTime())               ||
-                    ce.isInEvent(scheduleEvent.getFinalAbsoluteTime())      ||
-                    scheduleEvent.isInEvent(ce.getAbsoluteTime())           ||
-                    scheduleEvent.isInEvent(ce.getFinalAbsoluteTime()))){
+        for(ScheduleEvent se : events){
+            if((se.isInEvent(scheduleEvent.getAbsoluteTime())               ||
+                    se.isInEvent(scheduleEvent.getFinalAbsoluteTime())      ||
+                    scheduleEvent.isInEvent(se.getAbsoluteTime())           ||
+                    scheduleEvent.isInEvent(se.getFinalAbsoluteTime()))){
                 return false;
             }
         }
         return true;
     }
-
 }

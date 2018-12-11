@@ -20,6 +20,9 @@ import java.io.IOException;
  */
 public interface IUserInput {
     public abstract String getPassword(String mensager);
-    public abstract String getText(String mensager) throws IOException;
+    public abstract String getText(String mensager);
+    public abstract String getText(String mensager, String content);
     public abstract int[] getCPF(String mensager);
+    public abstract void showMessage(String title, String header, String content);
+    public boolean confirmationMessage(String title, String content);
 }
