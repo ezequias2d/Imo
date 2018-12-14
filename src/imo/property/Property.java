@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import elfo.calendar.schedule.Schedule;
-import elfo.calendar.schedule.ScheduleRepository;
-import elfo.data.IIdentifiable;
-import elfo.number.DeltaNumber;
-import elfo.sale.ISellable;
+import elfoAPI.calendar.schedule.Schedule;
+import elfoAPI.calendar.schedule.ScheduleRepository;
+import elfoAPI.data.IIdentifiable;
+import elfoAPI.number.DeltaNumber;
+import elfoAPI.sale.ISellable;
 import imo.exception.ParameterOutOfTypeException;
 
 /**
@@ -25,7 +25,7 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     private int floors;
     private double buyPrice;
     private double rentPrice;
-    private String name;
+    private String andress;
     private boolean avaliable;
 
 
@@ -35,32 +35,20 @@ public class Property implements Serializable, ISellable, IIdentifiable {
      * Constructor
      * @param area Area
      */
-    public Property(double area, double buyPrice, double rentPrice, PropertyType propertyType, String identity) {
+    public Property(ArrayList<Room> rooms, int floors, double area, double buyPrice, double rentPrice, PropertyType propertyType, String andress,String identity) throws ParameterOutOfTypeException {
         this.propertyType = propertyType;
-        this.area = area;
         this.identity = identity;
-        this.rooms = new ArrayList<Room>();
-        this.width = -1;
-        this.length = -1;
+        setTerrainArea(area);
+        setBuyPrice(buyPrice);
+        setRentPrice(rentPrice);
+        setFloors(floors);
+        setRooms(rooms);
+        this.andress = andress;
         this.avaliable = true;
         this.floors = 0;
         this.buyPrice = buyPrice;
         this.rentPrice = rentPrice;
-        this.name = "";
-    }
-
-    public Property(ArrayList<Room> rooms, double buyPrice, double rentPrice, PropertyType propertyType,String identity){
-        this.propertyType = propertyType;
-        this.identity = identity;
-        this.rooms = new ArrayList<Room>();
-        this.rooms.addAll(rooms);
-        this.width = -1;
-        this.length = -1;
-        this.avaliable = true;
-        this.floors = 0;
-        this.buyPrice = buyPrice;
-        this.rentPrice = rentPrice;
-        this.name = "";
+        this.andress = "";
     }
 
     public Schedule getSchedule(){
@@ -71,11 +59,6 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     public String getIdentity(){
         return this.identity;
     }
-
-    public boolean isIdent(String ident){
-        return ident.equals(this.identity);
-    }
-
 
     /**
      * @return ElfoNumber Area
@@ -88,13 +71,17 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         return area;
     }
     public double getTerrainArea(){
-        return area;
+        if(area != -1){
+            return area;
+        }else{
+            return width * length;
+        }
     }
 
     /**
      * @return ElfoNumber Rooms
      */
-    public double getNumberOfRooms() {
+    public int getNumberOfRooms() {
         return rooms.size();
     }
 
@@ -102,8 +89,8 @@ public class Property implements Serializable, ISellable, IIdentifiable {
      * @param type Type
      * @return ElfoNumber Rooms Type
      */
-    public double getNumberOfRooms(String type){
-        double count = 0;
+    public int getNumberOfRooms(String type){
+        int count = 0;
         for(Room r : rooms){
             if(r.isType(type)){
                 count++;
@@ -128,8 +115,8 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     /**
      * @return Name
      */
-    public String getName() {
-        return name;
+    public String getAndress() {
+        return andress;
     }
 
     /**
@@ -162,15 +149,31 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         }
     }
 
+    public void setRooms(ArrayList<Room> rooms) throws ParameterOutOfTypeException{
+        ArrayList<Room> saveRooms = this.rooms;
+        this.rooms = rooms;
+        if(!propertyType.isInRooms(rooms.size())){
+            throw new ParameterOutOfTypeException("All Rooms", propertyType.getRooms());
+        }
+        for(String roomType : Room.TYPE_NAME){
+            int numberOfType = getNumberOfRooms(roomType);
+            if(!propertyType.isInRoom(roomType,numberOfType)){
+                this.rooms = saveRooms;
+                throw  new ParameterOutOfTypeException(roomType,propertyType.getRoom(roomType));
+            }
+        }
+        this.rooms = new ArrayList<Room>();
+        this.rooms.addAll(rooms);
+    }
+
     /**
      * Set Area
-     * @param area Area
      */
-    public void getTerrainArea(double area) throws ParameterOutOfTypeException {
+    public void setTerrainArea(double lenght, double width) throws ParameterOutOfTypeException {
         if(propertyType.isInArea(area)){
-            this.area = area;
-            this.length = -1;
-            this.width = -1;
+            this.area = -1;
+            this.length = lenght;
+            this.width = width;
         }else{
             throw new ParameterOutOfTypeException("Area",propertyType.getArea());
         }
@@ -221,10 +224,10 @@ public class Property implements Serializable, ISellable, IIdentifiable {
 
     /**
      * Set Name
-     * @param name Name
+     * @param andress Name
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setAndress(String andress) {
+        this.andress = andress;
     }
 
     public void setFloors(int floors) throws ParameterOutOfTypeException {
@@ -236,13 +239,6 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         }
     }
 
-    public void addRoom(Room r){
-       rooms.add(r);
-    }
-
-    public void addRooms(Collection<Room> rooms){
-        rooms.addAll(rooms);
-    }
     /**
      * @param deltaNumber Limit(DeltaNumber)
      * @return if the area is in the area boundary
@@ -321,7 +317,7 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         return floors;
     }
     public String toString(){
-        String out = this.getName();
+        String out = this.getAndress();
         out += String.format("\nFloors:%d" +
                 "\nArea:%.2f", floors, area);
         if(this.isMeasured()){
@@ -329,7 +325,7 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         }
         out += String.format("\nRooms:");
         for(String type : Room.TYPE_NAME){
-            out += String.format("\n    %s - %.0f",type,this.getNumberOfRooms(type));
+            out += String.format("\n    %s - %d",type,this.getNumberOfRooms(type));
         }
         out += String.format("\nRent Price:$%.2f\nBuy Price::$%.2f\n",rentPrice,buyPrice);
         return out;

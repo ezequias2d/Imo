@@ -1,11 +1,8 @@
 package imo;
 
-import elfo.exception.data.DataCannotBeAccessedException;
 import imo.gui.controls.ImoController;
 import imo.gui.controls.LoginScreenController;
-import imo.exception.ParameterOutOfTypeException;
-import imo.property.*;
-import imo.gui.UserInputFX;
+import imo.gui.view.UserInputFX;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,6 +24,7 @@ public class MainApp extends Application {
 
     private UserInputFX userInputFX;
     private ImoController imoController;
+    private Imobily imobily;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -35,18 +33,21 @@ public class MainApp extends Application {
         this.loginStage.setTitle("Login Screen - Imo Project");
         this.loginStage.setResizable(false);
         initRootLayout();
-        clientStage(new Stage());
+        imoStage(new Stage());
+
     }
 
     public void initRootLayout(){
         try{
             userInputFX = new UserInputFX();
+            imobily = new Imobily(userInputFX);
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource(LOGIN_SCREEN_URI));
             rootLayout = loader.load();
             LoginScreenController loginScreenController = loader.getController();
             loginScreenController.setMainApp(this);
             loginScreenController.setUserInputFX(userInputFX);
+            loginScreenController.setImobily(imobily);
             Scene scene = new Scene(rootLayout);
             loginStage.setScene(scene);
             loginStage.show();
@@ -56,16 +57,19 @@ public class MainApp extends Application {
     }
 
 
-    private void clientStage(Stage clientStage){
+    private void imoStage(Stage clientStage){
         this.imo = clientStage;
         this.imo.setTitle("Client Screen - Imo Project");
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource(IMO_SCREEN_URI));
             Scene scene = new Scene(loader.load());
-            imoController = loader.getController();
+            imoController = loader.getController();//loader.getController();
             imoController.setMainApp(this);
             imoController.setMainScene(scene);
+            imoController.setImobily(imobily);
+            imoController.setUserInputFX(userInputFX);
+            imoController.start();
             this.imo.setScene(scene);
         }catch (IOException e){
             e.printStackTrace();

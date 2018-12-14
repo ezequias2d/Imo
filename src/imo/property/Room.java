@@ -23,9 +23,9 @@ public class Room implements Serializable {
      */
     public Room(String type){
         this.type = type;
-        this.area = area;
-        this.width = -1;
-        this.lenght = -1;
+        this.area = 0;
+        this.width = 0;
+        this.lenght = 0;
     }
     /**
      * Get Type

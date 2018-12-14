@@ -33,7 +33,7 @@
             </VBox>
          </children>
       </HBox>
-      <Label text="Total Area: 0.0" />
+      <Label fx:id="areaLabel" text="Total Area: 0.0" />
       <Label text="Price:">
          <VBox.margin>
             <Insets />

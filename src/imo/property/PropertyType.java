@@ -1,22 +1,17 @@
 package imo.property;
 
-import elfo.data.IIdentifiable;
-import elfo.number.DeltaNumber;
+import elfoAPI.data.IIdentifiable;
+import elfoAPI.number.DeltaNumber;
 
 import java.io.Serializable;
 
 
 /**
- * Classe destinada a definir, restringir ou limitar uma propriedade(Construçao)
+ * Classe destinada a definir, restringir e/ou limitar uma propriedade(Construçao)
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.2
  */
 public class PropertyType implements Serializable, IIdentifiable {
-    /*
-    public static String HOUSE = "House";
-    public static String ROW_HOUSE = "Row House";
-    public static String APARTAMENT = "Apartment";
-    public static String EMPTY_GROUND = "Empty Ground";
-    public static String BUILDING = "Building";
-    */
     private String name;
     private String description;
     private DeltaNumber floor;
@@ -24,12 +19,14 @@ public class PropertyType implements Serializable, IIdentifiable {
     private DeltaNumber area;
     private DeltaNumber buyPrice;
     private DeltaNumber rentPrice;
+    private DeltaNumber rooms;
 
 
     PropertyType(String name, String description){
         this.name = name;
         this.description = description;
         this.floor = new DeltaNumber();
+        this.rooms = new DeltaNumber();
         this.room = new DeltaNumber[Room.TYPE_NAME.length];
         for(int i = 0; i < room.length; i ++){
             this.room[i] = new DeltaNumber();
@@ -64,6 +61,10 @@ public class PropertyType implements Serializable, IIdentifiable {
         rentPrice.setDelta(min,max);
     }
 
+    public void setLimitRooms(double min, double max){
+        rooms.setDelta(min,max);
+    }
+
     public boolean isInArea(double area){
         return this.area.isInDeltaNumber(area);
     }
@@ -80,6 +81,9 @@ public class PropertyType implements Serializable, IIdentifiable {
             }
         }
         return false;
+    }
+    public boolean isInRooms(int num){
+        return rooms.isInDeltaNumber(num);
     }
     public boolean isInFloors(double floors){
         return this.floor.isInDeltaNumber(floors);
@@ -103,6 +107,9 @@ public class PropertyType implements Serializable, IIdentifiable {
             }
         }
         return null;
+    }
+    public DeltaNumber getRooms(){
+        return rooms.getClone();
     }
     public String getName(){
         return name;

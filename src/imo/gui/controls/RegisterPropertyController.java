@@ -1,12 +1,13 @@
 package imo.gui.controls;
 
-import elfo.exception.data.DataCannotBeAccessedException;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
 import imo.exception.ParameterOutOfTypeException;
+import imo.Imobily;
 import imo.property.Property;
 import imo.property.PropertyController;
 import imo.property.PropertyType;
 import imo.property.Room;
-import imo.gui.UserInputFX;
+import imo.gui.view.UserInputFX;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class RegisterPropertyController implements Initializable {
@@ -42,6 +44,9 @@ public class RegisterPropertyController implements Initializable {
     private TableColumn<Room,String> typeColumn;
     @FXML
     private ComboBox<PropertyType> propertyTypeComboBox;
+    @FXML
+    private Label areaLabel;
+
 
     private UserInputFX userInputFX;
 
@@ -50,6 +55,8 @@ public class RegisterPropertyController implements Initializable {
     private Stage stage;
 
     private Property property;
+
+    private Imobily imobily;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,7 +73,7 @@ public class RegisterPropertyController implements Initializable {
         buyTextField.setText("" + property.getBuyPrice());
         rentTextField.setText("" + property.getRentPrice());
         floorsTextField.setText("" + property.getFloors());
-        addressTextField.setText(property.getName());
+        addressTextField.setText(property.getAndress());
         propertyTypeComboBox.setValue(property.getPropertyType());
         areaTextField.setText("" + property.getTerrainArea());
         this.rooms.addAll(property.getRooms());
@@ -76,33 +83,31 @@ public class RegisterPropertyController implements Initializable {
         this.stage = stage;
     }
 
+    public void setImobily(Imobily imobily){
+        this.imobily = imobily;
+    }
     @FXML
     private void save(){
         double buyPrice = getValueTextField(buyTextField);
         double rentPrice = getValueTextField(rentTextField);
-        double floors = getValueTextField(floorsTextField);
+        int floors = (int)getValueTextField(floorsTextField);
         double terrainArea = getValueTextField(areaTextField);
-        String endress = addressTextField.getText();
-        PropertyType propertyType = (PropertyType) propertyTypeComboBox.getSelectionModel().getSelectedItem();
-
-        PropertyController propertyController = PropertyController.getInstance();
-        if(property == null) {
-            try {
-                property = propertyController.createNewProperty(rooms, buyPrice, rentPrice, propertyType);
-            } catch (DataCannotBeAccessedException e) {
-                userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
-            }
-        }
+        String andress = addressTextField.getText();
+        PropertyType propertyType = propertyTypeComboBox.getSelectionModel().getSelectedItem();
         try {
-            property.setPropertyType(propertyType);
-            property.setFloors((int)floors);
-            property.setName(endress);
-            property.replacingRooms(rooms);
-            property.setBuyPrice(buyPrice);
-            property.setRentPrice(rentPrice);
-            property.setTerrainArea(terrainArea);
+            if(property == null) {
+                imobily.registerProperty(rooms,floors,terrainArea,buyPrice,rentPrice,propertyType,andress);
+            }else {
+                property.setPropertyType(propertyType);
+                property.setFloors(floors);
+                property.setAndress(andress);
+                property.replacingRooms(rooms);
+                property.setBuyPrice(buyPrice);
+                property.setRentPrice(rentPrice);
+                property.setTerrainArea(terrainArea);
+            }
             stage.close();
-        } catch (ParameterOutOfTypeException e) {
+        } catch (ParameterOutOfTypeException | DataCannotBeAccessedException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
@@ -131,19 +136,19 @@ public class RegisterPropertyController implements Initializable {
                 double m = getValueTextField(main);
                 double out = getValueTextField(tOut);
                 if (s == 0 && m != 0 && out > 0) {
-                    secondary.setText("" + (out / m));
+                    secondary.setText(format(out / m));
                 } else if (s > 0) {
-                    tOut.setText("" + (m * s));
+                    tOut.setText(format(m * s));
                 } else if(s < 0){
-                    main.setText("0.00");
-                    tOut.setText("0.00");
+                    main.setText("0.0");
+                    tOut.setText("0.0");
                 }
             }
         });
     }
 
     private String format(double num){
-        return String.format("%.2f",num);
+        return String.format(Locale.US,"%.2f",num);
     }
 
     /**
@@ -161,11 +166,11 @@ public class RegisterPropertyController implements Initializable {
                 if((s != 0) && (m != 0)){
                     double newS = Math.sqrt((out * s) / m);
                     double newM = Math.sqrt((out * m) / s);
-                    element1.setText("" + newS);
-                    element2.setText("" + newM);
+                    element1.setText(format(newS));
+                    element2.setText(format(newM));
                 }else{
-                    element1.setText("0.00");
-                    element2.setText("0.00");
+                    element1.setText("0.0");
+                    element2.setText("0.0");
                 }
             }
         });
@@ -201,8 +206,16 @@ public class RegisterPropertyController implements Initializable {
             }
         }
 
-        xArea.setText(room.getWidth() + "");
-        yArea.setText(room.getLenght() + "");
+        if(room.getWidth() != -1){
+            xArea.setText(room.getWidth() + "");
+        }else{
+            xArea.setText("0.0");
+        }
+        if(room.getLenght() != -1) {
+            yArea.setText(room.getLenght() + "");
+        }else{
+            yArea.setText("0.0");
+        }
         tArea.setText(room.getArea() + "");
         dialog.setTitle("Room Configure");
 
@@ -310,5 +323,10 @@ public class RegisterPropertyController implements Initializable {
         areaColumn.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getArea())));
         typeColumn.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getType()));
         roomsTableView.setItems(FXCollections.observableArrayList(rooms));
+        double totalArea = 0;
+        for(Room room : rooms){
+            totalArea += room.getArea();
+        }
+        areaLabel.setText(String.format("Total area: %.2f", totalArea));
     }
 }

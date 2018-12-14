@@ -1,12 +1,12 @@
 package imo.gui.controls;
 
 
-import elfo.exception.data.DataCannotBeAccessedException;
-import elfo.exception.user.UserInvalidException;
-import elfo.exception.user.UserIsRegistredException;
-import elfo.users.IUserInput;
-import elfo.users.UserController;
-import elfo.users.UserTools;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
+import elfoAPI.exception.user.UserInvalidException;
+import elfoAPI.exception.user.UserIsRegistredException;
+import imo.Imobily;
+import elfoAPI.users.UserTools;
+import imo.gui.view.UserInputFX;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,9 +31,11 @@ public class RegisterUserController implements Initializable {
     @FXML
     private ComboBox<Integer> typeComboBox;
 
-    private IUserInput userInput;
+    private UserInputFX userInput;
 
     private Stage stage;
+
+    private Imobily imobily;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -63,22 +65,24 @@ public class RegisterUserController implements Initializable {
     }
     @FXML
     private void register(){
-        UserController userController = UserController.getInstance();
         String fullName = fullNameTextField.getText();
-        int[] cpf = UserTools.stringToCpf(cpfTextField.getText());
+        String cpf = cpfTextField.getText();
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
         String password = passwordSigInTextField.getText();
         if(password.equals(userInput.getText("Confirm the Password"))){
             try {
-                userController.registerNewUser(fullName,cpf,password,firstName,lastName, typeComboBox.getValue());
+                imobily.register(fullName,cpf,password,firstName,lastName, typeComboBox.getValue());
                 userInput.showMessage("User Registered", "Information from the user " + firstName + " " + lastName, "The user is registered!");
                 stage.close();
             } catch (UserIsRegistredException | UserInvalidException | DataCannotBeAccessedException e) {
                 userInput.showMessage(e.getClass().getName(),e.getMessage(),e.getLocalizedMessage());
-                e.printStackTrace();
             }
         }
+    }
+
+    public void setImobily(Imobily imobily){
+        this.imobily = imobily;
     }
 
     @FXML
@@ -90,7 +94,8 @@ public class RegisterUserController implements Initializable {
     public void setStage(Stage stage){
         this.stage = stage;
     }
-    public void setUserInput(IUserInput userInput){
+    public void setUserInput(UserInputFX userInput){
         this.userInput = userInput;
+        userInput.cpfTextField(cpfTextField);
     }
 }

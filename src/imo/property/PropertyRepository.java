@@ -1,14 +1,20 @@
 package imo.property;
 
-import elfo.data.IRepositorio;
-import elfo.data.Serializer;
-import elfo.exception.data.DataCannotBeAccessedException;
+import elfoAPI.data.IRepositorio;
+import elfoAPI.data.Serializer;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
+import elfoAPI.sale.ISellableRepository;
+import elfoAPI.sale.SaleController;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PropertyRepository implements IRepositorio<Property>, Serializable {
+
+/**
+ * Implementa o repositorio de propriedade
+ * @author Jose Romulo Pereira
+ * @version 0.0.19
+ */
+public class PropertyRepository implements IRepositorio<Property>, ISellableRepository<Property> {
     private static final String URI = "src/resources/depot/properties.dat";
     private Serializer serializer;
     private ArrayList<Property> properties;
@@ -17,10 +23,8 @@ public class PropertyRepository implements IRepositorio<Property>, Serializable 
         this.serializer = Serializer.getInstance();
         try {
             this.properties = (ArrayList<Property>) serializer.open(URI);
-            for(Property property : properties){
-                System.out.println(property.getName());
-            }
-        } catch (ClassNotFoundException | IOException e) {
+            SaleController.getInstace().setSellableRepository(this);
+        } catch (DataCannotBeAccessedException e) {
             this.properties = new ArrayList<Property>();
             update();
         }
