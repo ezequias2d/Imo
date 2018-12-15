@@ -11,6 +11,7 @@ import elfoAPI.users.User;
 import elfoAPI.users.UserController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Representa a classe que manipula o repositorio e gerencia a
@@ -26,6 +27,9 @@ public class SaleController {
     private int saleCount;
     private int[] today;
 
+    /**
+     * Contrutor do controlador privado
+     */
     private SaleController() throws DataCannotBeAccessedException {
         userController = UserController.getInstance();
         saleRepository = new SaleRepository();
@@ -54,6 +58,10 @@ public class SaleController {
         return saleController;
     }
 
+    /**
+     * Seta repositorio de produtos
+     * @param sellableRepository
+     */
     public void setSellableRepository(ISellableRepository sellableRepository){
         saleRepository.setSellableRepository(sellableRepository);
     }
@@ -75,6 +83,16 @@ public class SaleController {
         }
 
     }
+
+    /**
+     * Cria uma nova compra com um PayDay
+     * @param user User Buyer
+     * @param method Method
+     * @param product Product
+     * @param months Months
+     * @param payday PayDay
+     * @return A new Sale
+     */
     public Sale newSale(User user, int method, ISellable product, int months, int[] payday) throws DataCannotBeAccessedException,
             ProductNotAvaliableException, EventInvalidException, MonthsForRentOrFinanceInvalidException, InvalidCalendarDateException {
         if(product.isAvaliable()) {
@@ -91,6 +109,10 @@ public class SaleController {
 
     }
 
+    /**
+     * Deleta uma Sale
+     * @param sale Sale
+     */
     public void deleteSale(Sale sale) throws DataCannotBeAccessedException {
         saleRepository.remove(sale);
     }
@@ -128,25 +150,48 @@ public class SaleController {
      * @param days Amount of days before today to count
      * @return ArrayList with finished purchases of before days
      */
-    public ArrayList<Sale> getAprovedPurchases(int days) throws SaleIsFinalizedException {
+    public ArrayList<Sale> getAprovedPurchases(int days) {
         ArrayList<Sale> out = new ArrayList<Sale>();
-        int date[] = CalendarTools.dateChanger(- days,today);
-        for(int i = 0; saleRepository.get(i).isAfter(date) && saleRepository.get(i).isAproved(); i ++){
-            out.add(saleRepository.get(i));
+        int date[] = CalendarTools.dateChanger(-days,today);
+        for(Sale sale : getAprovedPurchases()){
+            if(sale.isAfter(date)) {
+                out.add(sale);
+            }
         }
         return out;
     }
 
     /**
+     * @param days Amount of days before today to count
+     * @return ArrayList with finished purchases of before days
+     */
+    public ArrayList<Sale> getPendingPurchases(int days) {
+        ArrayList<Sale> out = new ArrayList<Sale>();
+        int date[] = CalendarTools.dateChanger(-days,today);
+        for(Sale sale : getPendingPurchases()){
+            if(sale.isAfter(date)) {
+                out.add(sale);
+            }
+        }
+        return out;
+    }
+
+
+    /**
      * Pega compras confirmadas
      * @return ArrayList with finished purchases
      */
-    public ArrayList<Sale> getAprovedPurchases() throws SaleIsFinalizedException {
+    public ArrayList<Sale> getAprovedPurchases() {
         ArrayList<Sale> out = new ArrayList<Sale>();
-
         for(Sale sale : saleRepository.toArray()){
-            if(sale.isAproved()){
+            if(sale.isAprovedFinal()){
                 out.add(sale);
+            }else if(sale.getMethod() == Sale.IN_RENT || sale.getMethod() == Sale.IN_FINANCE){
+                for(Sale subsale : sale.getSubSales()){
+                    if(subsale.isAprovedFinal()){
+                        out.add(subsale);
+                    }
+                }
             }
         }
 
@@ -157,26 +202,42 @@ public class SaleController {
      * Pega compras nao confirmadas
      * @return ArrayList with unfinished purchases
      */
-    public ArrayList<Sale> getPendingPurchases() throws SaleIsFinalizedException {
+    public ArrayList<Sale> getPendingPurchases() {
         ArrayList<Sale> out = new ArrayList<Sale>();
-        for(Sale sale: saleRepository.toArray()){
-            if(!sale.isAproved()){
+        for(Sale sale : saleRepository.toArray()){
+            if(sale.getMethod() == Sale.IN_RENT || sale.getMethod() == Sale.IN_FINANCE){
+                for(Sale subsale : sale.getSubSales()){
+                    if(!subsale.isAprovedFinal()){
+                        out.add(subsale);
+                    }
+                }
+            }else if(!sale.isAprovedFinal()){
                 out.add(sale);
             }
         }
         return out;
     }
 
+    /**
+     * Pega Sales de um usuario
+     * @param user User
+     * @return Sales
+     */
     public ArrayList<Sale> getSales(User user){
         ArrayList<Sale> salesUser = new ArrayList<>();
         for(Sale sale : saleRepository.toArray()){
-            if(sale.isCpfBuyer(user.getCpf())){
+            if(sale != null && user != null && sale.isCpfBuyer(user.getCpf())){
                 salesUser.add(sale);
             }
         }
         return salesUser;
     }
 
+    /**
+     * Pega Sales atrasadas de um usuario
+     * @param user User
+     * @return Late Sales
+     */
     public ArrayList<Sale> getLate(User user) {
         ArrayList<Sale> late = new ArrayList<>();
         for(Sale sale: getSales(user)){
@@ -191,6 +252,11 @@ public class SaleController {
         return late;
     }
 
+    /**
+     * Pega Sales aprovadas do usuario
+     * @param user User
+     * @return Aproved Sales
+     */
     public ArrayList<Sale> getAproved(User user) {
         ArrayList<Sale> aproved = new ArrayList<>();
         for(Sale sale: getSales(user)){
@@ -205,6 +271,11 @@ public class SaleController {
         return aproved;
     }
 
+    /**
+     * Pega Sales nao aprovadas do usuario
+     * @param user User
+     * @return Not Aproved Sales
+     */
     public ArrayList<Sale> getNotAproved(User user) {
         ArrayList<Sale> notAproved = new ArrayList<>();
         for(Sale sale: getSales(user)){
@@ -219,7 +290,12 @@ public class SaleController {
         return notAproved;
     }
 
-    public ArrayList<Sale> getFinalizer(User user)  {
+    /**
+     * Pega Sales finalizadas do usuario
+     * @param user User
+     * @return Finalized Sales
+     */
+    public ArrayList<Sale> getFinalized(User user)  {
         ArrayList<Sale> canceled = new ArrayList<>();
         for(Sale sale: getSales(user)){
             try {
@@ -230,10 +306,21 @@ public class SaleController {
         }
         return canceled;
     }
+
+    /**
+     * Pega numero de Sales do usuario
+     * @param user User
+     * @return Number of sales
+     */
     public int getSalesNumber(User user){
         return getSales(user).size();
     }
 
+    /**
+     * Pega String com numero de cada tipo de sales de um usuario
+     * @param user User
+     * @return Status String
+     */
     public String getStatus(User user){
         ArrayList<Sale> salesUser = getSales(user);
         int aproved = 0;
@@ -263,6 +350,9 @@ public class SaleController {
         return aproved + "|" + notAproved + "|" + pedding + "|"+ late + "|" + finalize;
     }
 
+    /**
+     * Atualiza repositorio
+     */
     public void update() throws DataCannotBeAccessedException {
         saleRepository.update();
     }

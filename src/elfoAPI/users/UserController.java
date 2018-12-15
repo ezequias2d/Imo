@@ -10,8 +10,9 @@ import elfoAPI.exception.user.UserIsRegistredException;
 import java.util.ArrayList;
 
 /**
+ * Sistema de Usuarios
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.0.18
  */
 public class UserController {
     private static UserController userController;

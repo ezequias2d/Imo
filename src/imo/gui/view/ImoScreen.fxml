@@ -17,16 +17,18 @@
                   <MenuItem mnemonicParsing="false" onAction="#logout" text="Logout" />
             </items>
           </Menu>
-            <Menu fx:id="registerMenu" mnemonicParsing="false" text="Property" visible="false">
+            <Menu fx:id="registerMenu" mnemonicParsing="false" text="Property">
               <items>
                   <MenuItem mnemonicParsing="false" onAction="#registerProperty" text="Register" />
                 <MenuItem mnemonicParsing="false" onAction="#modifyProperty" text="Modify" />
                   <MenuItem mnemonicParsing="false" onAction="#deleteProperty" text="Delete" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#typesScreen" text="Types" />
               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
             </items>
           </Menu>
         </menus>
@@ -56,7 +58,7 @@
                            <top>
                               <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="966.0" spacing="8.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <CheckBox mnemonicParsing="false" onAction="#updateSearch" text="See unavailable" />
+                                    <CheckBox fx:id="seeUnavailablecheckBox" mnemonicParsing="false" onAction="#updateSearch" text="See unavailable" />
                                     <ComboBox fx:id="propertyTypeComboBox" onAction="#updateSearch" prefWidth="150.0" promptText="Type" />
                                     <Button fx:id="updateSearchButton" mnemonicParsing="false" onAction="#updateSearch" text="Update Search" />
                                     <Button mnemonicParsing="false" onAction="#buttonBrandEvent" text="Brand Visit" />
@@ -315,13 +317,13 @@
                <content>
                   <BorderPane prefHeight="292.0" prefWidth="489.0">
                      <center>
-                        <TableView fx:id="saleTableView" onKeyReleased="#selectSale" onMouseReleased="#selectSale" prefHeight="509.0" prefWidth="434.0" BorderPane.alignment="CENTER">
+                        <TableView fx:id="saleTableView" onKeyReleased="#selectSale" onMouseReleased="#selectSale" prefHeight="509.0" prefWidth="426.0" BorderPane.alignment="CENTER">
                           <columns>
-                            <TableColumn fx:id="saleCode" prefWidth="152.0" text="Sale Code" />
-                            <TableColumn fx:id="saleStatus" prefWidth="802.0" text="Status" />
-                              <TableColumn fx:id="salePrice" prefWidth="75.0" text="Price" />
-                              <TableColumn fx:id="saleMethod" prefWidth="75.0" text="Method" />
-                              <TableColumn fx:id="saleProperty" prefWidth="75.0" text="Property Code" />
+                            <TableColumn fx:id="saleCode" minWidth="49.0" prefWidth="49.0" text="Code" />
+                            <TableColumn fx:id="saleStatus" minWidth="157.0" prefWidth="157.0" text="Status" />
+                              <TableColumn fx:id="salePrice" minWidth="76.0" prefWidth="76.0" text="Price" />
+                              <TableColumn fx:id="saleMethod" minWidth="104.0" prefWidth="104.0" text="Method" />
+                              <TableColumn fx:id="saleProperty" minWidth="69.0" prefWidth="69.0" text="Property" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -331,9 +333,13 @@
                      <top>
                         <HBox fx:id="hboxSystem" alignment="CENTER" minHeight="0.0" prefHeight="35.0" prefWidth="489.0" spacing="5.0" BorderPane.alignment="CENTER">
                            <children>
+                              <Button mnemonicParsing="false" onAction="#saleReportAproved" text="Sale Report Aproved" />
+                              <Button mnemonicParsing="false" onAction="#saleReportPending" text="Sale Report Pending" />
+                              <Button mnemonicParsing="false" onAction="#saleReportAproved30Days" text="Sale Report Aproved 30 days" />
+                              <Button mnemonicParsing="false" onAction="#saleReportPending30Days" text="Sale Report Pending 30 days" />
                               <Button mnemonicParsing="false" onAction="#approveSaleAction" text="Approve" />
                               <Button mnemonicParsing="false" onAction="#disapproveSaleAction" text="Disapprove" />
-                              <Button mnemonicParsing="false" onAction="#finalizerSaleAction" text="Finalizer" />
+                              <Button mnemonicParsing="false" onAction="#finalizeSaleAction" text="Finalize" />
                               <Button fx:id="saleDeleteButton" mnemonicParsing="false" onAction="#saleDelete" text="Delete" />
                            </children>
                            <padding>
@@ -358,7 +364,7 @@
                         <TableView fx:id="subSaleTableView" maxWidth="250.0" minWidth="0.0" prefHeight="509.0" prefWidth="250.0" BorderPane.alignment="CENTER">
                           <columns>
                             <TableColumn fx:id="subSaleDayPayment" maxWidth="75.0" prefWidth="40.0" text="Payday" />
-                              <TableColumn fx:id="subSaleStatus" maxWidth="75.0" prefWidth="40.0" text="Status" />
+                              <TableColumn fx:id="subSaleStatus" maxWidth="150.0" prefWidth="40.0" text="Status" />
                               <TableColumn fx:id="subsalePriceTableColumn" maxWidth="100.0" prefWidth="112.0" text="Price" />
                           </columns>
                            <columnResizePolicy>
@@ -377,9 +383,8 @@
                         <Button mnemonicParsing="false" onAction="#changeYourPasswordButton" text="Change Your Password" />
                         <Button mnemonicParsing="false" onAction="#changeYourFullName" text="Change Your Full Name" />
                         <Button mnemonicParsing="false" onAction="#changeYourFormalNameButton" text="Change Your Formal Name" />
-                        <Button fx:id="deleteAccountButton" mnemonicParsing="false" onAction="#deleteAccountAction" text="Delete Account" visible="false" />
-                        <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePasswordAction" text="Change Password" visible="false" />
-                        <Button fx:id="changeCpfButton" mnemonicParsing="false" onAction="#changeCPFAction" text="Change Cpf" visible="false" />
+                        <Button fx:id="deleteAccountButton" mnemonicParsing="false" onAction="#deleteAccountAction" text="Delete Account" />
+                        <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePasswordAction" text="Change Password" />
                      </children>
                   </VBox>
               </content>

@@ -1,6 +1,6 @@
 package elfoAPI.users;
 
-import elfoAPI.data.IIdentifiable;
+import elfoAPI.data.IIdentificable;
 import elfoAPI.exception.user.UserInvalidException;
 import elfoAPI.exception.user.UserIsRegistredException;
 
@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author Ezequias Moises dos Santos Silva
  * @version 0.1.4
  */
-public class User implements Serializable, IIdentifiable {
+public class User implements Serializable, IIdentificable {
     public static final int LEVEL_ADM1 = 0;
     public static final int LEVEL_ADM2 = 1;
     public static final int LEVEL_NORMAL = 2;
@@ -70,10 +70,11 @@ public class User implements Serializable, IIdentifiable {
     }
 
     /**
+     * Autentica usuario
      * @param cpf Array of CPF
      * @return if it is a valid CPF
      */
-    public boolean authenticateCpf(int... cpf){
+    private boolean authenticateCpf(int... cpf){
         int cpfTam = 11;
         if(cpf.length != cpfTam){
             return false;
@@ -97,10 +98,11 @@ public class User implements Serializable, IIdentifiable {
         return out;
     }
     /**
+     * Autentica senha
      * @param password Password
      * @return if entered password meets minimum requirements
      */
-    static public boolean authenticatePassword(String password){
+    private boolean authenticatePassword(String password){
         char[] pass = password.toCharArray();
         boolean[] points = new boolean[6];
         for(char c : pass){
@@ -145,7 +147,7 @@ public class User implements Serializable, IIdentifiable {
      * @param cpf CPF
      * @return if it's the account's CPF
      */
-    public boolean isCpf(int[] cpf){
+    boolean isCpf(int[] cpf){
         if(cpf.length != this.cpf.length){
             return false;
         }

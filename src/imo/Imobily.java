@@ -20,6 +20,7 @@ import elfoAPI.users.UserController;
 import elfoAPI.users.UserTools;
 import imo.exception.EventNotBrandException;
 import imo.exception.ParameterOutOfTypeException;
+import imo.exception.PropertyIsUnavailable;
 import imo.gui.view.UserInputFX;
 import imo.property.Property;
 import imo.property.PropertyController;
@@ -45,13 +46,13 @@ import java.util.ArrayList;
  *          Andares
  *          Comodos Individuais
  *          Preço(aluguel e completo)
+ *      - Registrar novos tipos
  *
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.3
  */
 public class Imobily {
     private UserController userController;
-    private UserInputFX userInput;
 
     private Schedule schedule;
     private ScheduleRepository scheduleRepository;
@@ -59,23 +60,28 @@ public class Imobily {
 
     private PropertyController propertyController;
 
-    private DeltaNumber moneyLimit;
+    private DeltaNumber buyLimimt;
+    private DeltaNumber rentLimit;
     private DeltaNumber areaLimit;
     private DeltaNumber floorsLimit;
     private DeltaNumber roomsLimit;
 
     private SaleController saleController;
 
-    public Imobily(UserInputFX userInput){
+
+    /**
+     *  Construtor de Imobily
+     */
+    public Imobily() throws DataCannotBeAccessedException {
         userController = UserController.getInstance();
-        this.userInput = userInput;
 
         scheduleRepository = ScheduleRepository.getInstance();
         deltaTime = new DeltaTime(0,30);
         scheduleUpdate(CalendarTools.getCurrentYear());
 
         propertyController = PropertyController.getInstance();
-        moneyLimit = new DeltaNumber();
+        buyLimimt = new DeltaNumber();
+        rentLimit = new DeltaNumber();
         areaLimit = new DeltaNumber();
         floorsLimit = new DeltaNumber();
         roomsLimit = new DeltaNumber();
@@ -115,9 +121,7 @@ public class Imobily {
     /**
      * Menu Command
      */
-    public void changePassword() throws DataCannotBeAccessedException, UserInvalidPermissionException {
-        String oldPassword = userInput.getPassword("Old Password");
-        String newPassword = userInput.getPassword("New Password");
+    public void changePassword(String oldPassword, String newPassword) throws DataCannotBeAccessedException, UserInvalidPermissionException {
         userController.changeYourPassword(oldPassword,newPassword);
     }
 
@@ -125,47 +129,27 @@ public class Imobily {
         return userController.getUsers();
     }
 
-    public void changeFullName() throws DataCannotBeAccessedException, UserInvalidPermissionException {
-        String password = userInput.getPassword("Password");
-        String fullname = userInput.getText("Full Name");
+    public void changeFullName(String password, String fullname) throws DataCannotBeAccessedException, UserInvalidPermissionException {
         userController.changeYourName(password,fullname);
     }
 
     /**
      * Menu Command
      */
-    public void changeFormalName() throws DataCannotBeAccessedException, UserInvalidPermissionException {
-        String password = userInput.getPassword("Password");
-        String firstName = userInput.getText("First Name");
-        String lastName = userInput.getText("Last Name");
+    public void changeFormalName(String password, String firstName, String lastName) throws DataCannotBeAccessedException, UserInvalidPermissionException {
         userController.changeYourFormalName(password,firstName,lastName);
     }
     /**
      * Menu Command
      */
 
-    public void changePasswordADM1() throws UserInvalidPermissionException, DataCannotBeAccessedException {
-        String password = userInput.getPassword("ADM1 Password");
-        int[] cpf = userInput.getCPF("CPF");
-        String newPassword = userInput.getPassword("New Password");
-        userController.changePassword(userController.getUser(cpf),password,newPassword);
+    public void changePasswordADM1(String adm1Password, int[] cpf, String newPassword) throws UserInvalidPermissionException, DataCannotBeAccessedException {
+        userController.changePassword(userController.getUser(cpf),adm1Password,newPassword);
     }
     /**
-     * Menu Command
      */
-    public void changeCpfADM1() throws UserInvalidPermissionException, DataCannotBeAccessedException {
-        String password = userInput.getPassword("AM1 Password");
-        int[] cpf = userInput.getCPF("CPF");
-        int[] newCpf = userInput.getCPF("New CPF");
-        userController.changeCpf(userController.getUser(cpf),password,newCpf);
-    }
-
-    /**
-     */
-    public void deleteAccount() throws UserInvalidPermissionException, DataCannotBeAccessedException {
-        String password = userInput.getPassword("ADM Password");
-        int[] cpf = userInput.getCPF("CPF");
-        userController.deleteAccount(password,cpf);
+    public void deleteAccount(int[] cpf, String adm1Password) throws UserInvalidPermissionException, DataCannotBeAccessedException {
+        userController.deleteAccount(adm1Password,cpf);
     }
 
     public void logout(){
@@ -177,7 +161,7 @@ public class Imobily {
 
 
     //-----------CALENDAR------------
-    public ArrayList<ScheduleEvent> getPeriodEvents(LocalDate date, int period){
+    public ArrayList<ScheduleEvent> getPeriodEvents(LocalDate date, int period) throws DataCannotBeAccessedException {
         int[] dateInt = CalendarTools.convertToDate(date);
         ArrayList<ScheduleEvent> events = new ArrayList<ScheduleEvent>();
         for(int i = 0; i < period; i ++){
@@ -188,22 +172,26 @@ public class Imobily {
         return events;
     }
 
-    public void eventBrand(Property property, LocalDate date, String time) throws EventInvalidException, EventNotBrandException, HourNotExistException {
-        int[] dateV = CalendarTools.convertToDate(date);
-        int[] timeV = CalendarTools.convertToHour(time);
-        eventBrand(property,dateV,timeV);
+    public void eventBrand(Property property, LocalDate date, String time) throws EventInvalidException, EventNotBrandException, HourNotExistException, DataCannotBeAccessedException, PropertyIsUnavailable {
+        if(property.isAvaliable()) {
+            int[] dateV = CalendarTools.convertToDate(date);
+            int[] timeV = CalendarTools.convertToHour(time);
+            eventBrand(property, dateV, timeV);
+        } else{
+            throw new PropertyIsUnavailable(property);
+        }
     }
 
     /**
      * Get schedule of current cpf
      */
-    private void scheduleUpdate(int year){
+    private void scheduleUpdate(int year) throws DataCannotBeAccessedException {
         schedule = scheduleRepository.get(userController.getCurrentIdentity(), year);
     }
 
     /**
      */
-    public void eventBrand(Property property, int[] date, int[] time) throws HourNotExistException, EventInvalidException, EventNotBrandException {
+    public void eventBrand(Property property, int[] date, int[] time) throws HourNotExistException, EventInvalidException, EventNotBrandException, DataCannotBeAccessedException {
         String userFormalName = userController.getFormalNameCurrent();
         Schedule propertySchedule = property.getSchedule();
         String code = property.getIdentity();
@@ -233,7 +221,7 @@ public class Imobily {
         throw new EventNotBrandException(new ScheduleEvent("",hour,minutes,deltaTime, schedule.getDayOfDate(date[1],date[0])),schedule,propertySchedule);
     }
 
-    public ScheduleDay getDay(int[] date){
+    public ScheduleDay getDay(int[] date) throws DataCannotBeAccessedException {
         scheduleUpdate(date[2]);
         schedule.setDate(date[2], date[1], date[0]);
         ScheduleDay out = schedule.getDay();
@@ -245,8 +233,12 @@ public class Imobily {
     }
 
     //----------PROPERTY-------------
-    public void setMoneyLimit(double min, double max){
-        moneyLimit.setDelta(min, max);
+    public void setBuyLimit(double min, double max){
+        buyLimimt.setDelta(min, max);
+    }
+
+    public void setRentLimit(double min, double max){
+        rentLimit.setDelta(min, max);
     }
 
     public void setAreaLimit(double min, double max){
@@ -276,40 +268,93 @@ public class Imobily {
     /**
      * @return Search of property
      */
-    public ArrayList<Property> getSearch(PropertyType... propertyTypes){
-        return propertyController.filterProperties(moneyLimit,areaLimit,floorsLimit,roomsLimit,propertyTypes);
+    public ArrayList<Property> getSearch(boolean seeUnvaliable,PropertyType... propertyTypes){
+        return propertyController.filterProperties(seeUnvaliable,buyLimimt,rentLimit,areaLimit,floorsLimit,roomsLimit,propertyTypes);
     }
 
     public ArrayList<Property> getSearch(double min, double max, ArrayList<Property> listToFilter, String typeRoom){
         return propertyController.filterProperties(typeRoom, listToFilter,new DeltaNumber(min,max));
     }
 
+    public PropertyType[] getPropertyTypesFilter(){
+        return propertyController.getPropertiesTypesFilter();
+    }
     public PropertyType[] getPropertyTypes(){
         return propertyController.getPropertiesTypes();
+    }
+
+    public void addPropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
+        propertyController.addPropertyType(propertyType);
+        propertyController.update();
+    }
+    public void deletePropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
+        propertyController.deletePropertyType(propertyType);
+        propertyController.update();
+    }
+    public void updateProperty() throws DataCannotBeAccessedException {
+        propertyController.update();
     }
 
     //---------------SALE-------------
     /**
      * Sales report completed
-     * @param days Amount of days before today to count
      * @return Relatory String
      */
-    public ArrayList<Sale> getAprovedPurchases(int days) throws SaleIsFinalizedException {
-        return saleController.getAprovedPurchases(days);
+    public String getAprovedReport() {
+        ArrayList<Sale> sales =  saleController.getAprovedPurchases();
+        String out = "";
+        double totalPrice = 0;
+        for(Sale sale : sales){
+            out += sale.toString() + "\n";
+            totalPrice += sale.getPrice();
+        }
+        out += String.format("\nTotal:%.2f",totalPrice);
+        return out;
     }
 
     /**
      * @return Screen with unfinished purchases
      */
-    public ArrayList<Sale> getVisualPendingPurchases() throws SaleIsFinalizedException {
-        return saleController.getPendingPurchases();
+    public String getPeddingReport() {
+        ArrayList<Sale> sales =  saleController.getPendingPurchases();
+        String out = "";
+        double totalPrice = 0;
+        for(Sale sale : sales){
+            out += sale.toString() + "\n";
+            totalPrice += sale.getPrice();
+        }
+        out += String.format("\nTotal:%.2f",totalPrice);
+        return out;
     }
     /**
      * @return Screen with finished purchases
      */
-    public ArrayList<Sale> getVisualAprovedPurchases() throws SaleIsFinalizedException {
-        return saleController.getAprovedPurchases();
+    public String getAprovedReport(int days) {
+        ArrayList<Sale> sales =  saleController.getAprovedPurchases(days);
+        String out = "";
+        double totalPrice = 0;
+        for(Sale sale : sales){
+            out += sale.toString() + "\n";
+            totalPrice += sale.getPrice();
+        }
+        out += String.format("\nTotal:%.2f",totalPrice);
+        return out;
     }
+    /**
+     * @return Screen with finished purchases
+     */
+    public String getPeddingReport(int days) {
+        ArrayList<Sale> sales =  saleController.getPendingPurchases(days);
+        String out = "";
+        double totalPrice = 0;
+        for(Sale sale : sales){
+            out += sale.toString() + "\n";
+            totalPrice += sale.getPrice();
+        }
+        out += String.format("\nTotal:%.2f",totalPrice);
+        return out;
+    }
+
 
     /**
      * Create a New Sale
@@ -377,7 +422,7 @@ public class Imobily {
     }
 
     public ArrayList<Sale> getFinalizer(User user)  {
-        return saleController.getFinalizer(user);
+        return saleController.getFinalized(user);
     }
 
     public int getSalesNumber(User user){

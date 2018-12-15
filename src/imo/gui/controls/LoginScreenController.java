@@ -21,6 +21,11 @@ import javafx.scene.input.KeyEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controle da tela de login
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.5
+ */
 public class LoginScreenController implements Initializable {
     @FXML
     private TextField cpfLogOnTextField;
@@ -44,13 +49,19 @@ public class LoginScreenController implements Initializable {
 
     private Imobily imobily;
 
+    /**
+     * Construtor
+     */
     public LoginScreenController(){
         userController = UserController.getInstance();
     }
 
+    /**
+     * Evento do botao logOn
+     * tenta logar usuario usando informaçoes de textfield e passwordfield
+     */
     @FXML
     private void logOn(){
-        //if (userController.login(UserTools.stringToCpf(cpfLogOnTextField.getText()),passwordLogOnTextField.getText())) {
         if(imobily.login(cpfLogOnTextField.getText(),passwordLogOnTextField.getText())){
             mainApp.getLoginStage().hide();
             mainApp.getImoScreenStage().show();
@@ -71,14 +82,22 @@ public class LoginScreenController implements Initializable {
         }
 
     }
+
+    /**
+     * apaga textos das caixas de texto
+     */
     private void resetText(){
-        cpfLogOnTextField.setText("");
-        cpfSigInTextField.setText("");
-        passwordLogOnTextField.setText("");
-        passwordSigInTextField.setText("");
-        fullNameTextField.setText("");
+        cpfLogOnTextField.clear();
+        cpfSigInTextField.clear();
+        passwordLogOnTextField.clear();
+        passwordSigInTextField.clear();
+        fullNameTextField.clear();
     }
 
+    /**
+     * Evento do botao sigIn
+     * tenta registrar usuario usando informaçoes de textfield e passwordfield
+     */
     @FXML
     private void sigIn(){
         String fullName = fullNameTextField.getText();
@@ -99,6 +118,9 @@ public class LoginScreenController implements Initializable {
         }
     }
 
+    /**
+     * Funçao de inicio que configure os passwordField
+     */
     public void start() {
         passwordLogOnTextField.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
@@ -116,17 +138,34 @@ public class LoginScreenController implements Initializable {
         });
     }
 
+    /**
+     * Setea MainApp
+     * @param mainApp MainApp
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
+
+    /**
+     * Seta UserInputFX
+     * @param userInputFX UserInputFX
+     */
     public void setUserInputFX(UserInputFX userInputFX){
         this.userInputFX = userInputFX;
         userInputFX.cpfTextField(cpfLogOnTextField,cpfSigInTextField);
     }
+
+    /**
+     * Seta fachada Imobily
+     * @param imobily Imobily
+     */
     public void setImobily(Imobily imobily){
         this.imobily = imobily;
     }
 
+    /**
+     * Inicializador da classe Initializable
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         start();

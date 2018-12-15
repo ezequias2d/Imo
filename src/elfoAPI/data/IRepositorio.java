@@ -2,16 +2,18 @@ package elfoAPI.data;
 
 import elfoAPI.exception.data.DataCannotBeAccessedException;
 
-import java.io.IOException;
+/**
+ * Interface de repositorio generico
+ * @param <T> IIdentificable
+ */
+public interface IRepositorio<T extends IIdentificable> {
 
-public interface IRepositorio<T extends IIdentifiable> {
-
-    public boolean add(T object) throws DataCannotBeAccessedException;
-    public boolean remove(T object) throws DataCannotBeAccessedException;
-    public T get(int index);
-    public T get(String indent);
-    public int get(T object);
-    public T[] toArray();
-    public void update() throws DataCannotBeAccessedException;
+    public abstract boolean add(T object) throws DataCannotBeAccessedException;
+    public abstract boolean remove(T object) throws DataCannotBeAccessedException;
+    public abstract T get(int index);
+    public abstract T get(String indent);
+    public abstract int get(T object);
+    public abstract T[] toArray();
+    public abstract void update() throws DataCannotBeAccessedException;
 
 }

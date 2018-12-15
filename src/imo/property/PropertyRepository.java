@@ -57,8 +57,9 @@ public class PropertyRepository implements IRepositorio<Property>, ISellableRepo
      */
     @Override
     public boolean remove(Property property) throws DataCannotBeAccessedException {
+        boolean out = properties.remove(property);
         update();
-        return properties.remove(property);
+        return out;
     }
 
     /**

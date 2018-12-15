@@ -34,6 +34,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+
+/**
+ * Controle da tela principal do projeto Imo
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.5
+ */
 public class ImoController implements Initializable {
     /*
      * Funcionais
@@ -66,12 +72,12 @@ public class ImoController implements Initializable {
        Filtragem
      */
     @FXML
+    private CheckBox seeUnavailablecheckBox;
+    @FXML
     private Label infoPropertyLabel;
     @FXML
     private ComboBox<PropertyType> propertyTypeComboBox;
 
-    @FXML
-    private Button updateSearchButton;
     @FXML
     private TextField areaMinTextField;
     @FXML
@@ -126,8 +132,6 @@ public class ImoController implements Initializable {
     private Button deleteAccountButton;
     @FXML
     private Button changePasswordButton;
-    @FXML
-    private Button changeCpfButton;
 
     //Sale Screen
     @FXML
@@ -169,17 +173,23 @@ public class ImoController implements Initializable {
     @FXML
     private HBox hboxSystem;
 
+    /**
+     * Esconde Controles de usuario
+     */
     public void hideControlls(){
         registerMenu.setVisible(false);
         registerUserButton.setVisible(false);
         deleteAccountButton.setVisible(false);
-        changeCpfButton.setVisible(false);
         changePasswordButton.setVisible(false);
         hboxSystem.setPrefHeight(0);
         userTableView.setPrefWidth(0);
         hboxSystem.setVisible(false);
         saleDeleteButton.setVisible(false);
     }
+
+    /**
+     * Configura tela para tipo 'normal'(Cliente)
+     */
     public void normal(){
         hideControlls();
         loadSales(imobily.getSales(imobily.getLoadedAccount()));    //carega conta atual em System
@@ -191,15 +201,26 @@ public class ImoController implements Initializable {
             @Override
             public void run() {
                 updateSearch();
-                loadSales(imobily.getSales(imobily.getLoadedAccount()));
                 if(imobily.isRealEstateBroker() || imobily.isManager()){
+                    User userSelected = userTableView.getSelectionModel().getSelectedItem();
+                    if(userSelected != null){
+                        loadSales(imobily.getSales(userSelected));
+                    }
                     loadUsers(imobily.getUsers());
+                }else{
+                    loadSales(imobily.getSales(imobily.getLoadedAccount()));
+                }
+                Sale saleSelected = saleTableView.getSelectionModel().getSelectedItem();
+                if(saleSelected != null){
+                    loadSubSales(saleSelected.getSubSales());
                 }
             }
         };
         mainScene.getAccelerators().put(f5KeyCombination,f5Command);
     }
-
+    /**
+     * Configura tela para tipo 'AM2'(Corretor)
+     */
     public void adm2(){
         normal();
         registerMenu.setVisible(true);
@@ -208,24 +229,37 @@ public class ImoController implements Initializable {
         hboxSystem.setVisible(true);
         userTableView.setPrefWidth(260);
     }
+    /**
+     * Configura tela para tipo 'ADM1'(Gerente)
+     */
     public void adm1(){
         adm2();
         registerUserButton.setVisible(true);
         deleteAccountButton.setVisible(true);
-        changeCpfButton.setVisible(true);
         changePasswordButton.setVisible(true);
         saleDeleteButton.setVisible(true);
 
     }
-
+    /**
+     * Seta controle Imobily
+     * @param imobily Imobily
+     */
     public void setImobily(Imobily imobily){
         this.imobily = imobily;
     }
 
+    /**
+     * Seta um UserInputFX
+     * @param userInputFX UserInputFX
+     */
     public void setUserInputFX(UserInputFX userInputFX){
         this.userInputFX = userInputFX;
     }
 
+    /**
+     * Carrega propriedades na tableView de propriedades
+     * @param properties Properties
+     */
     private void loadPropertys(ArrayList<Property> properties){
         code.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getIdentity())));
         area.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getArea())));
@@ -236,6 +270,10 @@ public class ImoController implements Initializable {
         this.tableViewProperty.setItems(FXCollections.observableArrayList(properties));
     }
 
+    /**
+     * Carrega usuarios na tableView de usuarios
+     * @param users Users
+     */
     private void loadUsers(User[] users){
         userType.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getTypeUser())));
         userName.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getFormalName())));
@@ -245,6 +283,11 @@ public class ImoController implements Initializable {
         this.userTableView.setItems(FXCollections.observableArrayList(users));
         this.userTableView.refresh();
     }
+
+    /**
+     * Carrega sales na tableView de sales
+     * @param sales Sales
+     */
     private void loadSales(ArrayList<Sale> sales){
         saleCode.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getIdentity()));
         saleMethod.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getMethodText()));
@@ -252,14 +295,19 @@ public class ImoController implements Initializable {
         saleProperty.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getProductIdentity())));
         saleStatus.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getStatus())));
         this.saleTableView.setItems(FXCollections.observableArrayList(sales));
-        this.subSaleTableView.refresh();
+        this.saleTableView.refresh();
     }
-    private void loadSubSales(Sale[] sales){
-        if(sales != null) {
+
+    /**
+     * Carrega subSales na tableView de subSales
+     * @param subSales SubSales
+     */
+    private void loadSubSales(Sale[] subSales){
+        if(subSales != null) {
             subSaleDayPayment.setCellValueFactory((param) -> new SimpleStringProperty(CalendarTools.formatDate(param.getValue().getPayday())));
             subSaleStatus.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getStatus()));
             subsalePriceTableColumn.setCellValueFactory((param) -> new SimpleStringProperty(String.format("%.2f",param.getValue().getPrice())));
-            this.subSaleTableView.setItems(FXCollections.observableArrayList(sales));
+            this.subSaleTableView.setItems(FXCollections.observableArrayList(subSales));
             this.subSaleTableView.setPrefSize(250,200);
             this.subSaleTableView.refresh();
         }else{
@@ -267,51 +315,95 @@ public class ImoController implements Initializable {
         }
     }
 
-
+    /**
+     * Carrega tipos de propriedades na tableView de tipos de propriedades
+     * @param propertyTypes Property Types
+     */
     public void loadPropertyTypes(PropertyType[] propertyTypes){
         this.propertyTypeComboBox.setItems(FXCollections.observableArrayList(propertyTypes));
     }
+
+    /**
+     * Evento de selecionar uma Property na tableView
+     */
     @FXML
     private void onClickPropertyList(){
         if(tableViewProperty.getSelectionModel().getSelectedItem() != null) {
             infoPropertyLabel.setText(tableViewProperty.getSelectionModel().getSelectedItem().toString());
         }
     }
+    /**
+     * Evento do botao de marca evento(brand event)
+     */
     @FXML
     private void buttonBrandEvent(){
         userInputFX.brandEvent(imobily,tableViewProperty.getSelectionModel().getSelectedItem());
     }
 
+    /**
+     * Seta sena principal
+     * @param scene Scene
+     */
     public void setMainScene(Scene scene){
         this.mainScene = scene;
     }
 
+    /**
+     * Seta MainApp
+     * @param mainApp MainApp
+     */
     public void setMainApp(MainApp mainApp){
         this.mainApp = mainApp;
     }
 
+    /**
+     * Inicializador da interface Inicializable
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         calendarComboBoxConfigure();
         calendarDatePicker.setValue(LocalDate.now());
     }
-    public void reset() {
+
+    /**
+     * 'Reseta' interface
+     */
+    void reset() {
         if(propertyTypeComboBox != null)
-            propertyTypeComboBox.setValue(imobily.getPropertyTypes()[0]);
+            propertyTypeComboBox.setValue(imobily.getPropertyTypesFilter()[0]);
         if(calendarDatePicker != null) {
             calendarDatePicker.setValue(LocalDate.now());
-            selectDate();
+            try {
+                selectDate();
+            } catch (DataCannotBeAccessedException e) {
+                userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
+            }
         }
-        selectDate();
     }
+
+    /**
+     * Inicializador de conteudo de controles
+     */
     public void start(){
-        loadPropertys(imobily.getSearch());
-        loadPropertyTypes(imobily.getPropertyTypes());
-        propertyTypeComboBox.setValue(imobily.getPropertyTypes()[0]);
+        loadPropertys(imobily.getSearch(false));
+        loadPropertyTypes(imobily.getPropertyTypesFilter());
+        propertyTypeComboBox.setValue(imobily.getPropertyTypesFilter()[0]);
     }
+
+    /**
+     * Pega texto de um TextField e o transforma em double
+     * @param textField TextField
+     * @return value of TextField
+     */
     private double doubleOfTextField(TextField textField){
         return Double.valueOf(textField.getText());
     }
+
+    /**
+     * Configura os textFields da parte de filtro para aceitar apenas double
+     */
     public void configureTextField(){
         String[] roomsTypesNames = {"bedroom","livingroom","diningroom","kitchen","closet","bathroom","garage",
                 "office", "garden", "balcony", "lobby"};
@@ -327,14 +419,19 @@ public class ImoController implements Initializable {
                 roomsMaxTextField,roomsMinTextField);
     }
 
+    /**
+     * Evento de atualizar pesquisa
+     * Associado a: botao update search, selecionar tipo de propriedade ou aperta F5
+     */
     @FXML
     private void updateSearch(){
         imobily.setAreaLimit(doubleOfTextField(areaMinTextField), doubleOfTextField(areaMaxTextField));
         imobily.setFloorsLimit(doubleOfTextField(floorsMinTextField),doubleOfTextField(floorsMaxTextField));
-        imobily.setMoneyLimit(doubleOfTextField(buyMinTextField),doubleOfTextField(buyMaxTextField));
+        imobily.setBuyLimit(doubleOfTextField(buyMinTextField),doubleOfTextField(buyMaxTextField));
+        imobily.setRentLimit(doubleOfTextField(rentMinTextField),doubleOfTextField(rentMaxTextField));
         imobily.setRoomsLimit(doubleOfTextField(roomsMinTextField),doubleOfTextField(roomsMaxTextField));
 
-        ArrayList<Property> properties = imobily.getSearch(this.propertyTypeComboBox.getSelectionModel().getSelectedItem());
+        ArrayList<Property> properties = imobily.getSearch(seeUnavailablecheckBox.isSelected(),this.propertyTypeComboBox.getSelectionModel().getSelectedItem());
         String[] rooms = Room.TYPE_NAME;
         String[] roomsTypesNames = {"bedroom","livingroom","diningroom","kitchen","closet","bathroom","garage",
                                         "office", "garden", "balcony", "lobby"};
@@ -349,12 +446,22 @@ public class ImoController implements Initializable {
 
 
     //Account tab Buttons
+
+    /**
+     * Logout
+     * Associado a: botao logout no menu superior
+     */
     @FXML
     private void logout(){
         imobily.logout();
         mainApp.getImoScreenStage().hide();
         mainApp.getLoginStage().show();
     }
+
+    /**
+     * Registra usuario
+     * Associado a: Botao register no menu account no modo ADM1 ou ADM2
+     */
     @FXML
     private void registerUser(){
         Stage stage = new Stage();
@@ -365,7 +472,7 @@ public class ImoController implements Initializable {
             scene = new Scene(loader.load());
             RegisterUserController registerUserController = loader.getController();
             registerUserController.setStage(stage);
-            registerUserController.setUserInput(userInputFX);
+            registerUserController.setUserInputFX(userInputFX);
             registerUserController.setImobily(imobily);
             stage.setScene(scene);
             stage.showAndWait();
@@ -373,6 +480,11 @@ public class ImoController implements Initializable {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
+
+    /**
+     * Cria uma nova janela de registrar propriedade
+     * Associado a: Register no menu Property
+     */
     @FXML
     private void registerProperty(){
         Stage stage = new Stage();
@@ -393,6 +505,11 @@ public class ImoController implements Initializable {
         }
         updateSearch();
     }
+
+    /**
+     * Modifica propriedade selecionada
+     * Associado a: Modify no menu Property(apenas para ADM1 e ADM2)
+     */
     @FXML
     private void modifyProperty(){
         Stage stage = new Stage();
@@ -405,6 +522,7 @@ public class ImoController implements Initializable {
             registerPropertyController.setUserInputFX(userInputFX);
             registerPropertyController.setStage(stage);
             registerPropertyController.setProperty(tableViewProperty.getSelectionModel().getSelectedItem());
+            registerPropertyController.setImobily(imobily);
             stage.setScene(scene);
             stage.setTitle("Modify Property");
             stage.show();
@@ -413,6 +531,11 @@ public class ImoController implements Initializable {
         }
         updateSearch();
     }
+
+    /**
+     * Deleta propridade selecionada
+     * Associado a: Delete no menu Property(apenas para ADM1)
+     */
     @FXML
     private void deleteProperty(){
         Property property = tableViewProperty.getSelectionModel().getSelectedItem();
@@ -425,60 +548,112 @@ public class ImoController implements Initializable {
         }
         updateSearch();
     }
+
+    /**
+     * Cria tela e mostra de configuraçoes de tipo de propriedades
+     * Associado a: Types no menu Property
+     */
+    @FXML
+    private void typesScreen(){
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MainApp.class.getResource(MainApp.PROPERTY_TYPES_SCREEN_URI));
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+            PropertyTypesController propertyTypesController = loader.getController();
+            propertyTypesController.setUserInputFX(userInputFX);
+            propertyTypesController.setImobily(imobily);
+            stage.setScene(scene);
+            stage.setTitle("Modify Property");
+            stage.showAndWait();
+        } catch (IOException e) {
+            userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
+            e.printStackTrace();
+        }
+        loadPropertyTypes(imobily.getPropertyTypesFilter());
+    }
+
+    /**
+     * Muda senha do usuario atual
+     * Associado a: Change your password na aba Account
+     */
     @FXML
     private void changeYourPasswordButton(){
         try {
-            imobily.changePassword();
+            String oldPass = userInputFX.getPassword("Old Password");
+            String newPass = userInputFX.getPassword("Old Password");
+            imobily.changePassword(oldPass, newPass);
             reloadUserInfo();
         } catch (DataCannotBeAccessedException | UserInvalidPermissionException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
+    /**
+     * Muda nome completo do usuario atual
+     * Associado a: Change your full name na aba Account
+     */
     @FXML
     private void changeYourFullName(){
         try{
-            imobily.changeFullName();
+            String pass = userInputFX.getPassword("Password");
+            String fullName = userInputFX.getText("Full Name", imobily.getLoadedAccount().getFullName());
+            imobily.changeFullName(pass,fullName);
             reloadUserInfo();
         } catch (DataCannotBeAccessedException | UserInvalidPermissionException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
+    /**
+     * Muda nome formal do usuario atual
+     * Associado a: Change your formal name na aba Account
+     */
     @FXML
     private void changeYourFormalNameButton(){
         try{
-            imobily.changeFormalName();
+            String pass = userInputFX.getPassword("Password");
+            String first = userInputFX.getText("First Name", imobily.getLoadedAccount().getName());
+            String last = userInputFX.getText("Last Name", imobily.getLoadedAccount().getLastName());
+            imobily.changeFormalName(pass,first,last);
             reloadUserInfo();
         } catch (DataCannotBeAccessedException | UserInvalidPermissionException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
+    /**
+     * Deleta conta
+     * Associado a: Deleta account(ADM1)
+     */
     @FXML
     private void deleteAccountAction(){
         try {
-            imobily.deleteAccount();
+            String password = userInputFX.getPassword("ADM1 Password");
+            int[] cpf = userInputFX.getCPF("CPF to delete:");
+            imobily.deleteAccount(cpf, password);
         } catch (UserInvalidPermissionException | DataCannotBeAccessedException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
+    /**
+     * Muda senha
+     * Associado a: Deleta account(ADM1)
+     */
     @FXML
     private void changePasswordAction(){
         try {
-            imobily.changePasswordADM1();
-            reloadUserInfo();
-        } catch (UserInvalidPermissionException | DataCannotBeAccessedException e) {
-            userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
-        }
-    }
-    @FXML
-    private void changeCPFAction(){
-        try{
-            imobily.changeCpfADM1();
+            String password = userInputFX.getPassword("ADM1 Password");
+            int[] cpf = userInputFX.getCPF("CPF to delete:");
+            String newPassword = userInputFX.getPassword("New Password");
+            imobily.changePasswordADM1(password,cpf,newPassword);
             reloadUserInfo();
         } catch (UserInvalidPermissionException | DataCannotBeAccessedException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
 
+    /**
+     * recarrega informaçoes do usuario na aba Account
+     */
     public void reloadUserInfo(){
         this.labelAccountInfo.setText(imobily.getAccountInfo());
     }
@@ -486,6 +661,9 @@ public class ImoController implements Initializable {
 
     //aba Calendario
 
+    /**
+     * Configura combobox da aba calendar
+     */
     private void calendarComboBoxConfigure(){
         Callback<ListView<Integer>, ListCell<Integer>> cellFactory = new Callback<ListView<Integer>, ListCell<Integer>>() {
             @Override
@@ -513,6 +691,10 @@ public class ImoController implements Initializable {
         calendarComboBox.setValue(0);
     }
 
+    /**
+     * Atualiza lista de eventos da aba calendar
+     * @param scheduleEvents
+     */
     private void updateListViewCalendar(ArrayList<ScheduleEvent> scheduleEvents){
         dateColum.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getDay().toString()));
         startColumn.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getHoraryString()));
@@ -523,38 +705,60 @@ public class ImoController implements Initializable {
         this.eventDayTableView.refresh();
     }
 
-    private void selectDate(){
+    /**
+     * Atualiza lista de eventos da aba calendario para eventos do dia
+     */
+    private void selectDate() throws DataCannotBeAccessedException {
         ArrayList<ScheduleEvent> events = imobily.getPeriodEvents(calendarDatePicker.getValue(),1);
         updateListViewCalendar(events);
     }
 
-    private void updateCalendar7Days(){
+    /**
+     * Atualiza lista de eventos da aba calendario para eventos dos proximos 7 dias
+     */
+    private void updateCalendar7Days() throws DataCannotBeAccessedException {
         ArrayList<ScheduleEvent> events = imobily.getPeriodEvents(calendarDatePicker.getValue(),7);
         updateListViewCalendar(events);
     }
 
-    private void updateCalendar30Days(){
+    /**
+     * Atualiza lista de eventos da aba calendario para eventos dos proximos 30 dias
+     */
+    private void updateCalendar30Days() throws DataCannotBeAccessedException {
         ArrayList<ScheduleEvent> events = imobily.getPeriodEvents(calendarDatePicker.getValue(),30);
         updateListViewCalendar(events);
     }
 
 
+    /**
+     *  Ler combobox e descide o que mostrar na tableview de eventos de calendario
+     *  Associado a: combobox, datepicker, refreshButton e tecla do teclado F5
+     */
     @FXML
     private void selectionOptionsCalendar(){
-        switch (calendarComboBox.getSelectionModel().getSelectedItem()) {
-            case 0:
-                selectDate();
-                break;
-            case 1:
-                updateCalendar7Days();
-                break;
-            case 2:
-                updateCalendar30Days();
-                break;
+        try {
+            switch (calendarComboBox.getSelectionModel().getSelectedItem()) {
+                case 0:
+                    selectDate();
+                    break;
+                case 1:
+                    updateCalendar7Days();
+                    break;
+                case 2:
+                    updateCalendar30Days();
+                    break;
+            }
+        } catch (DataCannotBeAccessedException e) {
+            userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
 
     //   >>>   SALE   <<<
+
+    /**
+     * Cria nova Sale
+     * Associado a: botao sale em search
+     */
     @FXML
     private void saleButtonAction(){
         Property selectedProperty = tableViewProperty.getSelectionModel().getSelectedItem();
@@ -566,6 +770,10 @@ public class ImoController implements Initializable {
         loadUsers(imobily.getUsers());
     }
 
+    /**
+     * carrega sales na tableview de sales a parti do usuario selecionado
+     * Associado a: tableview de usuarios
+     */
     @FXML
     private void selectUser(){
         User selectedUser = userTableView.getSelectionModel().getSelectedItem();
@@ -573,6 +781,10 @@ public class ImoController implements Initializable {
             loadSales(imobily.getSales(selectedUser));
         }
     }
+    /**
+     * carrega subsales ou nao na tableview de subsales a parti da sale selecionado
+     * Associado a: tableview de sales
+     */
     @FXML
     private void selectSale(){
         Sale selectedSale = saleTableView.getSelectionModel().getSelectedItem();
@@ -582,6 +794,10 @@ public class ImoController implements Initializable {
             loadSubSales(null);
         }
     }
+    /**
+     * aprova sale selecionada
+     * associado a: approve button
+     */
     @FXML
     private void approveSaleAction(){
         Sale selectedSale = saleTableView.getSelectionModel().getSelectedItem();
@@ -604,6 +820,10 @@ public class ImoController implements Initializable {
             }
         }
     }
+    /**
+     * desaprova sale selecionada
+     * associado a: disapprove button
+     */
     @FXML
     private void disapproveSaleAction(){
         Sale selectedSale = saleTableView.getSelectionModel().getSelectedItem();
@@ -626,13 +846,17 @@ public class ImoController implements Initializable {
             }
         }
     }
+    /**
+     * finaliza sale selecionada
+     * associado a: finalize button
+     */
     @FXML
-    private void finalizerSaleAction(){
+    private void finalizeSaleAction(){
         Sale selectedSale = saleTableView.getSelectionModel().getSelectedItem();
         if(selectedSale != null){
             if(userInputFX.confirmationMessage("Do you want to finalize this purchase?","Do you want to disconfirm this purchase?" + "\n" + "After doing this you will not be able to recover the sale.")){
-                selectedSale.finalizer();
                 try {
+                    selectedSale.finalizer();
                     imobily.finalizeSale(selectedSale);
                 } catch (DataCannotBeAccessedException e) {
                     userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
@@ -640,6 +864,10 @@ public class ImoController implements Initializable {
             }
         }
     }
+    /**
+     * deleta sale selecionada
+     * associado a: delete button
+     */
     @FXML
     private void saleDelete(){
         Sale selectedSale = saleTableView.getSelectionModel().getSelectedItem();
@@ -650,5 +878,38 @@ public class ImoController implements Initializable {
                 userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
             }
         }
+    }
+    /**
+     * mosta relatorio de aprovados
+     */
+    @FXML
+    private void saleReportAproved(){
+        userInputFX.showRelatory(imobily.getAprovedReport());
+    }
+    /**
+     * mosta relatorio de depentes
+     */
+    @FXML
+    private void saleReportPending(){
+        userInputFX.showRelatory(imobily.getPeddingReport());
+    }
+    /**
+     * mosta relatorio de aprovados nos ultimos 30 dias
+     */
+    @FXML
+    private void saleReportAproved30Days(){
+        userInputFX.showRelatory(imobily.getAprovedReport(30));
+    }
+    /**
+     * mosta relatorio de pedentes nos ultimos 30 dias
+     */
+    @FXML
+    private void saleReportPending30Days(){
+        userInputFX.showRelatory(imobily.getPeddingReport(30));
+    }
+
+    @FXML
+    private void about(){
+        userInputFX.about();
     }
 }

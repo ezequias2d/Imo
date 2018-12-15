@@ -8,16 +8,19 @@ import elfoAPI.exception.user.UserIsRegistredException;
 
 import java.util.ArrayList;
 
+
+/**
+ * Repositorio de Usuarios
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.4
+ */
 public class UserRepository implements IRepositorio<User> {
     private static final String URI_DEPOT = "src/resources/depot/users.dat";
     private ArrayList<User> users;
     private Serializer serializer;
 
     /**
-     * @throws UserInvalidException
-     * @throws UserIsRegistredException
-     * @throws ClassNotFoundException
-     * @throws DataCannotBeAccessedException
+     * Contrutor do Repositorio
      */
     public UserRepository() throws DataCannotBeAccessedException {
         try {

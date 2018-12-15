@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox prefHeight="521.0" prefWidth="604.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imo.gui.controls.RegisterPropertyTypeController">
+   <children>
+      <VBox prefHeight="584.0" prefWidth="400.0" spacing="5.0">
+         <children>
+            <Label text="Name" />
+            <TextField fx:id="nameTextField" />
+            <Label text="Description" />
+            <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" spacing="4.0" />
+            <TextArea fx:id="descriptionTextArea" prefHeight="395.0" prefWidth="384.0" />
+            <HBox alignment="TOP_RIGHT" prefHeight="15.0" prefWidth="382.0" spacing="5.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#save" text="Save" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </VBox>
+      <Accordion nodeOrientation="LEFT_TO_RIGHT">
+         <panes>
+            <TitledPane alignment="CENTER_RIGHT" text="Area" textAlignment="RIGHT">
+               <content>
+                  <VBox spacing="8.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                        <TextField fx:id="areaMinTextField" text="-1" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                        <TextField fx:id="areaMaxTextField" text="-1" />
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane alignment="CENTER_RIGHT" text="Floors">
+               <content>
+                  <VBox spacing="8.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                        <TextField fx:id="floorsMinTextField" text="-1" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                        <TextField fx:id="floorsMaxTextField" text="-1" />
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane alignment="CENTER_RIGHT" text="Rooms">
+               <content>
+                  <Accordion>
+                     <padding>
+                        <Insets left="16.0" />
+                     </padding>
+                     <panes>
+                        <TitledPane alignment="CENTER" text="All">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="roomsMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="roomsMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Bedroom">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="bedroomMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="bedroomMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Living Room">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="livingroomMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="livingroomMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Dining Room">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="diningroomMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="diningroomMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Kitchen">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="kitchenMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="kitchenMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Closet">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="closetMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="closetMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Bathroom">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="bathroomMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="bathroomMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Garage">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="garageMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="garageMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Office">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="officeMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="officeMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Garden">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="gardenMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="gardenMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Balcony">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="balconyMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="balconyMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                        <TitledPane alignment="CENTER" text="Lobby">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                                    <TextField fx:id="lobbyMinTextField" text="-1" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                                    <TextField fx:id="lobbyMaxTextField" text="-1" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                     </panes>
+                  </Accordion>
+               </content>
+            </TitledPane>
+            <TitledPane alignment="CENTER_RIGHT" text="Buy Price">
+               <content>
+                  <VBox>
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                        <TextField fx:id="buyMinTextField" text="-1" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                        <TextField fx:id="buyMaxTextField" text="-1" />
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane alignment="CENTER_RIGHT" text="Rent Price">
+               <content>
+                  <VBox>
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum" />
+                        <TextField fx:id="rentMinTextField" text="-1" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Maximum" />
+                        <TextField fx:id="rentMaxTextField" text="-1" />
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+         </panes>
+      </Accordion>
+   </children>
+</HBox>

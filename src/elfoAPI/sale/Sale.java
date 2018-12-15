@@ -5,8 +5,9 @@ import elfoAPI.calendar.schedule.Schedule;
 import elfoAPI.calendar.schedule.ScheduleDay;
 import elfoAPI.calendar.schedule.ScheduleEvent;
 import elfoAPI.calendar.schedule.ScheduleRepository;
-import elfoAPI.data.IIdentifiable;
+import elfoAPI.data.IIdentificable;
 import elfoAPI.exception.calendar.EventInvalidException;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
 import elfoAPI.exception.sale.MonthsForRentOrFinanceInvalidException;
 import elfoAPI.exception.sale.SaleIsFinalizedException;
 import elfoAPI.users.User;
@@ -15,12 +16,15 @@ import elfoAPI.users.UserTools;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
+ * Representa uma venda/compra
+ *
  * @author Ezequias Moises dos Santos Silva
  * @version 0.1.15
  */
-public class Sale implements IIdentifiable, Serializable {
+public class Sale implements IIdentificable, Serializable {
 
     public static final int IN_CASH = 0;
     public static final int IN_FINANCE = 1;
@@ -43,9 +47,11 @@ public class Sale implements IIdentifiable, Serializable {
     private String buyer;
 
     /**
+     * Construtor usado geralmente para IN_CASH, pois nao define um dia de pagamento(payday)
      * @param buyer Buyer
      * @param method Payment method
      * @param product Product
+     * @param identity Identity
      */
     public Sale(User buyer,int method, ISellable product, String identity) {
         this.buyer = buyer.getIdentity();
@@ -57,6 +63,15 @@ public class Sale implements IIdentifiable, Serializable {
         this.identity = identity;
     }
 
+    /**
+     * Construtor usado geralmente para IN_RENT, IN_FINCANCE e variantes SIMPLE,
+     * pois define um dia de pagamento(payday)
+     * @param buyer Buyer
+     * @param method Payment method
+     * @param product Product
+     * @param identity Identity
+     * @param payday Pay day
+     */
     public Sale(User buyer, int method, ISellable product, String identity, int[] payday){
         this(buyer, method, product, identity);
         this.finalizer = false;
@@ -65,13 +80,17 @@ public class Sale implements IIdentifiable, Serializable {
     }
 
     /**
-     * @return Sale Code
+     * Pega identidade da Sale
+     * @return Identity
      */
     public String getIdentity(){
         return identity;
     }
 
-    public void finalizer(){
+    /**
+     * Finaliza Sale
+     */
+    public void finalizer() throws DataCannotBeAccessedException {
         try {
             if (getLate() != null && getLate().length > 0) {
                 //atrasado e finalizado
@@ -97,17 +116,36 @@ public class Sale implements IIdentifiable, Serializable {
         }
     }
 
+    /**
+     * Pega dia da compra
+     * @return Buy Day
+     */
     public int[] getBuyDay(){
         return buyDay;
     }
+
+    /**
+     * Pega dia de pagamento
+     * @return Pay Day
+     */
     public int[] getPayday(){
         return payday;
     }
 
+    /**
+     * Pega dia que foi pago
+     * @return Sale Day
+     */
     public int[] getSaleDay(){
         return saleDay;
     }
 
+
+    /**
+     * Pega Sale's no Status 'Pedente'
+     * @return
+     * @throws SaleIsFinalizedException
+     */
     public Sale[] getPedding() throws SaleIsFinalizedException {
         if(method != IN_RENT && method != IN_FINANCE){
             //nao tem subsales
@@ -122,6 +160,11 @@ public class Sale implements IIdentifiable, Serializable {
         return salesPedding.toArray(new Sale[salesPedding.size()]);
     }
 
+    /**
+     * Pega Sale's no Status 'Atrasado'
+     * @return
+     * @throws SaleIsFinalizedException
+     */
     public Sale[] getLate() throws SaleIsFinalizedException {
         if(method != IN_RENT && method != IN_FINANCE){
             //nao tem subsales
@@ -138,13 +181,24 @@ public class Sale implements IIdentifiable, Serializable {
         return late.toArray(new Sale[late.size()]);
     }
 
-
+    /**
+     * Pega dia do Schedule do Buyer(comprador)
+     * @param date Data
+     * @return ScheduleDay of Buyer
+     */
     private ScheduleDay getDay(int[] date){
-        Schedule schedule = ScheduleRepository.getInstance().get(buyer,date[2]);
-        return schedule.getDayOfDate(date[1], date[0]);
+        try {
+            Schedule schedule = ScheduleRepository.getInstance().get(buyer, date[2]);
+            return schedule.getDayOfDate(date[1], date[0]);
+        } catch (DataCannotBeAccessedException e) {
+            return null;
+        }
     }
 
-    private void unbrandSubsalesEvents(){
+    /**
+     * Desmarca eventos de pagamento de parcelas no calendario do Buyer
+     */
+    private void unbrandSubsalesEvents() throws DataCannotBeAccessedException {
         if(subSales != null){
             for(int i = 0; i < subSales.length; i++){
                 Sale subSale = subSales[i];
@@ -154,11 +208,21 @@ public class Sale implements IIdentifiable, Serializable {
         }
     }
 
+    /**
+     * Seta numero de parcelas(meses) para pagamento
+     * @param months Months
+     */
     private void setMonths(int months){
         this.months = months;
     }
 
-    public void setMonths(int months, int[] payday) throws EventInvalidException, MonthsForRentOrFinanceInvalidException {
+    /**
+     * Seta numero de parcelas(meses) para pagamento e
+     * marca no calendario do buyer eventos para pagar
+     * @param months Months
+     * @param payday Pay day
+     */
+    public void setMonths(int months, int[] payday) throws EventInvalidException, MonthsForRentOrFinanceInvalidException, DataCannotBeAccessedException {
         if(months <= 0){
             throw new MonthsForRentOrFinanceInvalidException();
         }
@@ -181,11 +245,15 @@ public class Sale implements IIdentifiable, Serializable {
         }
     }
 
-    public int getMonths(){
-        return months;
-    }
-
-    public boolean isAfter(int day, int month, int year){
+    /**
+     * Se esta depois do dia
+     *
+     * @param day Day
+     * @param month Month
+     * @param year Year
+     * @return if is after day
+     */
+    private boolean isAfter(int day, int month, int year){
         if(this.payday != null) {
             return this.getDay(payday).isAfter(day,month,year);
         }else if(this.saleDay != null){
@@ -195,7 +263,15 @@ public class Sale implements IIdentifiable, Serializable {
         }
     }
 
-    public boolean isBefore(int day, int month, int year){
+    /**
+     * Se esta antes do dia
+     *
+     * @param day Day
+     * @param month  Month
+     * @param year Year
+     * @return if is before day
+     */
+    private boolean isBefore(int day, int month, int year){
         if(this.payday != null) {
             return this.getDay(payday).isBefore(day,month,year);
         }else if(this.saleDay != null){
@@ -205,7 +281,15 @@ public class Sale implements IIdentifiable, Serializable {
         }
     }
 
-    public boolean isBeforeLastDay(int day, int month, int year){
+    /**
+     * Se o dia fornecido ja passou o ultimo dia marcado para
+     * pagamento em 30 dias
+     * @param day Day
+     * @param month Month
+     * @param year Year
+     * @return is before last day
+     */
+    private boolean isBeforeLastDay(int day, int month, int year){
         if(method != IN_RENT){
             return false;
         }
@@ -213,19 +297,36 @@ public class Sale implements IIdentifiable, Serializable {
         return this.getDay(date).isBefore(day,month,year);
     }
 
+    /**
+     * Se o dia fornecido ja passou o ultimo dia marcado para
+     * pagamento em 30 dias
+     * @param date Date
+     * @return is before last day
+     */
     private boolean isBeforeLastDay(int[] date){
         return isBeforeLastDay(date[0],date[1],date[2]);
     }
 
-    public boolean isAfter(int[] date){
+    /**
+     * Se esta depois
+     * @param date Data
+     * @return if after
+     */
+    boolean isAfter(int[] date){
         return isAfter(date[0],date[1],date[2]);
     }
-    public boolean isBefore(int[] date){
+    /**
+     * Se esta antes
+     * @param date Data
+     * @return if before
+     */
+    boolean isBefore(int[] date){
         return isBefore(date[0],date[1],date[2]);
     }
 
 
     /**
+     * Se esta aprovado
      * @return if aproved
      */
     public boolean isAproved() throws SaleIsFinalizedException {
@@ -245,7 +346,11 @@ public class Sale implements IIdentifiable, Serializable {
         return flag;
     }
 
-    public boolean isAprovedFinal(){
+    /**
+     * Se esta aprovado(sem verificaçao de finalizaçao)
+     * @return
+     */
+    boolean isAprovedFinal(){
         if(method == IN_CASH || method == SIMPLE_RENT || method == SIMPLE_FINANCE) {
             return aproved;
         }
@@ -260,6 +365,10 @@ public class Sale implements IIdentifiable, Serializable {
         return flag;
     }
 
+    /**
+     * Pega texto do tipo de Sale
+     * @return String of method
+     */
     public String getMethodText(){
         switch (method){
             case IN_CASH:
@@ -278,6 +387,7 @@ public class Sale implements IIdentifiable, Serializable {
     }
 
     /**
+     * Seta aprovaçao
      * @param bool Boolean
      */
     public void setAproved(boolean bool) throws SaleIsFinalizedException {
@@ -291,17 +401,26 @@ public class Sale implements IIdentifiable, Serializable {
         }
     }
 
+    /**
+     * Verifica se esta finalizado e lança exceçao
+     * @throws SaleIsFinalizedException Sale is Finalized Exception
+     */
     private void cheakFinalizer() throws SaleIsFinalizedException {
         if(finalizer){
             throw new SaleIsFinalizedException(this);
         }
     }
 
+    /**
+     * Pega vetor com as parcelas(subsales)
+     * @return SubSales
+     */
     public Sale[] getSubSales(){
         return subSales;
     }
 
     /**
+     * Pega preço
      * @return Price
      */
     public double getPrice(){
@@ -316,6 +435,10 @@ public class Sale implements IIdentifiable, Serializable {
         return price;
     }
 
+    /**
+     * Pega String com status com compra
+     * @return Status
+     */
     public String getStatus(){
         try {
             if(product == null){
@@ -344,31 +467,34 @@ public class Sale implements IIdentifiable, Serializable {
     }
 
     /**
+     * Verifica se e o cpf do comprador
      * @param cpf CPF
      * @return if Cpf buyer
      */
-    public boolean isCpfBuyer(int[] cpf){
+    boolean isCpfBuyer(int[] cpf){
         return buyer.equals(UserTools.convertCpfToString(cpf));
     }
 
     /**
-     * @return Product Code
+     * Pega identidade do produto
+     * @return Product Identity
      */
     public String getProductIdentity(){
-        return product.getIdentity();
+        return productCode;
     }
 
     /**
+     * Pega metodo
      * @return Method
      */
     public int getMethod(){
         return method;
     }
 
-    String getProductCode(){
-        return productCode;
-    }
-
+    /**
+     * Seta produto e verifica e seta a disponibilidade dele de acordo com a Sale.
+     * @param sellable Sellable
+     */
     void setProduct(ISellable sellable){
         this.product = sellable;
         if(method == IN_FINANCE || method == IN_RENT){
@@ -408,6 +534,23 @@ public class Sale implements IIdentifiable, Serializable {
             }
         }
         product.setAvaliable(avaliable);
+    }
+
+    @Override
+    public String toString(){
+        User buyerUser = UserController.getInstance().getUser(buyer);
+        String out = String.format("Buyer:%s - %s, Product Code:%s, Price:$%.2f, Aproved:",
+                buyerUser.getFormalName(), buyer,
+                productCode, getPrice());
+        out += aproved + ", BuyDay:" + CalendarTools.formatDate(buyDay);
+        if(payday != null){
+            out += ", PayDay:" + CalendarTools.formatDate(payday);
+        }
+        if(saleDay != null){
+            out += ", SaleDay:" + CalendarTools.formatDate(saleDay);
+        }
+        out += ", Sale CODE:" + identity;
+        return out;
     }
 
 }

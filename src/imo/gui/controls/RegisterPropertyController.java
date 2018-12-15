@@ -24,6 +24,11 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Controle da tela de registrador de Property
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.5
+ */
 public class RegisterPropertyController implements Initializable {
 
     @FXML
@@ -58,16 +63,28 @@ public class RegisterPropertyController implements Initializable {
 
     private Imobily imobily;
 
+    /**
+     * Inicializador da classe Initializable
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         rooms = new ArrayList<Room>();
         loadComboBoxPropertyType(propertyTypeComboBox);
     }
 
+    /**
+     * Seta UserInputFX
+     * @param userInputFX UserInputFX
+     */
     public void setUserInputFX(UserInputFX userInputFX){
         this.userInputFX = userInputFX;
+        userInputFX.onlyNumberTextField(floorsTextField,areaTextField,rentTextField,buyTextField);
     }
 
+    /**
+     * Seta propriedade para editar
+     * @param property
+     */
     public void setProperty(Property property){
         this.property = property;
         buyTextField.setText("" + property.getBuyPrice());
@@ -79,13 +96,27 @@ public class RegisterPropertyController implements Initializable {
         this.rooms.addAll(property.getRooms());
         loadRooms(rooms);
     }
+
+    /**
+     * Seta Stage do controle
+     * @param stage Stage
+     */
     public void setStage(Stage stage){
         this.stage = stage;
     }
 
+    /**
+     * Seta Imobily
+     * @param imobily Imobily
+     */
     public void setImobily(Imobily imobily){
         this.imobily = imobily;
     }
+
+    /**
+     * Evento do botao save
+     * Salva e fecha a propriedade
+     */
     @FXML
     private void save(){
         double buyPrice = getValueTextField(buyTextField);
@@ -101,22 +132,15 @@ public class RegisterPropertyController implements Initializable {
                 property.setPropertyType(propertyType);
                 property.setFloors(floors);
                 property.setAndress(andress);
-                property.replacingRooms(rooms);
+                property.setRooms(rooms);
                 property.setBuyPrice(buyPrice);
                 property.setRentPrice(rentPrice);
                 property.setTerrainArea(terrainArea);
+                imobily.updateProperty();
             }
             stage.close();
         } catch (ParameterOutOfTypeException | DataCannotBeAccessedException e) {
             userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
-        }
-    }
-    @FXML
-    private void removeRoom(){
-        if(userInputFX.confirmationMessage("Are you sure?","Are you sure? Delete Selection Room")){
-            rooms.remove(roomsTableView.getSelectionModel().getSelectedItem());
-            roomsTableView.setItems(FXCollections.observableArrayList(rooms));
-            loadRooms(rooms);
         }
     }
 
@@ -176,9 +200,14 @@ public class RegisterPropertyController implements Initializable {
         });
     }
 
+    /**
+     * Cria tela para configurar um Room
+     * @param room Room
+     * @return Se configurou
+     */
     private boolean configureRoom(Room room){
         HBox hBox = new HBox();
-        Dialog<Room> dialog = new Dialog<Room>();
+        Dialog<Boolean> dialog = new Dialog<Boolean>();
         Label typeLabel = new Label("Room Type");
         VBox vBox = new VBox();
         Label xLabel = new Label("X");
@@ -240,14 +269,17 @@ public class RegisterPropertyController implements Initializable {
                 }else{
                     room.setArea(area);
                 }
-                return room;
+                return true;
             }
-            return null;
+            return false;
         });
         dialog.showAndWait();
-        return dialog.getResult() != null;
+        return dialog.getResult();
     }
 
+    /**
+     * Evento do botao +, Cria novo room e configura
+     */
     @FXML
     private void createRoom(){
         Room room = new Room(Room.TYPE_NAME[0]);
@@ -257,6 +289,21 @@ public class RegisterPropertyController implements Initializable {
         }
     }
 
+    /**
+     * Evento do botao -, remove room selecionado
+     */
+    @FXML
+    private void removeRoom(){
+        if(userInputFX.confirmationMessage("Are you sure?","Are you sure? Delete Selection Room")){
+            rooms.remove(roomsTableView.getSelectionModel().getSelectedItem());
+            roomsTableView.setItems(FXCollections.observableArrayList(rooms));
+            loadRooms(rooms);
+        }
+    }
+
+    /**
+     * Evento do botao C, configura room selecionado
+     */
     @FXML
     private void configure(){
         Room selected = roomsTableView.getSelectionModel().getSelectedItem();
@@ -265,6 +312,11 @@ public class RegisterPropertyController implements Initializable {
         }
     }
 
+    /**
+     * Transforma conteudo de um textfield em double
+     * @param textField Textfield
+     * @return Double value
+     */
     private double getValueTextField(TextField textField){
         if(textField.getText().equals("")){
             return 0;
@@ -273,6 +325,10 @@ public class RegisterPropertyController implements Initializable {
         }
     }
 
+    /**
+     * Carrega combobox com tipos de rooms
+     * @param roomComboBox RoomComboBox
+     */
     private void loadComboBoxRoom(ComboBox<Integer> roomComboBox){
         Callback<ListView<Integer>, ListCell<Integer>> cellFactory = new Callback<ListView<Integer>, ListCell<Integer>>() {
             @Override
@@ -298,7 +354,12 @@ public class RegisterPropertyController implements Initializable {
         }
         roomComboBox.setItems(FXCollections.observableArrayList(arrayList));
     }
-    private void loadComboBoxPropertyType(ComboBox<PropertyType> roomComboBox){
+
+    /**
+     * Carrega combobox com Property types
+     * @param propertyComboBox
+     */
+    private void loadComboBoxPropertyType(ComboBox<PropertyType> propertyComboBox){
         Callback<ListView<PropertyType>, ListCell<PropertyType>> cellFactory = new Callback<ListView<PropertyType>, ListCell<PropertyType>>() {
             @Override
             public ListCell<PropertyType> call(ListView<PropertyType> l) {
@@ -315,10 +376,16 @@ public class RegisterPropertyController implements Initializable {
                 };
             }
         };
-        roomComboBox.setButtonCell(cellFactory.call(null));
-        roomComboBox.setCellFactory(cellFactory);
-        roomComboBox.setItems(FXCollections.observableArrayList(PropertyController.getInstance().getPropertiesTypes()));
+        propertyComboBox.setButtonCell(cellFactory.call(null));
+        propertyComboBox.setCellFactory(cellFactory);
+        propertyComboBox.setItems(FXCollections.observableArrayList(PropertyController.getInstance().getPropertiesTypes()));
+        propertyComboBox.setValue(propertyComboBox.getItems().get(0));
     }
+
+    /**
+     * carrega rooms no tableview de rooms
+     * @param rooms
+     */
     private void loadRooms(ArrayList<Room> rooms){
         areaColumn.setCellValueFactory((param) -> new SimpleStringProperty(String.valueOf(param.getValue().getArea())));
         typeColumn.setCellValueFactory((param) -> new SimpleStringProperty(param.getValue().getType()));

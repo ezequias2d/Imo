@@ -3,7 +3,6 @@ package elfoAPI.sale;
 import elfoAPI.data.IRepositorio;
 import elfoAPI.data.Serializer;
 import elfoAPI.exception.data.DataCannotBeAccessedException;
-import imo.property.Property;
 
 import java.io.IOException;
 
@@ -36,7 +35,7 @@ public class SaleRepository implements IRepositorio<Sale> {
 
     public void setSellableRepository(ISellableRepository sellableRepository){
         for(Sale sale: sales){
-            ISellable sellable = sellableRepository.get(sale.getProductCode());
+            ISellable sellable = sellableRepository.get(sale.getProductIdentity());
             sale.setProduct(sellable);
         }
     }
@@ -119,8 +118,6 @@ public class SaleRepository implements IRepositorio<Sale> {
 
     /**
      * Atualiza dados persistentes
-     * @throws IOException
-     * @throws DataCannotBeAccessedException
      */
     @Override
     public void update() throws DataCannotBeAccessedException {

@@ -2,11 +2,11 @@ package imo.property;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import elfoAPI.calendar.schedule.Schedule;
 import elfoAPI.calendar.schedule.ScheduleRepository;
-import elfoAPI.data.IIdentifiable;
+import elfoAPI.data.IIdentificable;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
 import elfoAPI.number.DeltaNumber;
 import elfoAPI.sale.ISellable;
 import imo.exception.ParameterOutOfTypeException;
@@ -15,12 +15,10 @@ import imo.exception.ParameterOutOfTypeException;
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
-public class Property implements Serializable, ISellable, IIdentifiable {
+public class Property implements Serializable, ISellable, IIdentificable {
 
     private final String identity;
     private double area;
-    private double width;
-    private double length;
     private ArrayList<Room> rooms;
     private int floors;
     private double buyPrice;
@@ -51,17 +49,26 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         this.andress = "";
     }
 
-    public Schedule getSchedule(){
+    /**
+     * Pega Schedule da propriedade
+     * @return Schedule of Property
+     */
+    public Schedule getSchedule() throws DataCannotBeAccessedException {
         return ScheduleRepository.getInstance().get(identity);
     }
 
+    /**
+     * Pega identidade
+     * @return Identity
+     */
     @Override
     public String getIdentity(){
         return this.identity;
     }
 
     /**
-     * @return ElfoNumber Area
+     * Pega area de todos os rooms juntos
+     * @return Rooms Area
      */
     public double getArea() {
         double area = 0;
@@ -70,15 +77,17 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         }
         return area;
     }
+
+    /**
+     * Pega area do terreno
+     * @return Terrain Area
+     */
     public double getTerrainArea(){
-        if(area != -1){
-            return area;
-        }else{
-            return width * length;
-        }
+        return area;
     }
 
     /**
+     * Pega numero de rooms
      * @return ElfoNumber Rooms
      */
     public int getNumberOfRooms() {
@@ -86,6 +95,7 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     }
 
     /**
+     * Pega numero de rooms de um tipo
      * @param type Type
      * @return ElfoNumber Rooms Type
      */
@@ -102,24 +112,31 @@ public class Property implements Serializable, ISellable, IIdentifiable {
 
 
     /**
-     * @return ElfoNumber Price
+     * Pega preço de compra
+     * @return buy price
      */
     public double getBuyPrice() {
         return buyPrice;
     }
 
+    /**
+     * Pega preço de aluguel
+     * @return Rent Price
+     */
     public double getRentPrice() {
         return rentPrice;
     }
 
     /**
-     * @return Name
+     * Pega endereço
+     * @return Andress
      */
     public String getAndress() {
         return andress;
     }
 
     /**
+     * Se esta disponivel
      * @return is Availability
      */
     @Override
@@ -136,19 +153,21 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     }
 
     /**
-     * Set Area
+     * Set Terrain Area
      * @param area Area
      */
     public void setTerrainArea(double area) throws ParameterOutOfTypeException {
         if(propertyType.isInArea(area)){
             this.area = area;
-            this.length = -1;
-            this.width = -1;
         }else{
             throw new ParameterOutOfTypeException("Area",propertyType.getArea());
         }
     }
 
+    /**
+     * Seta rooms
+     * @param rooms
+     */
     public void setRooms(ArrayList<Room> rooms) throws ParameterOutOfTypeException{
         ArrayList<Room> saveRooms = this.rooms;
         this.rooms = rooms;
@@ -167,44 +186,8 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     }
 
     /**
-     * Set Area
-     */
-    public void setTerrainArea(double lenght, double width) throws ParameterOutOfTypeException {
-        if(propertyType.isInArea(area)){
-            this.area = -1;
-            this.length = lenght;
-            this.width = width;
-        }else{
-            throw new ParameterOutOfTypeException("Area",propertyType.getArea());
-        }
-    }
-
-    /**
-     * Get Width
-     * @return Width
-     */
-    public double getWidth(){
-        return width;
-    }
-
-    /**
-     * Get Lenght
-     * @return Lenght
-     */
-    public double getLength(){
-        return length;
-    }
-
-    /**
-     * @return if it has square dimensions
-     */
-    public boolean isMeasured(){
-        return !(length == -1 && width == -1);
-    }
-
-    /**
-     * Set Price
-     * @param price ElfoNumber Price
+     * Set Rent Price
+     * @param price Price
      */
     public void setRentPrice(double price) throws ParameterOutOfTypeException {
         if(propertyType.isInRentPrice(price)){
@@ -214,6 +197,10 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         }
     }
 
+    /**
+     * Set Buy Price
+     * @param price Price
+     */
     public void setBuyPrice(double price) throws ParameterOutOfTypeException {
         if(propertyType.isInBuyPrice(price)){
             this.buyPrice = price;
@@ -223,13 +210,17 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     }
 
     /**
-     * Set Name
-     * @param andress Name
+     * Set Andress
+     * @param andress Andress
      */
     public void setAndress(String andress) {
         this.andress = andress;
     }
 
+    /**
+     * Seta numero de andares
+     * @param floors Floors
+     */
     public void setFloors(int floors) throws ParameterOutOfTypeException {
         this.floors = floors;
         if(propertyType.isInFloors(floors)){
@@ -240,33 +231,50 @@ public class Property implements Serializable, ISellable, IIdentifiable {
     }
 
     /**
+     * Se a area esta dentro do intervalo de deltaNumber
      * @param deltaNumber Limit(DeltaNumber)
      * @return if the area is in the area boundary
      */
     public boolean isInArea(DeltaNumber deltaNumber){
         return deltaNumber.isInDeltaNumber(area);
     }
+
     /**
+     * Se a Buy Price esta dentro do intervalo de deltaNumber
      * @param deltaNumber Limit(DeltaNumber)
      * @return if the price is in the price boundary
      */
-    public boolean isInPrice(DeltaNumber deltaNumber){
+    public boolean isInBuyPrice(DeltaNumber deltaNumber){
         return deltaNumber.isInDeltaNumber(buyPrice);
     }
+
     /**
+     * Se a Rent Price esta dentro do intervalo de deltaNumber
+     * @param deltaNumber Limit(DeltaNumber)
+     * @return if the price is in the price boundary
+     */
+    public boolean isInRentPrice(DeltaNumber deltaNumber){
+        return deltaNumber.isInDeltaNumber(rentPrice);
+    }
+
+    /**
+     * Se a Floors esta dentro do intervalo de deltaNumber
      * @param deltaNumber Limit(DeltaNumber)
      * @return if the price is in the price boundary
      */
     public boolean isInFloors(DeltaNumber deltaNumber){
         return deltaNumber.isInDeltaNumber(floors);
     }
+
     /**
+     * Se a Rooms esta dentro do intervalo de deltaNumber
      * @param deltaNumber Limit(DeltaNumber)
      * @return if the rooms is in the rooms boundary
      */
     public boolean isInNumberRooms(DeltaNumber deltaNumber){
         return deltaNumber.isInDeltaNumber(getNumberOfRooms());
     }
+
     /**
      * @param deltaNumber Limit(DeltaNumber)
      * @param type Type
@@ -276,58 +284,59 @@ public class Property implements Serializable, ISellable, IIdentifiable {
         return deltaNumber.isInDeltaNumber(getNumberOfRooms(type));
     }
 
-    public void replacingRooms(ArrayList<Room> rooms){
-        this.rooms.clear();
-        this.rooms.addAll(rooms);
-    }
+    /**
+     * Seta PropertyType
+     * @param propertyType
+     */
     public void setPropertyType(PropertyType propertyType){
         this.propertyType = propertyType;
     }
 
+    /**
+     * Pega rooms
+     * @return rooms
+     */
     public ArrayList<Room> getRooms(){
         return (ArrayList<Room>) rooms.clone();
     }
 
+    /**
+     * Pega nome do tipo de PropertyType
+     * @return PropertyType Name
+     */
     public String getPropertyTypeName(){
         return propertyType.getName();
     }
-    public String getPropertyTypeDescription(){
-        return propertyType.getDescription();
-    }
+
+    /**
+     * Pega PropertyType
+     * @return
+     */
     public PropertyType getPropertyType(){
         return propertyType;
     }
-    public DeltaNumber getPropertyTypeArea(){
-        return propertyType.getArea().getClone();
-    }
-    public DeltaNumber getPropertyTypeBuyPrice(){
-        return propertyType.getBuyPrice().getClone();
-    }
-    public DeltaNumber getPropertyTypeFloor(){
-        return propertyType.getFloor().getClone();
-    }
-    public DeltaNumber getPropertyTypeRentPrice(){
-        return propertyType.getRentPrice().getClone();
-    }
-    public DeltaNumber getPropertyRoom(String roomType){
-        return propertyType.getRoom(roomType).getClone();
-    }
 
+    /**
+     * Pega numero de andares
+     * @return Floors
+     */
     public int getFloors(){
         return floors;
     }
+
+    @Override
     public String toString(){
-        String out = this.getAndress();
-        out += String.format("\nFloors:%d" +
-                "\nArea:%.2f", floors, area);
-        if(this.isMeasured()){
-            out += String.format("\nWidth:%.2f\nLength:%.2f", this.getWidth(),this.getLength());
-        }
-        out += String.format("\nRooms:");
+        String out = "Andress: " + andress +
+        String.format("\nFloors:%d" +
+                "\nTerrain Area:%.2f" +
+                "\nRooms:", floors, area);
         for(String type : Room.TYPE_NAME){
             out += String.format("\n    %s - %d",type,this.getNumberOfRooms(type));
         }
-        out += String.format("\nRent Price:$%.2f\nBuy Price::$%.2f\n",rentPrice,buyPrice);
+        out += String.format("\n    Total area: %.2f", getArea()) +
+                String.format("\nRent Price:$%.2f\nBuy Price::$%.2f\n",rentPrice,buyPrice) +
+                "\n" + propertyType.getName() +
+                "\n" + propertyType.getDescription();
         return out;
     }
 }

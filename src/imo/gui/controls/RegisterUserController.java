@@ -17,6 +17,11 @@ import javafx.util.Callback;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controle da tela de registro de usuario
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.5
+ */
 public class RegisterUserController implements Initializable {
     @FXML
     private TextField fullNameTextField;
@@ -37,6 +42,10 @@ public class RegisterUserController implements Initializable {
 
     private Imobily imobily;
 
+    /**
+     * Inicializador da interface Initializable
+     * e carrega typeComboBox com tipos de usuario
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Callback<ListView<Integer>, ListCell<Integer>> cellFactory = new Callback<ListView<Integer>, ListCell<Integer>>() {
@@ -63,6 +72,10 @@ public class RegisterUserController implements Initializable {
         typeComboBox.setCellFactory(cellFactory);
         typeComboBox.setItems(FXCollections.observableArrayList(0,1,2));
     }
+
+    /**
+     * Evento do botao register
+     */
     @FXML
     private void register(){
         String fullName = fullNameTextField.getText();
@@ -70,7 +83,7 @@ public class RegisterUserController implements Initializable {
         String firstName = firstNameTextField.getText();
         String lastName = lastNameTextField.getText();
         String password = passwordSigInTextField.getText();
-        if(password.equals(userInput.getText("Confirm the Password"))){
+        if(password.equals(userInput.getPassword("Confirm the Password"))){
             try {
                 imobily.register(fullName,cpf,password,firstName,lastName, typeComboBox.getValue());
                 userInput.showMessage("User Registered", "Information from the user " + firstName + " " + lastName, "The user is registered!");
@@ -81,21 +94,37 @@ public class RegisterUserController implements Initializable {
         }
     }
 
+    /**
+     * Seta imobily
+     * @param imobily
+     */
     public void setImobily(Imobily imobily){
         this.imobily = imobily;
     }
 
+    /**
+     * Evento de atualizaçao dos nomes formais enquanto digita no TextField de full name
+     */
     @FXML
     private void updateFirstLastName(){
         firstNameTextField.setText(UserTools.getFirstName(fullNameTextField.getText()));
         lastNameTextField.setText(UserTools.getLastName(fullNameTextField.getText()));
     }
 
+    /**
+     * Seta Stage
+     * @param stage Stage
+     */
     public void setStage(Stage stage){
         this.stage = stage;
     }
-    public void setUserInput(UserInputFX userInput){
-        this.userInput = userInput;
-        userInput.cpfTextField(cpfTextField);
+
+    /**
+     * Seta userInputFX
+     * @param userInputFX UserInputFX
+     */
+    public void setUserInputFX(UserInputFX userInputFX){
+        this.userInput = userInputFX;
+        userInputFX.cpfTextField(cpfTextField);
     }
 }

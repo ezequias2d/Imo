@@ -1,6 +1,8 @@
 package elfoAPI.calendar.schedule;
 
 import elfoAPI.calendar.CalendarTools;
+import elfoAPI.data.Serializer;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,18 +13,27 @@ import java.util.Map;
  * @version 0.1.27
  */
 public class ScheduleRepository implements IScheduleRepository{
-    public static final String URI_DEPOT = "src/resources/depot/calendars.dat";
+    public static final String URI = "src/resources/depot/calendars.dat";
     private static ScheduleRepository scheduleRepository;
 
     private ArrayList<Schedule> schedules;
-    private Map<Integer, ArrayList<Schedule>> schedulePerYears;
+    private HashMap<Integer, ArrayList<Schedule>> schedulePerYears;
+    private Serializer serializer;
+
 
     /**
      * Constructor of ScheduleRepository
      */
-    private ScheduleRepository(){
-        this.schedules = new ArrayList<Schedule>();
-        this.schedulePerYears = new HashMap<Integer, ArrayList<Schedule>>();
+    private ScheduleRepository() throws DataCannotBeAccessedException {
+
+        this.serializer = Serializer.getInstance();
+        try {
+            this.schedulePerYears = (HashMap<Integer, ArrayList<Schedule>>) serializer.open(URI);
+            updateSchedulesForTheYear(CalendarTools.getCurrentYear());
+        } catch (DataCannotBeAccessedException e) {
+            this.schedulePerYears = new HashMap<Integer, ArrayList<Schedule>>();
+            update();
+        }
     }
 
     /**
@@ -41,7 +52,12 @@ public class ScheduleRepository implements IScheduleRepository{
      */
     public static ScheduleRepository getInstance(){
         if(scheduleRepository == null){
-            scheduleRepository = new ScheduleRepository();
+            try {
+                scheduleRepository = new ScheduleRepository();
+            } catch (DataCannotBeAccessedException e) {
+                //nao faz sentido continuar
+                System.exit(125);
+            }
         }
         return scheduleRepository;
     }
@@ -55,7 +71,7 @@ public class ScheduleRepository implements IScheduleRepository{
      * @return Schedule
      */
     @Override
-    public Schedule get(String identify, int year){
+    public Schedule get(String identify, int year) throws DataCannotBeAccessedException {
         updateSchedulesForTheYear(year);
         int index = -1;
         for(int i = 0; i < schedules.size(); i++){
@@ -69,22 +85,28 @@ public class ScheduleRepository implements IScheduleRepository{
         }else{
             Schedule schedule = new Schedule(year,identify);
             schedules.add(schedule);
+            update();
             return schedule;
         }
     }
 
     @Override
-    public boolean remove(Schedule object) {
-        return schedules.remove(object);
+    public boolean remove(Schedule object) throws DataCannotBeAccessedException {
+        boolean out = schedules.remove(object);
+        update();
+        return out;
     }
     @Override
-    public Schedule get(String indent) {
-        return get(indent,CalendarTools.getCurrentYear());
+    public Schedule get(String identity) throws DataCannotBeAccessedException {
+        return get(identity,CalendarTools.getCurrentYear());
     }
     @Override
     public int get(Schedule object) {
         return schedules.indexOf(object);
     }
 
-
+    @Override
+    public void update() throws DataCannotBeAccessedException {
+        serializer.save(URI, schedulePerYears);
+    }
 }

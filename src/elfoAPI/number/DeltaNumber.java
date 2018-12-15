@@ -3,8 +3,11 @@ package elfoAPI.number;
 import java.io.Serializable;
 
 /**
+ * Represneta uma variaçao de numeros
+ * Exemplo:
+ *      DeltaNumber(1, 5) representa o intervalo de 1 ate 5
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.0.14
  */
 public class DeltaNumber implements Serializable, Cloneable {
     private final int deltaNull;

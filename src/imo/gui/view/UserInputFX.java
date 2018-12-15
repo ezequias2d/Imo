@@ -1,6 +1,7 @@
 package imo.gui.view;
 
 import elfoAPI.calendar.CalendarTools;
+import elfoAPI.exception.ElfoException;
 import elfoAPI.exception.calendar.EventInvalidException;
 import elfoAPI.exception.calendar.HourNotExistException;
 import elfoAPI.exception.calendar.InvalidCalendarDateException;
@@ -11,6 +12,7 @@ import elfoAPI.sale.Sale;
 import elfoAPI.users.UserTools;
 import imo.exception.EventNotBrandException;
 import imo.Imobily;
+import imo.exception.PropertyIsUnavailable;
 import imo.property.Property;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,6 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -28,21 +31,18 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
+/**
+ * GUI com usuario usando JavaFX
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.7
+ */
 public class UserInputFX {
 
-    private TextField inputText;
-
-    private PasswordField inputPassword;
-
-    private Stage mainStage;
-
-    private final StringProperty out;
-
-    public UserInputFX() {
-        out = new SimpleStringProperty();
-    }
-
-
+    /**
+     * Cria janela pedindo senha
+     * @param mensager Mensagem
+     * @return Senha
+     */
     public String getPassword(String mensager) {
         HBox hBox = new HBox();
         Dialog<String> dialog = new Dialog<String>();
@@ -71,13 +71,21 @@ public class UserInputFX {
         return dialog.getResult();
     }
 
-
+    /**
+     * Cria janela pedindo um texto
+     * @param mensager Mensagem
+     * @return Texto
+     */
     public String getText(String mensager) {
         return getText(mensager,"");
     }
 
-
-
+    /**
+     * Cria janela pedindo um texto e preenche o textField com o content
+     * @param mensager Mensagem
+     * @param content Conteudo
+     * @return Texto
+     */
     public String getText(String mensager, String content) {
         HBox hBox = new HBox();
         Dialog<String> dialog = new Dialog<String>();
@@ -108,6 +116,11 @@ public class UserInputFX {
     }
 
 
+    /**
+     * Cria janela pedindo um CPF
+     * @param mensager Mensagem
+     * @return CPF
+     */
     public int[] getCPF(String mensager) {
         HBox hBox = new HBox();
         Dialog<String> dialog = new Dialog<String>();
@@ -137,6 +150,13 @@ public class UserInputFX {
     }
 
 
+    /**
+     * Mosta mensagem de alerta
+     * @param title Titulo
+     * @param header Corpo
+     * @param content Conteudo
+     * @return Texto
+     */
     public void showMessage(String title, String header, String content){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -145,7 +165,12 @@ public class UserInputFX {
         alert.showAndWait();
     }
 
-
+    /**
+     * Mostra mensagem pedindo confimaçao de açao
+     * @param title Titulo
+     * @param content Conteudo
+     * @return Se aceito
+     */
     public boolean confirmationMessage(String title, String content){
         Dialog<Boolean> dialog = new Dialog<Boolean>();
         dialog.setContentText(content);
@@ -162,38 +187,11 @@ public class UserInputFX {
         return dialog.getResult();
     }
 
-
-    public double getNumber(String mensager, double content) {
-        HBox hBox = new HBox();
-        Dialog<Double> dialog = new Dialog<Double>();
-        TextField textField = new TextField();
-        ButtonType passButton = new ButtonType("Ok!", ButtonBar.ButtonData.OK_DONE);
-
-        dialog.setContentText(mensager);
-        dialog.setTitle(mensager);
-        dialog.getDialogPane().getButtonTypes().addAll(passButton, ButtonType.CANCEL);
-
-        textField.setPromptText(mensager);
-        textField.setText("" + content);
-        onlyNumberTextField(textField);
-
-        hBox.getChildren().add(textField);
-        hBox.setPadding(new Insets(16));
-        HBox.setHgrow(textField, Priority.ALWAYS);
-
-        dialog.getDialogPane().setContent(hBox);
-        Platform.runLater(textField::requestFocus);
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton.equals(passButton)) {
-                return Double.valueOf(textField.getText());
-            }
-            return null;
-        });
-        dialog.showAndWait();
-        return dialog.getResult();
-    }
-
-
+    /**
+     * Cria janela para marca evento
+     * @param imobily Imobily
+     * @param property Propriedade
+     */
     public void brandEvent(Imobily imobily, Property property){
         VBox vBox = new VBox();
         Dialog<Boolean> dialog = new Dialog<Boolean>();
@@ -229,7 +227,7 @@ public class UserInputFX {
                 try {
                     imobily.eventBrand(property,date.getValue(),hour.getText());
                     return true;
-                } catch (HourNotExistException | EventInvalidException | EventNotBrandException e) {
+                } catch (ElfoException e) {
                     showMessage(e.getClass().getSimpleName(),e.getClass().getSimpleName(),e.getMessage());
                 }
             }
@@ -238,6 +236,11 @@ public class UserInputFX {
         dialog.showAndWait();
     }
 
+    /**
+     * Cria janela para fazer uma Sale
+     * @param imobily Imobily
+     * @param property Property
+     */
     public void sale(Imobily imobily, Property property){
         VBox vBox = new VBox();
         Dialog<Boolean> dialog = new Dialog<Boolean>();
@@ -280,7 +283,13 @@ public class UserInputFX {
         dialog.showAndWait();
     }
 
-    private void saleRentOrFinance(Imobily imobily, Property property, int type){
+    /**
+     * Cria janela para escolher tempo de alugel ou finança
+     * @param imobily Imobily
+     * @param property Property
+     * @param method Method
+     */
+    private void saleRentOrFinance(Imobily imobily, Property property, int method){
         VBox vBox = new VBox();
         Dialog<Boolean> dialog = new Dialog<Boolean>();
 
@@ -294,8 +303,8 @@ public class UserInputFX {
 
         datePicker.setValue(LocalDate.now());
 
-        dialog.setContentText("Sale - " + Sale.METHODS[type]);
-        dialog.setTitle("Sale - " + Sale.METHODS[type]);
+        dialog.setContentText("Sale - " + Sale.METHODS[method]);
+        dialog.setTitle("Sale - " + Sale.METHODS[method]);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.FINISH, ButtonType.CANCEL);
 
         vBox.setSpacing(8);
@@ -313,8 +322,8 @@ public class UserInputFX {
                 int months = Integer.valueOf(monthsTextField.getText());
                 int[] payday = CalendarTools.convertToDate(datePicker.getValue());
                 try {
-                    imobily.newSale(property,type,months,payday);
-                } catch (ProductNotAvaliableException | DataCannotBeAccessedException | EventInvalidException | MonthsForRentOrFinanceInvalidException | InvalidCalendarDateException e) {
+                    imobily.newSale(property,method,months,payday);
+                } catch (ElfoException e) {
                     showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
                 }
             }
@@ -323,6 +332,10 @@ public class UserInputFX {
         dialog.showAndWait();
     }
 
+    /**
+     * Aplica evento a alteraçao de texto de um TextField para aceitar apenas caracteres compativeis com Double
+     * @param textFields TextFields
+     */
     public void onlyNumberTextField(TextField... textFields){
         for(TextField textField : textFields) {
             textField.textProperty().addListener(new ChangeListener<String>() {
@@ -344,6 +357,10 @@ public class UserInputFX {
         }
     }
 
+    /**
+     * Aplica evento a alteraçao de texto de um TextField para aceitar apenas CPF
+     * @param textFields TextFields
+     */
     public void cpfTextField(TextField... textFields){
         for(TextField textField : textFields) {
             textField.textProperty().addListener(new ChangeListener<String>() {
@@ -374,5 +391,68 @@ public class UserInputFX {
                 }
             });
         }
+    }
+
+    /**
+     * Cria janela de TextArea preencido com o relatorio
+     * @param mensager Mensagem
+     */
+    public void showRelatory(String mensager) {
+        AnchorPane anchorPane = new AnchorPane();
+
+        Dialog<String> dialog = new Dialog<String>();
+        TextArea textArea = new TextArea();
+
+        dialog.setContentText("Relatory");
+        dialog.setTitle("Relatory");
+        dialog.setWidth(800);
+        dialog.setHeight(600);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+
+        textArea.setPromptText(mensager);
+        textArea.setText(mensager);
+
+        anchorPane.getChildren().add(textArea);
+        AnchorPane.setBottomAnchor(textArea, 0.0);
+        AnchorPane.setLeftAnchor(textArea, 0.0);
+        AnchorPane.setRightAnchor(textArea, 0.0);
+        AnchorPane.setTopAnchor(textArea, 0.0);
+
+        dialog.getDialogPane().setContent(anchorPane);
+        Platform.runLater(textArea::requestFocus);
+        dialog.showAndWait();
+    }
+
+    public void about(){
+        AnchorPane anchorPane = new AnchorPane();
+
+        Dialog<String> dialog = new Dialog<String>();
+        Label label = new Label();
+
+        dialog.setContentText("About");
+        dialog.setTitle("About");
+        dialog.setWidth(400);
+        dialog.setHeight(500);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+
+        String aboutText = "Imo Projet 1.0.2" +
+                "\nAlunos:" +
+                "\n     Ezequias Moises dos Santos Silva" +
+                "\n     Jose Romulo Pereira" +
+                "\nDisciplina: POO" +
+                "\nProfesora: Thaís Alves Burity Rocha"+
+                "\nSemetre: 2018.2";
+        label.setText(aboutText);
+        label.setWrapText(true);
+
+        anchorPane.getChildren().add(label);
+        AnchorPane.setBottomAnchor(label, 16.0);
+        AnchorPane.setLeftAnchor(label, 16.0);
+        AnchorPane.setRightAnchor(label, 16.0);
+        AnchorPane.setTopAnchor(label, 16.0);
+
+        dialog.getDialogPane().setContent(anchorPane);
+        Platform.runLater(label::requestFocus);
+        dialog.showAndWait();
     }
 }

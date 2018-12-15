@@ -80,7 +80,7 @@ public class PropertyController {
         return property;
     }
 
-    public PropertyType[] getPropertiesTypes(){
+    public PropertyType[] getPropertiesTypesFilter(){
         ArrayList<PropertyType> propertiesTypes = new ArrayList<PropertyType>();
         propertiesTypes.add(propertyTypeGeneric);
         for(PropertyType propertyType : propertyTypeRepository.toArray()){
@@ -88,23 +88,28 @@ public class PropertyController {
         }
         return propertiesTypes.toArray(new PropertyType[propertiesTypes.size()]);
     }
+    public PropertyType[] getPropertiesTypes(){
+        return propertyTypeRepository.toArray();
+    }
 
     /**
-     * @param moneyLimit MoneyLimit
+     * Filtra propriedades do repositorio por preoço, disponibilidade, area, andares, numero de quartos total e tipos
+     * @param buyLimit BuyLimit
+     * @param rentLimit RentLimit
      * @param areaLimit AreaLimit
      * @param floorsLimit FloorsLimit
      * @param roomsLimit RoomsLimit
      * @return Filtered Properties
      */
-    public ArrayList<Property> filterProperties(DeltaNumber moneyLimit, DeltaNumber areaLimit, DeltaNumber floorsLimit, DeltaNumber roomsLimit, PropertyType... propertyTypes){
+    public ArrayList<Property> filterProperties(boolean seeUnvaliable,DeltaNumber buyLimit, DeltaNumber rentLimit, DeltaNumber areaLimit, DeltaNumber floorsLimit, DeltaNumber roomsLimit, PropertyType... propertyTypes){
         ArrayList<Property> propertiesOut = new ArrayList<Property>();
         for (Property property: propertyRepository.toArray()) {
-            if(property.isInPrice(moneyLimit) &&
+            if(property.isInBuyPrice(buyLimit) &&
+                    property.isInRentPrice(rentLimit) &&
                     property.isInArea(areaLimit) &&
                     property.isInNumberRooms(roomsLimit) &&
-                    property.isAvaliable() &&
                     property.isInFloors(floorsLimit) &&
-                    property.isAvaliable() &&
+                    (property.isAvaliable() || seeUnvaliable) &&
                     isInArrayPropertyType(property,propertyTypes)){
                 propertiesOut.add(property);
             }
@@ -112,28 +117,10 @@ public class PropertyController {
         return propertiesOut;
     }
 
-    public void delete(Property property) throws DataCannotBeAccessedException {
-        propertyRepository.remove(property);
-    }
-
-    public void update() throws DataCannotBeAccessedException {
-        propertyRepository.update();
-    }
-
-    private boolean isInArrayPropertyType(Property property, PropertyType[] propertyTypes){
-        if(propertyTypes.length == 0){
-            return true;
-        }
-        for(PropertyType propertyType : propertyTypes){
-            if(propertyType.getName().equals(property.getPropertyTypeName()) || propertyType == propertyTypeGeneric){
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
+     * Filta lista fornecida de Propriedades por DeltaNumber de um tipo de Room
      * @param roomType Room Type
+     * @param properties
      * @param limitRoomType LimitRoom of Type
      * @return Filtered Properties
      */
@@ -145,6 +132,63 @@ public class PropertyController {
             }
         }
         return propertiesOut;
+    }
+
+
+    /**
+     * Delete property
+     * @param property Property
+     */
+    public void delete(Property property) throws DataCannotBeAccessedException {
+        propertyRepository.remove(property);
+    }
+
+    /**
+     * Delete property type
+     * @param propertyType PropertyType
+     */
+    public void deletePropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
+        propertyTypeRepository.remove(propertyType);
+        for(Property property : propertyRepository.toArray()){
+            if(property.getPropertyType().equals(propertyType)){
+                propertyRepository.remove(property);
+            }
+        }
+    }
+
+    /**
+     * Add PropertyType
+     * @param propertyType PropertyType
+     * @throws DataCannotBeAccessedException
+     */
+    public void addPropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
+        propertyTypeRepository.add(propertyType);
+    }
+
+    /**
+     * Update repository
+     */
+    public void update() throws DataCannotBeAccessedException {
+        propertyRepository.update();
+        propertyTypeRepository.update();
+    }
+
+    /**
+     * Se a propridade tem o tipo dos tipos fonecidos
+     * @param property Property
+     * @param propertyTypes PropertyType's
+     * @return if is in Array PropertyType
+     */
+    private boolean isInArrayPropertyType(Property property, PropertyType[] propertyTypes){
+        if(propertyTypes.length == 0){
+            return true;
+        }
+        for(PropertyType propertyType : propertyTypes){
+            if(propertyType != null && propertyType.getName().equals(property.getPropertyTypeName()) || propertyType == propertyTypeGeneric){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

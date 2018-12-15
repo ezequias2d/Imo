@@ -1,6 +1,6 @@
 package imo.property;
 
-import elfoAPI.data.IIdentifiable;
+import elfoAPI.data.IIdentificable;
 import elfoAPI.number.DeltaNumber;
 
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.2
  */
-public class PropertyType implements Serializable, IIdentifiable {
+public class PropertyType implements Serializable, IIdentificable {
     private String name;
     private String description;
     private DeltaNumber floor;
@@ -22,7 +22,7 @@ public class PropertyType implements Serializable, IIdentifiable {
     private DeltaNumber rooms;
 
 
-    PropertyType(String name, String description){
+    public PropertyType(String name, String description){
         this.name = name;
         this.description = description;
         this.floor = new DeltaNumber();
@@ -121,8 +121,22 @@ public class PropertyType implements Serializable, IIdentifiable {
         return name;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setDescription(String description){
+        this.description = description;
+    }
     @Override
     public String getIdentity() {
         return name;
+    }
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof PropertyType){
+            PropertyType propertyType = (PropertyType) object;
+            return propertyType.getIdentity().equals(name);
+        }
+        return false;
     }
 }

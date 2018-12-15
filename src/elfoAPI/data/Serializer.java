@@ -4,13 +4,21 @@ import elfoAPI.exception.data.DataCannotBeAccessedException;
 
 import java.io.*;
 
+/**
+ * Serializador de objetos
+ */
 public class Serializer{
 
     private static Serializer serializerInstance;
 
     private Serializer(){
+
     }
 
+    /**
+     * Pega instancia
+     * @return Intancia
+     */
     public static Serializer getInstance(){
         if(serializerInstance == null){
             serializerInstance = new Serializer();
@@ -19,6 +27,11 @@ public class Serializer{
     }
 
 
+    /**
+     * Abre arquivo e retorna objeto
+     * @param uri URI
+     * @return  Object of URI
+     */
     public Object open(String uri) throws DataCannotBeAccessedException {
         //tenta abrir arquivo
         try {
@@ -33,6 +46,11 @@ public class Serializer{
         }
     }
 
+    /**
+     * Salva um objeto em um URI
+     * @param uri URI
+     * @param meta Objeto
+     */
     public void save(String uri, Serializable meta) throws DataCannotBeAccessedException {
         FileOutputStream fileOutput = null;
         ObjectOutputStream outputStream = null;

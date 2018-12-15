@@ -2,7 +2,7 @@ package elfoAPI.calendar.schedule;
 
 import elfoAPI.calendar.CalendarTools;
 import elfoAPI.calendar.Day;
-import elfoAPI.data.IIdentifiable;
+import elfoAPI.data.IIdentificable;
 import elfoAPI.exception.calendar.HourNotExistException;
 
 import java.io.Serializable;
@@ -10,9 +10,9 @@ import java.io.Serializable;
 /**
  * Representa um evento do Schedule
  * @author Ezequias Moises dos Santos Silva
- * @version 0.1.15
+ * @version 0.1.18
  */
-public class ScheduleEvent implements IIdentifiable, Serializable {
+public class ScheduleEvent implements IIdentificable, Serializable {
     private int hour;
     private int minutes;
     private DeltaTime time;
@@ -92,7 +92,7 @@ public class ScheduleEvent implements IIdentifiable, Serializable {
     }
 
     /**
-     * Retorna dia mascado com esse evento
+     * Retorna o dia mascado com esse evento
      * @return
      */
     public Day getDay(){
@@ -100,6 +100,7 @@ public class ScheduleEvent implements IIdentifiable, Serializable {
     }
 
     /**
+     * Verifica se uma hora espeficifica na forma 'absoluta' esta dentro desse evento
      * @param absoluteTime Absolute Time
      * @return returns true if the given time is between the event
      */
@@ -109,6 +110,7 @@ public class ScheduleEvent implements IIdentifiable, Serializable {
     }
 
     /**
+     * Pega tempo de inicio abosluto
      * @return returns the absolute time of the start of the event in hours
      */
     public double getAbsoluteTime(){
@@ -118,6 +120,8 @@ public class ScheduleEvent implements IIdentifiable, Serializable {
     }
 
     /**
+     * Pega tempo do final absoluto
+     * (final no sentido do horario que termina o evento)
      * @return returns the absolute time of the end of the event in hours
      */
     public double getFinalAbsoluteTime(){
@@ -174,33 +178,6 @@ public class ScheduleEvent implements IIdentifiable, Serializable {
     public String getText(){
         return text;
     }
-
-    /**
-     * Pega parte de "horas" do fim do horario do evento
-     * @return End hour
-     */
-    public int getEndHour(){
-        return endHour;
-    }
-
-    /**
-     * Pega parte de "minutos" do fim do horario do evento
-     * @return End minutes
-     */
-    public int getEndMinutes(){
-        return endMinutes;
-    }
-
-//    @Override
-//    public String toString(){
-//        return CalendarTools.formatOfTime(hour,minutes) +
-//                " ---" +
-//                CalendarTools.formatOfTime(time.getDeltaHours(),time.getDeltaMinutes()) +
-//                "---> " +
-//                CalendarTools.formatOfTime(endHour,endMinutes) +
-//                " | " + text +
-//                String.format("\n");
-//    }
 
     @Override
     public String getIdentity() {

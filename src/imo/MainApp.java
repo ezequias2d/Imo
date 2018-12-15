@@ -1,5 +1,6 @@
 package imo;
 
+import elfoAPI.exception.data.DataCannotBeAccessedException;
 import imo.gui.controls.ImoController;
 import imo.gui.controls.LoginScreenController;
 import imo.gui.view.UserInputFX;
@@ -15,7 +16,9 @@ public class MainApp extends Application {
     private static final String LOGIN_SCREEN_URI = "gui/view/LoginScreen.fxml";
     private static final String IMO_SCREEN_URI = "gui/view/ImoScreen.fxml";
     public static final String REGISTER_PROPERTY_SCREEN_URI = "gui/view/RegisterPropertyScreen.fxml";
+    public static final String REGISTER_PROPERTY_TYPE_SCREEN_URI = "gui/view/RegisterPropertyTypeScreen.fxml";
     public static final String REGISTER_USER_SCREEN_URI = "gui/view/RegisterUserScreen.fxml";
+    public static final String PROPERTY_TYPES_SCREEN_URI = "gui/view/PropertyTypesScreen.fxml";
 
     private Stage loginStage;
     private Stage imo;
@@ -40,7 +43,7 @@ public class MainApp extends Application {
     public void initRootLayout(){
         try{
             userInputFX = new UserInputFX();
-            imobily = new Imobily(userInputFX);
+            imobily = new Imobily();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource(LOGIN_SCREEN_URI));
             rootLayout = loader.load();
@@ -51,8 +54,8 @@ public class MainApp extends Application {
             Scene scene = new Scene(rootLayout);
             loginStage.setScene(scene);
             loginStage.show();
-        }catch (IOException e){
-            e.printStackTrace();
+        }catch (IOException | DataCannotBeAccessedException e){
+            userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
         }
     }
 

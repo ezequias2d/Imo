@@ -1,16 +1,15 @@
 package elfoAPI.calendar.schedule;
 
-import elfoAPI.calendar.CalendarTools;
 import elfoAPI.calendar.Day;
-import elfoAPI.data.IIdentifiable;
 import elfoAPI.exception.calendar.EventInvalidException;
 import elfoAPI.exception.calendar.HourNotExistException;
+import elfoAPI.exception.data.DataCannotBeAccessedException;
 
 import java.util.ArrayList;
 
 /**
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.13
+ * @version 0.1.18
  */
 public class ScheduleDay extends Day {
     private ArrayList<ScheduleEvent> events;
@@ -57,12 +56,18 @@ public class ScheduleDay extends Day {
      * @param minutes Minutes
      * @param time variation of time
      */
-    public void addEvents(String text,int hour, int minutes, DeltaTime time) throws EventInvalidException, HourNotExistException {
+    public void addEvents(String text,int hour, int minutes, DeltaTime time) throws EventInvalidException, HourNotExistException, DataCannotBeAccessedException {
         ScheduleEvent scheduleEvent = new ScheduleEvent(text,hour,minutes,time, this);
         addEvents(scheduleEvent);
+        ScheduleRepository.getInstance().update();
     }
 
-    public void deleteEvent(String identity){
+    /**
+     * Deleta um evento por identificador
+     * @param identity Identificador
+     * @throws DataCannotBeAccessedException
+     */
+    public void deleteEvent(String identity) throws DataCannotBeAccessedException {
         ArrayList<ScheduleEvent> eventsToRemove = new ArrayList<>();
         for(ScheduleEvent scheduleEvent : events){
             if(scheduleEvent.getIdentity().equals(identity)){
@@ -70,15 +75,17 @@ public class ScheduleDay extends Day {
             }
         }
         events.removeAll(eventsToRemove);
+        ScheduleRepository.getInstance().update();
     }
 
     /**
      * Add event
      * @param scheduleEvent Event
      */
-    public void addEvents(ScheduleEvent scheduleEvent) throws EventInvalidException{
+    public void addEvents(ScheduleEvent scheduleEvent) throws EventInvalidException, DataCannotBeAccessedException {
         if(isDisponible(scheduleEvent)){
             events.add(scheduleEvent);
+            ScheduleRepository.getInstance().update();
             return;
         }
         throw new EventInvalidException("Event '" + scheduleEvent.getText() + "' not possible");

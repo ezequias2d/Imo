@@ -1,13 +1,17 @@
 package elfoAPI.calendar;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 /**
+ * Representa um calendario, podendo ser contruido com qualquer
+ * classe compativel com Day, como uma herança de Day e o proprio
+ * Day.
+ *
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.15
+ * @version 0.0.22
+ * @param <T> T extends Day or T is Day
  */
 public class ElfoCalendar<T extends Day> implements Serializable {
     private ArrayList<ArrayList<T>> array;
@@ -16,9 +20,12 @@ public class ElfoCalendar<T extends Day> implements Serializable {
     protected int day;
     private T auxiliaryDay;
     /**
+     * Contrutor de ElfoCalendar
+     * Dia auxiliar usado para criar os outros dias usando a funçao 'newDay'.
      * @param year Year
      * @param month Month
-     * @param day ScheduleDay
+     * @param day Day
+     * @param auxiliaryDay Auxiliary Day
      */
     public ElfoCalendar(int year,int month, int day, T auxiliaryDay){
         this.array = new ArrayList<ArrayList<T>>();
@@ -28,41 +35,41 @@ public class ElfoCalendar<T extends Day> implements Serializable {
     }
 
     /**
+     * Seta data
      * @param year Year
      * @param month Month
      * @param day ScheduleDay
      * @return Success
      */
-    public boolean setDate(int year, int month, int day){
+    public void setDate(int year, int month, int day){
         if(year > 1536 &&
                 month > 0 && month <= 12 &&
                 day > 0 && day <= CalendarTools.monthSize(month)){
             this.year = year;
             this.month = month;
             this.day = day;
-            return true;
         }
-        return false;
     }
 
     /**
      * @param obj ScheduleDay
      * @return if added
      */
-    private boolean addMonth(ArrayList<T> obj){
-        return array.add(obj);
+    private void addMonth(ArrayList<T> obj){
+        array.add(obj);
     }
 
     /**
+     * Pega ArrayList que representa o Mes
      * @param index Month
      * @return ArraList of 'ScheduleDay's
      */
-    public ArrayList<T> getMonth(int index){
+    private ArrayList<T> getMonth(int index){
         return array.get(index - 1);
     }
 
     /**
-        Update Calendar
+        Reconstroi o calendario
      */
     @SuppressWarnings ( "unchecked" )
     protected void updateCalendar(){
@@ -76,6 +83,7 @@ public class ElfoCalendar<T extends Day> implements Serializable {
     }
 
     /**
+     * Pega dia de um mes e dia
      * @param month Month
      * @param day ScheduleDay
      * @return ScheduleDay of date
@@ -101,6 +109,7 @@ public class ElfoCalendar<T extends Day> implements Serializable {
     }
 
     /**
+     * Pega dia atual do calendario
      * @return Current day
      */
     public T getDay(){
@@ -108,37 +117,7 @@ public class ElfoCalendar<T extends Day> implements Serializable {
     }
 
     /**
-     *
-     */
-
-    /**
-     * @param month Month
-     * @param day ScheduleDay
-     * @return Returns ScheduleDay[7] with next seven days
-     */
-    @SuppressWarnings ( "unchecked" )
-    public T[] getNextWeekDays(int month, int day){
-        T[] ret = (T[])Array.newInstance(auxiliaryDay.getClass(),7);
-        for(int i = day ; i < day + 7; i++){
-            ret[i - day] = this.getDayOfDate(month,i);
-        }
-        return ret;
-    }
-
-    /**
-     * @param n n Days
-     * @return Returns ScheduleDay[n] with before 'n' days
-     */
-    @SuppressWarnings ( "unchecked" )
-    public T[] getBeforeDays(int n){
-        T[] ret = (T[])Array.newInstance(auxiliaryDay.getClass(),n);
-        for(int i = 0; i < n; i++){
-            ret[i] = this.getDayOfDate(month,day + i);
-        }
-        return ret;
-    }
-
-    /**
+     * Cria um Calendario visual em String
      * @param month Month
      * @return Returns calendar mounted in standard form
      */
@@ -159,8 +138,6 @@ public class ElfoCalendar<T extends Day> implements Serializable {
                     ret += "| ";
                 }else if(day.getDay() == this.day - 1) {
                     ret += " |";
-               // }else if(day.getEvents().size() > 0){
-               //     ret += "<-";
                 }else{
                     ret += "  ";
                 }
@@ -176,28 +153,6 @@ public class ElfoCalendar<T extends Day> implements Serializable {
                 }
             }
         }
-        return ret;
-    }
-
-    public int getCurrentDay(){
-        return day;
-    }
-    public int getCurrentMonth(){
-        return month;
-    }
-    public int getCurrentYear(){
-        return year;
-    }
-
-    /**
-     * @return Returns year mounted in standard form
-     */
-    public String getVisualYear(){
-        String ret = "";
-        for (int i = 1; i <= 12; i++){
-            ret += getVisualMonth(i);
-        }
-        ret += String.format("\n");
         return ret;
     }
 }
