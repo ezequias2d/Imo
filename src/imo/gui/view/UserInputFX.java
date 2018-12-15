@@ -435,7 +435,7 @@ public class UserInputFX {
         dialog.setHeight(500);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
-        String aboutText = "Imo Projet 1.0.2" +
+        String aboutText = "Imo Projet 1.0.2a" +
                 "\nAlunos:" +
                 "\n     Ezequias Moises dos Santos Silva" +
                 "\n     Jose Romulo Pereira" +

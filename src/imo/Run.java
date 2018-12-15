@@ -12,7 +12,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainApp extends Application {
+public class Run extends Application {
+    /*
+     * Links para os FXML
+     */
     private static final String LOGIN_SCREEN_URI = "gui/view/LoginScreen.fxml";
     private static final String IMO_SCREEN_URI = "gui/view/ImoScreen.fxml";
     public static final String REGISTER_PROPERTY_SCREEN_URI = "gui/view/RegisterPropertyScreen.fxml";
@@ -21,16 +24,18 @@ public class MainApp extends Application {
     public static final String PROPERTY_TYPES_SCREEN_URI = "gui/view/PropertyTypesScreen.fxml";
 
     private Stage loginStage;
-    private Stage imo;
+    private Stage imoStage;
+
     private Pane rootLayout;
-
-
     private UserInputFX userInputFX;
     private ImoController imoController;
     private Imobily imobily;
 
+    /**
+     * Statrt de Application
+     */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         //demonstracaoPropriedades();
         this.loginStage = primaryStage;
         this.loginStage.setTitle("Login Screen - Imo Project");
@@ -40,15 +45,18 @@ public class MainApp extends Application {
 
     }
 
+    /**
+     * Inicia layout de loginScreen
+     */
     public void initRootLayout(){
         try{
             userInputFX = new UserInputFX();
             imobily = new Imobily();
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource(LOGIN_SCREEN_URI));
+            loader.setLocation(Run.class.getResource(LOGIN_SCREEN_URI));
             rootLayout = loader.load();
             LoginScreenController loginScreenController = loader.getController();
-            loginScreenController.setMainApp(this);
+            loginScreenController.setRun(this);
             loginScreenController.setUserInputFX(userInputFX);
             loginScreenController.setImobily(imobily);
             Scene scene = new Scene(rootLayout);
@@ -59,35 +67,57 @@ public class MainApp extends Application {
         }
     }
 
-
-    private void imoStage(Stage clientStage){
-        this.imo = clientStage;
-        this.imo.setTitle("Client Screen - Imo Project");
+    /**
+     * Carrega imoScreen
+     * @param imoStage Stage
+     */
+    private void imoStage(Stage imoStage){
+        this.imoStage = imoStage;
+        this.imoStage.setTitle("Client Screen - Imo Project");
         try{
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource(IMO_SCREEN_URI));
+            loader.setLocation(Run.class.getResource(IMO_SCREEN_URI));
             Scene scene = new Scene(loader.load());
             imoController = loader.getController();//loader.getController();
-            imoController.setMainApp(this);
+            imoController.setRun(this);
             imoController.setMainScene(scene);
             imoController.setImobily(imobily);
             imoController.setUserInputFX(userInputFX);
             imoController.start();
-            this.imo.setScene(scene);
+            this.imoStage.setScene(scene);
         }catch (IOException e){
             e.printStackTrace();
         }
     }
+
+    /**
+     * Pega imoController
+     * @return
+     */
     public ImoController getImoController(){
         return imoController;
     }
+
+    /**
+     * Pega LoginStage
+     * @return
+     */
     public Stage getLoginStage(){
         return loginStage;
     }
+
+    /**
+     * Pega ImoScreenStage
+     * @return
+     */
     public Stage getImoScreenStage(){
-        return imo;
+        return imoStage;
     }
 
+
+    /**
+     * Executa programa
+     */
     public static void main(String[] args){
         launch(args);
     }

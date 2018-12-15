@@ -3,6 +3,7 @@ package imo.property;
 import java.io.Serializable;
 
 /**
+ * Comodo de um Imovel, interno ou externo.
  * @author Jose Romulo Pereira
  * @version 0.0.4
  */
@@ -44,6 +45,7 @@ public class Room implements Serializable {
     }
 
     /**
+     * Get area
      * @return Area
      */
     public double getArea(){
@@ -73,6 +75,7 @@ public class Room implements Serializable {
 
 
     /**
+     * Get Width
      * @return Width
      */
     public double getWidth(){
@@ -80,6 +83,7 @@ public class Room implements Serializable {
     }
 
     /**
+     * Get lenght
      * @return Lenght
      */
     public double getLenght(){
@@ -87,6 +91,7 @@ public class Room implements Serializable {
     }
 
     /**
+     * Se e do tipo
      * @param type Type
      * @return if it is type
      */
@@ -95,6 +100,7 @@ public class Room implements Serializable {
     }
 
     /**
+     * Equivalencia
      * @param room Room
      * @return if the room is equivalent to another
      */

@@ -93,23 +93,41 @@ public class Imobily {
         return userController.login(UserTools.stringToCpf(cpf),password);
     }
 
+    /**
+     * Se e Manager(Gerente/ADM1)
+     * @return True se sim
+     */
     public boolean isManager(){
         return userController.isADM1();
     }
 
+    /**
+     * Se e RealEstateBroker(Corretor/ADM2)
+     * @return True se sim
+     */
     public boolean isRealEstateBroker(){
         return userController.isADM2();
     }
 
+    /**
+     * Se e consumer(Consumidor/NORMAL)
+     * @return True se sim
+     */
     public boolean isConsumer(){
         return userController.isNORMAL();
     }
 
+    /**
+     * Pega conta logada
+     * @return Conta logada
+     */
     public User getLoadedAccount(){
         return userController.getLoadedAccount();
     }
+
     /**
-     *
+     * Pega informaçoes da conta logada
+     * @return String Account Info
      */
     public String getAccountInfo(){
         return String.format("Full Name:%s\nFormal Name:%s\nCpf:%s\n",
@@ -119,48 +137,89 @@ public class Imobily {
     }
 
     /**
-     * Menu Command
+     * Muda senha da conta atual
+     * @param oldPassword Senha antiga
+     * @param newPassword Nova senha
      */
     public void changePassword(String oldPassword, String newPassword) throws DataCannotBeAccessedException, UserInvalidPermissionException {
         userController.changeYourPassword(oldPassword,newPassword);
     }
 
+    /**
+     * Pega usuarios
+     * @return Todos os usuarios
+     */
     public User[] getUsers(){
         return userController.getUsers();
     }
 
+    /**
+     * Muda nome completo de um usuario
+     * @param password Sennha do usuario
+     * @param fullname Novo nome completo
+     */
     public void changeFullName(String password, String fullname) throws DataCannotBeAccessedException, UserInvalidPermissionException {
         userController.changeYourName(password,fullname);
     }
 
     /**
-     * Menu Command
+     * Muda nome formal
+     * @param password Senha
+     * @param firstName Novo primeiro nome
+     * @param lastName Novo sobrenome
      */
     public void changeFormalName(String password, String firstName, String lastName) throws DataCannotBeAccessedException, UserInvalidPermissionException {
         userController.changeYourFormalName(password,firstName,lastName);
     }
-    /**
-     * Menu Command
-     */
 
+    /**
+     * Muda senha de qualquer conta
+     * @param adm1Password Senha de ADM1
+     * @param cpf CPF da conta para mudar senha
+     * @param newPassword Nova senha
+     */
     public void changePasswordADM1(String adm1Password, int[] cpf, String newPassword) throws UserInvalidPermissionException, DataCannotBeAccessedException {
         userController.changePassword(userController.getUser(cpf),adm1Password,newPassword);
     }
+
     /**
+     * Deleta quase qualquer conta
+     * @param cpf CPF da conta
+     * @param adm1Password Senha de ADM1
      */
     public void deleteAccount(int[] cpf, String adm1Password) throws UserInvalidPermissionException, DataCannotBeAccessedException {
         userController.deleteAccount(adm1Password,cpf);
     }
 
+    /**
+     * Faz logout
+     */
     public void logout(){
         userController.logout();
     }
+
+    /**
+     * Registra novo usuario
+     * @param fullName Nome completo
+     * @param cpf CPF
+     * @param password Senha
+     * @param firstName Primeiro Nome
+     * @param lastName Ultimo nome
+     * @param userType Tipo do usuario
+     */
     public void register(String fullName, String cpf, String password, String firstName, String lastName, int userType) throws UserIsRegistredException, UserInvalidException, DataCannotBeAccessedException {
         userController.registerNewUser(fullName,UserTools.stringToCpf(cpf),password,firstName,lastName,userType);
     }
 
 
     //-----------CALENDAR------------
+
+    /**
+     * Pega eventos de uma data ate passar 'n' dias
+     * @param date Data
+     * @param period Periodo(n dias)
+     * @return Eventos
+     */
     public ArrayList<ScheduleEvent> getPeriodEvents(LocalDate date, int period) throws DataCannotBeAccessedException {
         int[] dateInt = CalendarTools.convertToDate(date);
         ArrayList<ScheduleEvent> events = new ArrayList<ScheduleEvent>();
@@ -172,6 +231,20 @@ public class Imobily {
         return events;
     }
 
+    /**
+     * Atualiza schedule para um ano especifico
+     * @param year Ano
+     */
+    private void scheduleUpdate(int year) throws DataCannotBeAccessedException {
+        schedule = scheduleRepository.get(userController.getCurrentIdentity(), year);
+    }
+
+    /**
+     * Marca um evento de visita a propriedade
+     * @param property Propriedade
+     * @param date Data
+     * @param time Horario
+     */
     public void eventBrand(Property property, LocalDate date, String time) throws EventInvalidException, EventNotBrandException, HourNotExistException, DataCannotBeAccessedException, PropertyIsUnavailable {
         if(property.isAvaliable()) {
             int[] dateV = CalendarTools.convertToDate(date);
@@ -183,13 +256,10 @@ public class Imobily {
     }
 
     /**
-     * Get schedule of current cpf
-     */
-    private void scheduleUpdate(int year) throws DataCannotBeAccessedException {
-        schedule = scheduleRepository.get(userController.getCurrentIdentity(), year);
-    }
-
-    /**
+     * Marca evento de visita a propriedade
+     * @param property Propriedade
+     * @param date Data em int[]
+     * @param time Horario em int[]
      */
     public void eventBrand(Property property, int[] date, int[] time) throws HourNotExistException, EventInvalidException, EventNotBrandException, DataCannotBeAccessedException {
         String userFormalName = userController.getFormalNameCurrent();
@@ -221,6 +291,12 @@ public class Imobily {
         throw new EventNotBrandException(new ScheduleEvent("",hour,minutes,deltaTime, schedule.getDayOfDate(date[1],date[0])),schedule,propertySchedule);
     }
 
+    /**
+     * Pega dia de uma data espeficica
+     * @param date Data
+     * @return
+     * @throws DataCannotBeAccessedException
+     */
     public ScheduleDay getDay(int[] date) throws DataCannotBeAccessedException {
         scheduleUpdate(date[2]);
         schedule.setDate(date[2], date[1], date[0]);
@@ -228,77 +304,149 @@ public class Imobily {
         schedule.upgradeToCurrentDay();
         return out;
     }
+
+    /**
+     * Pega schedule atual
+     * @return Schedule
+     */
     public Schedule getSchedule(){
         return schedule;
     }
 
     //----------PROPERTY-------------
+
+    /**
+     * Seta limite de preço de compra
+     * @param min Minimum
+     * @param max Maximum
+     */
     public void setBuyLimit(double min, double max){
         buyLimimt.setDelta(min, max);
     }
 
+    /**
+     * Seta limite de preço do aluguel
+     * @param min Minimum
+     * @param max Maximum
+     */
     public void setRentLimit(double min, double max){
         rentLimit.setDelta(min, max);
     }
 
+    /**
+     * Seta limite de area
+     * @param min Minimum
+     * @param max Maximum
+     */
     public void setAreaLimit(double min, double max){
         areaLimit.setDelta(min, max);
     }
 
+    /**
+     * Seta limite de andares
+     * @param min Minimum
+     * @param max Maximum
+     */
     public void setFloorsLimit(double min, double max){
         floorsLimit.setDelta(min, max);
     }
 
+    /**
+     * Seta limite de quartos
+     * @param min Minimum
+     * @param max Maximum
+     */
     public void setRoomsLimit(double min, double max){
         floorsLimit.setDelta(min, max);
     }
 
     /**
+     * Deleta propriedade
+     * @param property Property
      */
     public void deleteProperty(Property property) throws DataCannotBeAccessedException {
         propertyController.delete(property);
     }
+
     /**
-     * MenuCommand
-     * Register Property
+     * Registra propriedade
+     * @param rooms Rooms
+     * @param floors Floors
+     * @param area Terrain Area
+     * @param buyPrice Buy Price
+     * @param rentPrice Rent Price
+     * @param propertyType Property Type
+     * @param andress Andress
      */
     public void registerProperty(ArrayList<Room> rooms, int floors, double area, double buyPrice, double rentPrice, PropertyType propertyType, String andress) throws ParameterOutOfTypeException, DataCannotBeAccessedException {
         propertyController.createNewProperty(rooms,floors,area,buyPrice,rentPrice,propertyType, andress);
     }
     /**
+     * Pega pesquisa
      * @return Search of property
      */
     public ArrayList<Property> getSearch(boolean seeUnvaliable,PropertyType... propertyTypes){
         return propertyController.filterProperties(seeUnvaliable,buyLimimt,rentLimit,areaLimit,floorsLimit,roomsLimit,propertyTypes);
     }
 
+    /**
+     * Filtra Lista de Property pelos Room's
+     * @param min Minumum
+     * @param max Maximum
+     * @param listToFilter Lista para filtrar
+     * @param typeRoom Tipo do Room
+     * @return
+     */
     public ArrayList<Property> getSearch(double min, double max, ArrayList<Property> listToFilter, String typeRoom){
         return propertyController.filterProperties(typeRoom, listToFilter,new DeltaNumber(min,max));
     }
 
+    /**
+     * Pega vetor de tipos de propriedades para filtrar(com 'All' no meio)
+     * @return PropertyTypes
+     */
     public PropertyType[] getPropertyTypesFilter(){
         return propertyController.getPropertiesTypesFilter();
     }
+
+    /**
+     * Pega vetor de tipos de propriedades
+     * @return PropertyTypes
+     */
     public PropertyType[] getPropertyTypes(){
         return propertyController.getPropertiesTypes();
     }
 
+    /**
+     * Adiciona PropertyType
+     * @param propertyType Property Type
+     */
     public void addPropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
         propertyController.addPropertyType(propertyType);
         propertyController.update();
     }
+
+    /**
+     * Deleta Property Type
+     * @param propertyType Property Type
+     */
     public void deletePropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
         propertyController.deletePropertyType(propertyType);
         propertyController.update();
     }
+
+    /**
+     *Atualiza repositorio de Property
+     */
     public void updateProperty() throws DataCannotBeAccessedException {
         propertyController.update();
     }
 
     //---------------SALE-------------
+
     /**
-     * Sales report completed
-     * @return Relatory String
+     * Sales report Approved
+     * @return Sales Approved Report
      */
     public String getAprovedReport() {
         ArrayList<Sale> sales =  saleController.getAprovedPurchases();
@@ -313,7 +461,8 @@ public class Imobily {
     }
 
     /**
-     * @return Screen with unfinished purchases
+     * Sales report Pedding
+     * @return Sales Pedding Report
      */
     public String getPeddingReport() {
         ArrayList<Sale> sales =  saleController.getPendingPurchases();
@@ -326,8 +475,12 @@ public class Imobily {
         out += String.format("\nTotal:%.2f",totalPrice);
         return out;
     }
+
+
     /**
-     * @return Screen with finished purchases
+     * Sales report Approved
+     * @param days Days
+     * @return Sales Approved Report
      */
     public String getAprovedReport(int days) {
         ArrayList<Sale> sales =  saleController.getAprovedPurchases(days);
@@ -340,8 +493,11 @@ public class Imobily {
         out += String.format("\nTotal:%.2f",totalPrice);
         return out;
     }
+
     /**
-     * @return Screen with finished purchases
+     * Sales report Pedding
+     * @param days Days
+     * @return Sales Pedding Report
      */
     public String getPeddingReport(int days) {
         ArrayList<Sale> sales =  saleController.getPendingPurchases(days);
@@ -373,6 +529,10 @@ public class Imobily {
         return saleController.newSale(userController.getLoadedAccount(), method, property, months, payday);
     }
 
+    /**
+     * Delete Sale
+     * @param sale Sale
+     */
     public void deleteSale(Sale sale) throws DataCannotBeAccessedException {
         saleController.deleteSale(sale);
     }
@@ -400,38 +560,76 @@ public class Imobily {
         }
     }
 
+    /**
+     * Finaliza uma Sale
+     * @param sale Sale
+     */
     public void finalizeSale(Sale sale) throws DataCannotBeAccessedException {
         sale.finalizer();
         saleController.update();
     }
 
+    /**
+     * Pega sales de um usuario
+     * @param user Usuario
+     * @return Sales do usuario
+     */
     public ArrayList<Sale> getSales(User user){
         return saleController.getSales(user);
     }
 
+    /**
+     * Pega sales atrasadas de um usuario
+     * @param user Usuario
+     * @return Sales atradadas do usuario
+     */
     public ArrayList<Sale> getLate(User user) {
         return saleController.getLate(user);
     }
 
+    /**
+     * Pega sales aprovadas de um usuario
+     * @param user Usuario
+     * @return Sales aprovadas do usuario
+     */
     public ArrayList<Sale> getAproved(User user) {
         return saleController.getAproved(user);
     }
 
+    /**
+     * Pega sales nao aprovadas de um usuario
+     * @param user Usuario
+     * @return Sales nao aprovadas do usuario
+     */
     public ArrayList<Sale> getNotAproved(User user) {
         return saleController.getNotAproved(user);
     }
 
+    /**
+     * Pega sales finalizadas de um usuario
+     * @param user Usuario
+     * @return Sales finalizadas do usuario
+     */
     public ArrayList<Sale> getFinalizer(User user)  {
         return saleController.getFinalized(user);
     }
 
+    /**
+     * Pega numero de Sales d eum usuario
+     * @param user Usuario
+     * @return Numero de Sales do usuario
+     */
     public int getSalesNumber(User user){
         return saleController.getSalesNumber(user);
     }
 
+    /**
+     * Pega status do usuario em relaçao a sales
+     * @param user Usuario
+     * @return Status
+     */
     public String getStatus(User user){
         return saleController.getStatus(user);
     }
-
 
 }

@@ -21,9 +21,9 @@
               <items>
                   <MenuItem mnemonicParsing="false" onAction="#registerProperty" text="Register" />
                 <MenuItem mnemonicParsing="false" onAction="#modifyProperty" text="Modify" />
-                  <MenuItem mnemonicParsing="false" onAction="#deleteProperty" text="Delete" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#typesScreen" text="Types" />
+                  <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false" onAction="#deleteProperty" text="Delete" />
+                  <SeparatorMenuItem fx:id="typesSeparatorMenuItem" mnemonicParsing="false" />
+                  <MenuItem fx:id="typesMenuItem" mnemonicParsing="false" onAction="#typesScreen" text="Types" />
               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">

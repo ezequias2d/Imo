@@ -8,7 +8,7 @@ import elfoAPI.exception.user.permission.UserInvalidPermissionException;
 import elfoAPI.sale.Sale;
 import elfoAPI.users.User;
 import imo.Imobily;
-import imo.MainApp;
+import imo.Run;
 import imo.property.Property;
 import imo.property.PropertyType;
 import imo.property.Room;
@@ -38,7 +38,7 @@ import java.util.ResourceBundle;
 /**
  * Controle da tela principal do projeto Imo
  * @author Ezequias Moises dos Santos Silva
- * @version 0.0.5
+ * @version 0.0.6
  */
 public class ImoController implements Initializable {
     /*
@@ -47,7 +47,7 @@ public class ImoController implements Initializable {
     private Imobily imobily;
     private Scene mainScene;
     private UserInputFX userInputFX;
-    private MainApp mainApp;
+    private Run run;
     /*
      *  Aba Calendario
      */
@@ -132,6 +132,12 @@ public class ImoController implements Initializable {
     private Button deleteAccountButton;
     @FXML
     private Button changePasswordButton;
+    @FXML
+    private MenuItem typesMenuItem;
+    @FXML
+    private MenuItem deleteMenuItem;
+    @FXML
+    private SeparatorMenuItem typesSeparatorMenuItem;
 
     //Sale Screen
     @FXML
@@ -185,6 +191,9 @@ public class ImoController implements Initializable {
         userTableView.setPrefWidth(0);
         hboxSystem.setVisible(false);
         saleDeleteButton.setVisible(false);
+        typesMenuItem.setVisible(false);
+        typesSeparatorMenuItem.setVisible(false);
+        deleteMenuItem.setVisible(false);
     }
 
     /**
@@ -238,7 +247,9 @@ public class ImoController implements Initializable {
         deleteAccountButton.setVisible(true);
         changePasswordButton.setVisible(true);
         saleDeleteButton.setVisible(true);
-
+        typesMenuItem.setVisible(true);
+        typesSeparatorMenuItem.setVisible(true);
+        deleteMenuItem.setVisible(true);
     }
     /**
      * Seta controle Imobily
@@ -349,11 +360,11 @@ public class ImoController implements Initializable {
     }
 
     /**
-     * Seta MainApp
-     * @param mainApp MainApp
+     * Seta Run
+     * @param run Run
      */
-    public void setMainApp(MainApp mainApp){
-        this.mainApp = mainApp;
+    public void setRun(Run run){
+        this.run = run;
     }
 
     /**
@@ -454,8 +465,8 @@ public class ImoController implements Initializable {
     @FXML
     private void logout(){
         imobily.logout();
-        mainApp.getImoScreenStage().hide();
-        mainApp.getLoginStage().show();
+        run.getImoScreenStage().hide();
+        run.getLoginStage().show();
     }
 
     /**
@@ -466,10 +477,11 @@ public class ImoController implements Initializable {
     private void registerUser(){
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainApp.class.getResource(MainApp.REGISTER_USER_SCREEN_URI));
+        loader.setLocation(Run.class.getResource(Run.REGISTER_USER_SCREEN_URI));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
+            stage.setTitle("Register User");
             RegisterUserController registerUserController = loader.getController();
             registerUserController.setStage(stage);
             registerUserController.setUserInputFX(userInputFX);
@@ -489,7 +501,7 @@ public class ImoController implements Initializable {
     private void registerProperty(){
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainApp.class.getResource(MainApp.REGISTER_PROPERTY_SCREEN_URI));
+        loader.setLocation(Run.class.getResource(Run.REGISTER_PROPERTY_SCREEN_URI));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
@@ -512,24 +524,27 @@ public class ImoController implements Initializable {
      */
     @FXML
     private void modifyProperty(){
-        Stage stage = new Stage();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainApp.class.getResource(MainApp.REGISTER_PROPERTY_SCREEN_URI));
-        Scene scene = null;
-        try {
-            scene = new Scene(loader.load());
-            RegisterPropertyController registerPropertyController = loader.getController();
-            registerPropertyController.setUserInputFX(userInputFX);
-            registerPropertyController.setStage(stage);
-            registerPropertyController.setProperty(tableViewProperty.getSelectionModel().getSelectedItem());
-            registerPropertyController.setImobily(imobily);
-            stage.setScene(scene);
-            stage.setTitle("Modify Property");
-            stage.show();
-        } catch (IOException e) {
-            userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
+        Property selectedProperty = tableViewProperty.getSelectionModel().getSelectedItem();
+        if(selectedProperty != null) {
+            Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Run.class.getResource(Run.REGISTER_PROPERTY_SCREEN_URI));
+            Scene scene = null;
+            try {
+                scene = new Scene(loader.load());
+                RegisterPropertyController registerPropertyController = loader.getController();
+                registerPropertyController.setUserInputFX(userInputFX);
+                registerPropertyController.setStage(stage);
+                registerPropertyController.setProperty(selectedProperty);
+                registerPropertyController.setImobily(imobily);
+                stage.setScene(scene);
+                stage.setTitle("Modify Property");
+                stage.show();
+            } catch (IOException e) {
+                userInputFX.showMessage(e.getClass().getName(), e.getClass().getName(), e.getMessage());
+            }
+            updateSearch();
         }
-        updateSearch();
     }
 
     /**
@@ -557,7 +572,7 @@ public class ImoController implements Initializable {
     private void typesScreen(){
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainApp.class.getResource(MainApp.PROPERTY_TYPES_SCREEN_URI));
+        loader.setLocation(Run.class.getResource(Run.PROPERTY_TYPES_SCREEN_URI));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());

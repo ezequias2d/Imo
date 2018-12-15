@@ -7,7 +7,7 @@ import elfoAPI.users.User;
 import elfoAPI.users.UserController;
 import elfoAPI.users.UserTools;
 import imo.Imobily;
-import imo.MainApp;
+import imo.Run;
 
 import imo.gui.view.UserInputFX;
 import javafx.event.EventHandler;
@@ -43,7 +43,7 @@ public class LoginScreenController implements Initializable {
 
     private UserController userController;
 
-    private MainApp mainApp;
+    private Run run;
 
     private UserInputFX userInputFX;
 
@@ -63,9 +63,9 @@ public class LoginScreenController implements Initializable {
     @FXML
     private void logOn(){
         if(imobily.login(cpfLogOnTextField.getText(),passwordLogOnTextField.getText())){
-            mainApp.getLoginStage().hide();
-            mainApp.getImoScreenStage().show();
-            ImoController imoController = mainApp.getImoController();
+            run.getLoginStage().hide();
+            run.getImoScreenStage().show();
+            ImoController imoController = run.getImoController();
             imoController.reloadUserInfo();
             if(imobily.isManager()){
                 imoController.adm1();
@@ -139,11 +139,11 @@ public class LoginScreenController implements Initializable {
     }
 
     /**
-     * Setea MainApp
-     * @param mainApp MainApp
+     * Setea Run
+     * @param run Run
      */
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
+    public void setRun(Run run) {
+        this.run = run;
     }
 
     /**

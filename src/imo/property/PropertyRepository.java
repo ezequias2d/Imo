@@ -83,6 +83,11 @@ public class PropertyRepository implements IRepositorio<Property>, ISellableRepo
         return out;
     }
 
+    /**
+     * Pega por identificador
+     * @param identity Identity
+     * @return Property of Identity
+     */
     @Override
     public Property get(String identity) {
         for(Property property : properties){
@@ -94,7 +99,9 @@ public class PropertyRepository implements IRepositorio<Property>, ISellableRepo
     }
 
 
-
+    /**
+     *  Atualiza repositorio
+     */
     @Override
     public void update() throws DataCannotBeAccessedException {
         serializer.save(URI,properties);

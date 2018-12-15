@@ -19,6 +19,9 @@ public class PropertyTypeRepository implements IRepositorio<PropertyType> {
     private ArrayList<PropertyType> propertyTypes;
     private Serializer serializer;
 
+    /**
+     * Construtor
+     */
     public PropertyTypeRepository() throws DataCannotBeAccessedException {
         this.serializer = Serializer.getInstance();
         try {
@@ -30,6 +33,9 @@ public class PropertyTypeRepository implements IRepositorio<PropertyType> {
         }
     }
 
+    /**
+     * Carrega tipos padroes do sistema
+     */
     private void loadDefault() throws DataCannotBeAccessedException {
         PropertyType house = new PropertyType("House","Simply a house.");
         PropertyType rowHouse = new PropertyType("Row House","Any of a row of houses joined by common sidewalls.");
@@ -49,6 +55,11 @@ public class PropertyTypeRepository implements IRepositorio<PropertyType> {
         update();
     }
 
+    /**
+     * Adiciona
+     * @param object Object
+     * @return if add
+     */
     @Override
     public boolean add(PropertyType object) throws DataCannotBeAccessedException {
         boolean out = propertyTypes.add(object);
@@ -56,6 +67,11 @@ public class PropertyTypeRepository implements IRepositorio<PropertyType> {
         return out;
     }
 
+    /**
+     * Remove
+     * @param object Object
+     * @return if remove
+     */
     @Override
     public boolean remove(PropertyType object) throws DataCannotBeAccessedException {
         boolean out = propertyTypes.remove(object);
@@ -63,35 +79,53 @@ public class PropertyTypeRepository implements IRepositorio<PropertyType> {
         return out;
     }
 
+    /**
+     * Pega por index
+     * @param index Index
+     * @return Object of index
+     */
     @Override
     public PropertyType get(int index) {
         return propertyTypes.get(index);
     }
 
+    /**
+     * Pega por identity
+     * @param identity Identity
+     * @return
+     */
     @Override
-    public PropertyType get(String indent) {
+    public PropertyType get(String identity) {
         for(PropertyType propertyType : propertyTypes){
-            if(propertyType.getName().equals(indent)){
+            if(propertyType.getIdentity().equals(identity)){
                 return propertyType;
             }
         }
         return null;
     }
 
+    /**
+     * Pega index de um objeto
+     * @param object Object
+     * @return Index
+     */
     @Override
     public int get(PropertyType object) {
         return propertyTypes.indexOf(object);
     }
 
+    /**
+     * Transforma dados do repositorio em um Array
+     * @return Array de PropertyType
+     */
     @Override
     public PropertyType[] toArray() {
-        PropertyType[] out = new PropertyType[propertyTypes.size()];
-        for(int i = 0; i < propertyTypes.size(); i++){
-            out[i] = propertyTypes.get(i);
-        }
-        return out;
+        return propertyTypes.toArray(new PropertyType[propertyTypes.size()]);
     }
 
+    /**
+     * Atualiza repositorio
+     */
     @Override
     public void update() throws DataCannotBeAccessedException {
         serializer.save(URI,propertyTypes);

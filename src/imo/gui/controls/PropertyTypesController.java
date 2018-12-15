@@ -2,7 +2,7 @@ package imo.gui.controls;
 
 import elfoAPI.exception.data.DataCannotBeAccessedException;
 import imo.Imobily;
-import imo.MainApp;
+import imo.Run;
 import imo.gui.view.UserInputFX;
 import imo.property.PropertyType;
 import javafx.beans.property.SimpleStringProperty;
@@ -78,7 +78,7 @@ public class PropertyTypesController implements Initializable {
     private void create(){
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainApp.class.getResource(MainApp.REGISTER_PROPERTY_TYPE_SCREEN_URI));
+        loader.setLocation(Run.class.getResource(Run.REGISTER_PROPERTY_TYPE_SCREEN_URI));
         Scene scene = null;
         try {
             scene = new Scene(loader.load());
@@ -121,7 +121,7 @@ public class PropertyTypesController implements Initializable {
         if(propertyType != null) {
             Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource(MainApp.REGISTER_PROPERTY_TYPE_SCREEN_URI));
+            loader.setLocation(Run.class.getResource(Run.REGISTER_PROPERTY_TYPE_SCREEN_URI));
             Scene scene = null;
             try {
                 scene = new Scene(loader.load());
