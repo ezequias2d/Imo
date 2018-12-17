@@ -4,13 +4,11 @@ import elfoAPI.data.IRepositorio;
 import elfoAPI.data.Serializer;
 import elfoAPI.exception.data.DataCannotBeAccessedException;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Implementa um repositorio para PropertyType
- * @author Ezequias Moises dos Santos Silva
+ * @author Jose Romulo Pereira
  * @version 0.0.2
  */
 public class PropertyTypeRepository implements IRepositorio<PropertyType> {

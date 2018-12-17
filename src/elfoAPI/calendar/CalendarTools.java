@@ -57,7 +57,7 @@ public class CalendarTools {
     /**
      * Pega tamanho de um mes em dias
      * Exemplo:
-     *      12/18 -> Retorna 31
+     *      12/18 - Retorna 31
      * @param month month number
      * @param year Year
      * @return  returns size of month
@@ -73,7 +73,7 @@ public class CalendarTools {
     /**
      * Pega tamanho de um mes em dias do ano atual
      * Exemplo:
-     *      12(ano 2018) -> Retorna 31
+     *      12(ano 2018) - Retorna 31
      * @param month month number
      * @return returns size of month
      */
@@ -88,7 +88,7 @@ public class CalendarTools {
      * Formata array de inteiros(data) em String.
      * Exemplo:
      *      int[] date = {15, 12, 2018};
-     *      formatDate(date) -> RETORNA -> "15/12/2018"
+     *      formatDate(date) - RETORNA - "15/12/2018"
      * @param date
      * @return
      */
@@ -99,7 +99,7 @@ public class CalendarTools {
     /**
      * Formata hora em String
      * Exemplo:
-     *      formatOfTime(7, 30) -> RETORNA -> "7:30"
+     *      formatOfTime(7, 30) - RETORNA - "7:30"
      * @param hour Hour
      * @param minute Minute
      * @return formated time
@@ -113,7 +113,7 @@ public class CalendarTools {
     /**
      * Pega abreviaçao do nome de um mes
      * Exemplo:
-     *      monthName(3) -> RETORNA -> "Mar"(Março)
+     *      monthName(3) - RETORNA - "Mar"(Março)
      * @param number ElfoNumber
      * @return month name
      */
@@ -126,7 +126,7 @@ public class CalendarTools {
      * Convete um LocalDate em um array com a data.
      * Exemplo:
      *      LocalDate localDate = 15-12-2018
-     *      convertToDate(localDate) -> RETORNA -> new int[]{15, 12, 2018}
+     *      convertToDate(localDate) - RETORNA - new int[]{15, 12, 2018}
      * @param date
      * @return
      */
@@ -141,7 +141,7 @@ public class CalendarTools {
     /**
      * Pega um String no formato "0:00" e retorna um vetor com a hora
      * Exemplo:
-     *      convertToHour("7:30") -> RETORNA -> new int[]{7, 30};
+     *      convertToHour("7:30") - RETORNA - new int[]{7, 30};
      * @param s
      * @return
      */
@@ -183,7 +183,7 @@ public class CalendarTools {
      * Muda uma data em 'n' dias
      * Exemplo:
      *      n = 15
-     *      dateChanger(n, 28, 12, 2018) -> RETORNA -> new int[]{12, 1, 2019}
+     *      dateChanger(n, 28, 12, 2018) - RETORNA - new int[]{12, 1, 2019}
      * @param daysToChange Days to Change
      * @param day Date day
      * @param month Date month
@@ -215,7 +215,7 @@ public class CalendarTools {
      * Muda uma data em 'n' dias
      * Exemplo:
      *      n = 15
-     *      dateChanger(n, int[]{28, 12, 2018}) -> RETORNA -> new int[]{12, 1, 2019}
+     *      dateChanger(n, int[]{28, 12, 2018}) - RETORNA - new int[]{12, 1, 2019}
      *
      *
      * @param daysToChange Days to Change

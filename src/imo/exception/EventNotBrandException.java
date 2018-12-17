@@ -16,7 +16,7 @@ public class EventNotBrandException extends ElfoException {
         String menseger = "Unmaked Event! "
                 + scheduleEvent.getHoraryString() + " | " + scheduleEvent.getDay().toString();
         for(Schedule schedule : schedules){
-            menseger += "\n" + "Schedule: " + schedule.getIdentifier();
+            menseger += "\n" + "Schedule: " + schedule.getIdentity();
         }
         setMessage(menseger);
     }

@@ -12,6 +12,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * @author Ezequias Moises dos Santos Silva
+ * @version 0.0.4
+ */
 public class Run extends Application {
     /*
      * Links para os FXML
@@ -26,7 +30,6 @@ public class Run extends Application {
     private Stage loginStage;
     private Stage imoStage;
 
-    private Pane rootLayout;
     private UserInputFX userInputFX;
     private ImoController imoController;
     private Imobily imobily;
@@ -54,7 +57,7 @@ public class Run extends Application {
             imobily = new Imobily();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Run.class.getResource(LOGIN_SCREEN_URI));
-            rootLayout = loader.load();
+            Pane rootLayout = loader.load();
             LoginScreenController loginScreenController = loader.getController();
             loginScreenController.setRun(this);
             loginScreenController.setUserInputFX(userInputFX);
@@ -92,7 +95,7 @@ public class Run extends Application {
 
     /**
      * Pega imoController
-     * @return
+     * @return ImoController
      */
     public ImoController getImoController(){
         return imoController;
@@ -100,7 +103,7 @@ public class Run extends Application {
 
     /**
      * Pega LoginStage
-     * @return
+     * @return Login Stage
      */
     public Stage getLoginStage(){
         return loginStage;
@@ -108,14 +111,14 @@ public class Run extends Application {
 
     /**
      * Pega ImoScreenStage
-     * @return
+     * @return ImoScreen Stage
      */
     public Stage getImoScreenStage(){
         return imoStage;
     }
 
 
-    /**
+    /*
      * Executa programa
      */
     public static void main(String[] args){

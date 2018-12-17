@@ -5,7 +5,7 @@ import imo.property.Property;
 
 /**
  * Prorpiedede indisponivel
- * @author Jose Romulo
+ * @author Jose Romulo Pereira
  * @version 0.0.1
  */
 public class PropertyIsUnavailable extends ElfoException {

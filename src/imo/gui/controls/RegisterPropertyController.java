@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 
 /**
  * Controle da tela de registrador de Property
- * @author Ezequias Moises dos Santos Silva
+ * @author Jose Romulo Pereira
  * @version 0.0.5
  */
 public class RegisterPropertyController implements Initializable {

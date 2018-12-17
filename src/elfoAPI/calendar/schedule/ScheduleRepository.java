@@ -6,7 +6,6 @@ import elfoAPI.exception.data.DataCannotBeAccessedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Ezequias Moises dos Santos Silva
@@ -75,7 +74,7 @@ public class ScheduleRepository implements IScheduleRepository{
         updateSchedulesForTheYear(year);
         int index = -1;
         for(int i = 0; i < schedules.size(); i++){
-            if(schedules.get(i).getIdentifier().equals(identify)){
+            if(schedules.get(i).getIdentity().equals(identify)){
                 index = i;
                 break;
             }

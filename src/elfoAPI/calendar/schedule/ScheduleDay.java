@@ -29,14 +29,12 @@ public class ScheduleDay extends Day {
      * @param day Dia
      * @param month Mes
      * @param year Ano
-     * @return
+     * @return Um novo dia
      */
     @Override
     public ScheduleDay newDay(int day, int month, int year){
         return new ScheduleDay(day,month,year);
     }
-
-
 
     /**
      * Pega eventos do dia
@@ -47,7 +45,6 @@ public class ScheduleDay extends Day {
         newEvents.addAll(events);
         return newEvents;
     }
-
 
     /**
      * Add and create Event
@@ -65,7 +62,6 @@ public class ScheduleDay extends Day {
     /**
      * Deleta um evento por identificador
      * @param identity Identificador
-     * @throws DataCannotBeAccessedException
      */
     public void deleteEvent(String identity) throws DataCannotBeAccessedException {
         ArrayList<ScheduleEvent> eventsToRemove = new ArrayList<>();

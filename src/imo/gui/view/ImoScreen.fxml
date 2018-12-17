@@ -333,10 +333,10 @@
                      <top>
                         <HBox fx:id="hboxSystem" alignment="CENTER" minHeight="0.0" prefHeight="35.0" prefWidth="489.0" spacing="5.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#saleReportAproved" text="Sale Report Aproved" />
-                              <Button mnemonicParsing="false" onAction="#saleReportPending" text="Sale Report Pending" />
-                              <Button mnemonicParsing="false" onAction="#saleReportAproved30Days" text="Sale Report Aproved 30 days" />
-                              <Button mnemonicParsing="false" onAction="#saleReportPending30Days" text="Sale Report Pending 30 days" />
+                              <Button fx:id="saleReportAprovedButton" mnemonicParsing="false" onAction="#saleReportAproved" text="Sale Report Aproved" />
+                              <Button fx:id="saleReportPendingButton" mnemonicParsing="false" onAction="#saleReportPending" text="Sale Report Pending" />
+                              <Button fx:id="saleReportAproved30DaysButton" mnemonicParsing="false" onAction="#saleReportAproved30Days" text="Sale Report Aproved 30 days" />
+                              <Button fx:id="saleReportPending30DaysButton" mnemonicParsing="false" onAction="#saleReportPending30Days" text="Sale Report Pending 30 days" />
                               <Button mnemonicParsing="false" onAction="#approveSaleAction" text="Approve" />
                               <Button mnemonicParsing="false" onAction="#disapproveSaleAction" text="Disapprove" />
                               <Button mnemonicParsing="false" onAction="#finalizeSaleAction" text="Finalize" />

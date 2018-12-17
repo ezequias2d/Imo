@@ -155,7 +155,6 @@ public class UserInputFX {
      * @param title Titulo
      * @param header Corpo
      * @param content Conteudo
-     * @return Texto
      */
     public void showMessage(String title, String header, String content){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -435,7 +434,7 @@ public class UserInputFX {
         dialog.setHeight(500);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
-        String aboutText = "Imo Projet 1.0.2a" +
+        String aboutText = "Imo Projet 1.0.2c" +
                 "\nAlunos:" +
                 "\n     Ezequias Moises dos Santos Silva" +
                 "\n     Jose Romulo Pereira" +

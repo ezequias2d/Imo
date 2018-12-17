@@ -1,10 +1,7 @@
 package elfoAPI.sale;
 
-import elfoAPI.data.IRepositorio;
 import elfoAPI.data.Serializer;
 import elfoAPI.exception.data.DataCannotBeAccessedException;
-
-import java.io.IOException;
 
 import java.util.ArrayList;
 
@@ -13,7 +10,7 @@ import java.util.ArrayList;
  * @version 0.0.3
  * @author EZequias Moises dos Santos Silva
  */
-public class SaleRepository implements IRepositorio<Sale> {
+public class SaleRepository implements ISaleRepository {
 
     private static final String URI = "src/resources/depot/sales.dat";
 
@@ -44,8 +41,6 @@ public class SaleRepository implements IRepositorio<Sale> {
      * Adiciona ao repositorio
      * @param object Object to add
      * @return True
-     * @throws IOException
-     * @throws DataCannotBeAccessedException
      */
     @Override
     public boolean add(Sale object) throws DataCannotBeAccessedException {
@@ -58,7 +53,6 @@ public class SaleRepository implements IRepositorio<Sale> {
      * Remove do repositorio
      * @param object Object to remove
      * @return if removed
-     * @throws DataCannotBeAccessedException
      */
     @Override
     public boolean remove(Sale object) throws DataCannotBeAccessedException {

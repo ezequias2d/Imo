@@ -1,7 +1,7 @@
 package elfoAPI.calendar.schedule;
 
-import elfoAPI.calendar.CalendarTools;
 import elfoAPI.calendar.ElfoCalendar;
+import elfoAPI.data.IIdentificable;
 import elfoAPI.exception.calendar.EventInvalidException;
 import elfoAPI.exception.calendar.HourNotExistException;
 import elfoAPI.exception.data.DataCannotBeAccessedException;
@@ -15,18 +15,18 @@ import java.util.GregorianCalendar;
  * @author Ezequias Moises dos Santos Silva
  * @version 0.1.18
  */
-public class Schedule extends ElfoCalendar<ScheduleDay>{
+public class Schedule extends ElfoCalendar<ScheduleDay> implements IIdentificable {
 
-    private final String identifier;
+    private final String identity;
     /**
      * Constroi um Schedule de um ano especifico
-     * @param identifier Identificador unico
+     * @param identity Identificador unico
      * @param year Ano do schedule
      */
-    Schedule(int year, String identifier){
+    Schedule(int year, String identity){
         super(year,1,1, new ScheduleDay(0,0,0));
         updateCalendar();
-        this.identifier = identifier;
+        this.identity = identity;
     }
 
     /**
@@ -39,8 +39,8 @@ public class Schedule extends ElfoCalendar<ScheduleDay>{
         day = gCalendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    public String getIdentifier(){
-        return identifier;
+    public String getIdentity(){
+        return identity;
     }
 
     /**
@@ -79,4 +79,5 @@ public class Schedule extends ElfoCalendar<ScheduleDay>{
     public boolean isDisponible(int month, int day,int hour, int minutes, DeltaTime deltaTime) throws HourNotExistException {
         return this.getDayOfDate(month,day).isDisponible(hour,minutes,deltaTime);
     }
+
 }

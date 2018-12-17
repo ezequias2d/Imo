@@ -62,8 +62,6 @@ public class User implements Serializable, IIdentificable {
 
     /**
      * Usuario nulo
-     * @throws UserInvalidException
-     * @throws UserIsRegistredException
      */
     public User() throws UserInvalidException, UserIsRegistredException{
         this("","","",UserTools.getCpfNull(),"");
@@ -135,7 +133,7 @@ public class User implements Serializable, IIdentificable {
 
     /**
      * Pega identifdicador
-     * @return
+     * @return Identity(CPF in String)
      */
     @Override
     public String getIdentity(){

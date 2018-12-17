@@ -6,7 +6,7 @@ import elfoAPI.exception.data.DataCannotBeAccessedException;
  * Repositorio de coisas vendiveis
  * @author Ezequias Moises dos Santos Silva
  * @version 0.0.2
- * @param <T>
+ * @param <T> Sellable
  */
 public interface ISellableRepository<T extends ISellable> {
     /**

@@ -23,7 +23,7 @@ public class PropertyController {
 
     private int identityCount;
     private IRepositorio<Property> propertyRepository;
-    private PropertyTypeRepository propertyTypeRepository;
+    private IRepositorio<PropertyType> propertyTypeRepository;
 
     private PropertyType propertyTypeGeneric;
 
@@ -159,7 +159,6 @@ public class PropertyController {
     /**
      * Add PropertyType
      * @param propertyType PropertyType
-     * @throws DataCannotBeAccessedException
      */
     public void addPropertyType(PropertyType propertyType) throws DataCannotBeAccessedException {
         propertyTypeRepository.add(propertyType);

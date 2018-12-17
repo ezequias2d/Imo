@@ -1,5 +1,6 @@
 package elfoAPI.users;
 
+import elfoAPI.data.IRepositorio;
 import elfoAPI.exception.ElfoException;
 import elfoAPI.exception.data.DataCannotBeAccessedException;
 import elfoAPI.exception.user.UserDoesNotExistForThisTypeException;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 public class UserController {
     private static UserController userController;
 
-    private UserRepository userRepository;
+    private IRepositorio<User> userRepository;
 
     //Guarda o usuario atual logado
     private User loadedAccount;
@@ -64,7 +65,7 @@ public class UserController {
 
     /**
      * Pega usuario atual
-     * @return
+     * @return Loaded Account
      */
     public User getLoadedAccount(){
         return loadedAccount;
@@ -72,7 +73,7 @@ public class UserController {
 
     /**
      * Verifica se o sistema esta logado(Se o loadedAccount e diferente de notLoggedAccount)
-     * @return
+     * @return Se esta logado
      */
     public boolean isLogged(){
         return loadedAccount != notLoggedAccount;
@@ -223,64 +224,17 @@ public class UserController {
     }
 
     /**
-     * >>ADM1<<
-     * Pega tipo do usuario
-     * @return Type of loaded user
-     */
-    public int getTypeOfUser(){
-        return loadedAccount.getTypeUser();
-    }
-
-    /**
-     * Muda tipo do usuario se a senha fornecida for a do usuario logado
-     * e o usuario logado for do tipo ADM1
-     *
-     * @param password ADM1
-     * @param user User
-     * @param newType New Type
-     * @return if will change
-     */
-    public void changeTypeOfUser(String password,User user, int newType) throws UserInvalidPermissionException, DataCannotBeAccessedException {
-        if(getPermission(password,User.LEVEL_ADM1)){//this.loadedAccount.isPassword(ADM1Password) && isADM1()){
-            user.setTypeUser(newType);
-            userRepository.update();
-            return;
-        }
-        throw new UserInvalidPermissionException("ADM1");
-    }
-
-    /**
-     * >>ADM1<<
+     *   ADM1
      * Muda senha de um usuario qualquer se o usuario logado for ADM1
      * e a senha dele estiver correta
      *
      * @param user User to change
      * @param password ADM1 Password
      * @param newPassword New Password
-     * @return if will change
      */
     public void changePassword(User user, String password, String newPassword) throws UserInvalidPermissionException, DataCannotBeAccessedException {
         if(getPermission(password,User.LEVEL_ADM1)){//this.isADM1() && this.loadedAccount.isPassword(ADM1Password)){
             user.setPassword(newPassword);
-            userRepository.update();
-            return;
-        }
-        throw new UserInvalidPermissionException("ADM1");
-    }
-
-    /**
-     * >>ADM1<<
-     * Muda cpf de um usuario qualquer se o usuario logado for ADM1
-     * e a senha dele estiver correta
-     *
-     * @param user User to change
-     * @param password ADM1 Password
-     * @param newCpf New CPF
-     * @return if changed
-     */
-    public void changeCpf(User user, String password, int[] newCpf) throws UserInvalidPermissionException, DataCannotBeAccessedException {
-        if(getPermission(password, User.LEVEL_ADM1)){//this.isADM1() && this.loadedAccount.isPassword(ADM1Password)){
-            user.setCpf(newCpf);
             userRepository.update();
             return;
         }
@@ -340,7 +294,7 @@ public class UserController {
 
     /**
      * Pega um array de todos os usuarios
-     * @return
+     * @return Users of repository
      */
     public User[] getUsers(){
         return userRepository.toArray();
@@ -387,6 +341,7 @@ public class UserController {
     /**
      * Pede permiçao ao usuario logado de um tipo e com uma senha para validar
      * @param password Password
+     * @param levelType Level of Permission
      * @return Permission
      */
     public boolean getPermission(String password, int levelType) throws UserInvalidPermissionException{

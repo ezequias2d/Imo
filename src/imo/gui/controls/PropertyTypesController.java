@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 
 /**
  * Controle de tela de Property Types
- * @author Ezequias Moises dos Santos Silva
+ * @author Jose Romulo Pereira
  * @version 0.0.5
  */
 public class PropertyTypesController implements Initializable {

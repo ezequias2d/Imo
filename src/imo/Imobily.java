@@ -13,6 +13,7 @@ import elfoAPI.exception.user.UserInvalidException;
 import elfoAPI.exception.user.UserIsRegistredException;
 import elfoAPI.exception.user.permission.UserInvalidPermissionException;
 import elfoAPI.number.DeltaNumber;
+import elfoAPI.sale.ISaleRepository;
 import elfoAPI.sale.Sale;
 import elfoAPI.sale.SaleController;
 import elfoAPI.users.User;
@@ -55,7 +56,7 @@ public class Imobily {
     private UserController userController;
 
     private Schedule schedule;
-    private ScheduleRepository scheduleRepository;
+    private IScheduleRepository scheduleRepository;
     private DeltaTime deltaTime;
 
     private PropertyController propertyController;
@@ -294,8 +295,7 @@ public class Imobily {
     /**
      * Pega dia de uma data espeficica
      * @param date Data
-     * @return
-     * @throws DataCannotBeAccessedException
+     * @return Day of date
      */
     public ScheduleDay getDay(int[] date) throws DataCannotBeAccessedException {
         scheduleUpdate(date[2]);
@@ -383,6 +383,8 @@ public class Imobily {
     }
     /**
      * Pega pesquisa
+     * @param propertyTypes Property Types for filter
+     * @param seeUnvaliable If it's to pick up unavailable
      * @return Search of property
      */
     public ArrayList<Property> getSearch(boolean seeUnvaliable,PropertyType... propertyTypes){
@@ -395,7 +397,7 @@ public class Imobily {
      * @param max Maximum
      * @param listToFilter Lista para filtrar
      * @param typeRoom Tipo do Room
-     * @return
+     * @return Lista filtrada
      */
     public ArrayList<Property> getSearch(double min, double max, ArrayList<Property> listToFilter, String typeRoom){
         return propertyController.filterProperties(typeRoom, listToFilter,new DeltaNumber(min,max));
@@ -516,14 +518,18 @@ public class Imobily {
      * Create a New Sale
      * @param method Method of pay
      * @param property Property to sale
+     * @return A new Sale
      */
     public Sale newSale(Property property, int method) throws ProductNotAvaliableException, DataCannotBeAccessedException {
         return saleController.newSale(userController.getLoadedAccount(), method, property);
     }
     /**
-     * Create a New Sale
+     * Create a New Sale for Rent or Finance(with payday)
      * @param method Method of pay
      * @param property Property to sale
+     * @param payday  Payday
+     * @param months Months to Payday
+     * @return A new Sale
      */
     public Sale newSale(Property property, int method, int months, int[] payday) throws ProductNotAvaliableException, DataCannotBeAccessedException, EventInvalidException, MonthsForRentOrFinanceInvalidException, InvalidCalendarDateException {
         return saleController.newSale(userController.getLoadedAccount(), method, property, months, payday);
@@ -531,10 +537,11 @@ public class Imobily {
 
     /**
      * Delete Sale
+     * @param adm1Password ADM1 Password
      * @param sale Sale
      */
-    public void deleteSale(Sale sale) throws DataCannotBeAccessedException {
-        saleController.deleteSale(sale);
+    public void deleteSale(Sale sale, String adm1Password) throws DataCannotBeAccessedException, UserInvalidPermissionException {
+        saleController.deleteSale(sale,adm1Password);
     }
 
 
@@ -578,6 +585,9 @@ public class Imobily {
         return saleController.getSales(user);
     }
 
+    /*
+        Removido por nao ter dado tempo da implementa]ap grafica
+     */
     /**
      * Pega sales atrasadas de um usuario
      * @param user Usuario
@@ -632,4 +642,7 @@ public class Imobily {
         return saleController.getStatus(user);
     }
 
+    public void getPermission(String password, int type) throws UserInvalidPermissionException {
+        userController.getPermission(password,type);
+    }
 }

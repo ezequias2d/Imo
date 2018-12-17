@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * Classe destinada a definir, restringir e/ou limitar uma propriedade(Construçao)
- * @author Ezequias Moises dos Santos Silva
+ * @author Jose Romulo Pereira
  * @version 0.0.2
  */
 public class PropertyType implements Serializable, IIdentificable {

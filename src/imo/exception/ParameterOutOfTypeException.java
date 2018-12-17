@@ -14,7 +14,7 @@ import elfoAPI.number.DeltaNumber;
  *      Logo ao tentar cirar uma propriedade do tipo "Sobrado", mas eu disse que este sobrado
  *      possui 0 andares, ou seja apenas o terrio, a exceçao seria lançada informando que esta
  *      fora do tipo "Sobrado"
- * @author Ezequias Moises dos Santos Silva
+ * @author Jose Romulo Pereira
  * @version 0.0.1
  */
 public class ParameterOutOfTypeException extends ElfoException {

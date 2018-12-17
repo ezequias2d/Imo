@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 
 /**
- * Representa um calendario, podendo ser contruido com qualquer
+ * Representa um calendario, podendo ser construido com qualquer
  * classe compativel com Day, como uma herança de Day e o proprio
  * Day.
  *
@@ -39,7 +39,6 @@ public class ElfoCalendar<T extends Day> implements Serializable {
      * @param year Year
      * @param month Month
      * @param day ScheduleDay
-     * @return Success
      */
     public void setDate(int year, int month, int day){
         if(year > 1536 &&
@@ -53,7 +52,6 @@ public class ElfoCalendar<T extends Day> implements Serializable {
 
     /**
      * @param obj ScheduleDay
-     * @return if added
      */
     private void addMonth(ArrayList<T> obj){
         array.add(obj);
@@ -114,45 +112,5 @@ public class ElfoCalendar<T extends Day> implements Serializable {
      */
     public T getDay(){
         return this.getMonth(month).get(day - 1);
-    }
-
-    /**
-     * Cria um Calendario visual em String
-     * @param month Month
-     * @return Returns calendar mounted in standard form
-     */
-    public String getVisualMonth(int month){
-        String ret = "";
-        int con = -1;
-        if(month >= 1 && month <= 12){
-            int initialDay = this.getMonth(month).get(0).getWeekDay() + con;
-            ret += String.format("\n%s\n",CalendarTools.monthName(month ));
-            ArrayList<T> days = this.getMonth(month);
-            for(int w = 0; w < initialDay; w++){
-                ret += "    ";
-            }
-            for(int j = 0; j < days.size(); j++){
-                T day = days.get(j);
-                ret += String.format("%s",day.getDay());
-                if(day.getDay() == this.day){
-                    ret += "| ";
-                }else if(day.getDay() == this.day - 1) {
-                    ret += " |";
-                }else{
-                    ret += "  ";
-                }
-                if(day.getDay() < 10){
-                    ret += " ";
-                }
-                int weekDay = day.getWeekDay() + con;
-                while(weekDay < 0){
-                    weekDay += 7;
-                }
-                if(weekDay == 6){
-                    ret += String.format("\n");
-                }
-            }
-        }
-        return ret;
     }
 }

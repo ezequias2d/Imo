@@ -76,8 +76,8 @@ public class UserRepository implements IRepositorio<User> {
 
     /**
      * Pega objeto por index
-     * @param index
-     * @return
+     * @param index Index
+     * @return User do index
      */
     @Override
     public User get(int index) {
@@ -86,14 +86,14 @@ public class UserRepository implements IRepositorio<User> {
 
     /**
      * Pega objeto por identificador
-     * @param indent
-     * @return
+     * @param identity Identity
+     * @return User da identity
      */
     @Override
-    public User get(String indent) {
+    public User get(String identity) {
         for(User user : users){
             String cpfUser = user.getIdentity();
-            if(indent.equals(cpfUser)){
+            if(identity.equals(cpfUser)){
                 return user;
             }
         }
@@ -102,8 +102,8 @@ public class UserRepository implements IRepositorio<User> {
 
     /**
      * Pega index do objeto
-     * @param object
-     * @return
+     * @param object Objeto
+     * @return Index
      */
     @Override
     public int get(User object) {
@@ -125,7 +125,6 @@ public class UserRepository implements IRepositorio<User> {
 
     /**
      * Atualiza dados persistentes
-     * @throws DataCannotBeAccessedException
      */
     @Override
     public void update() throws DataCannotBeAccessedException {

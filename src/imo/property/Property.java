@@ -166,7 +166,7 @@ public class Property implements Serializable, ISellable, IIdentificable {
 
     /**
      * Seta rooms
-     * @param rooms
+     * @param rooms Rooms
      */
     public void setRooms(ArrayList<Room> rooms) throws ParameterOutOfTypeException{
         ArrayList<Room> saveRooms = this.rooms;

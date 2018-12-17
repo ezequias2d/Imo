@@ -117,14 +117,6 @@ public class Sale implements IIdentificable, Serializable {
     }
 
     /**
-     * Pega dia da compra
-     * @return Buy Day
-     */
-    public int[] getBuyDay(){
-        return buyDay;
-    }
-
-    /**
      * Pega dia de pagamento
      * @return Pay Day
      */
@@ -133,18 +125,8 @@ public class Sale implements IIdentificable, Serializable {
     }
 
     /**
-     * Pega dia que foi pago
-     * @return Sale Day
-     */
-    public int[] getSaleDay(){
-        return saleDay;
-    }
-
-
-    /**
      * Pega Sale's no Status 'Pedente'
-     * @return
-     * @throws SaleIsFinalizedException
+     * @return Sales Pedding
      */
     public Sale[] getPedding() throws SaleIsFinalizedException {
         if(method != IN_RENT && method != IN_FINANCE){
@@ -162,8 +144,7 @@ public class Sale implements IIdentificable, Serializable {
 
     /**
      * Pega Sale's no Status 'Atrasado'
-     * @return
-     * @throws SaleIsFinalizedException
+     * @return Sales Late
      */
     public Sale[] getLate() throws SaleIsFinalizedException {
         if(method != IN_RENT && method != IN_FINANCE){
@@ -348,7 +329,7 @@ public class Sale implements IIdentificable, Serializable {
 
     /**
      * Se esta aprovado(sem verificaçao de finalizaçao)
-     * @return
+     * @return If is aproved
      */
     boolean isAprovedFinal(){
         if(method == IN_CASH || method == SIMPLE_RENT || method == SIMPLE_FINANCE) {
@@ -403,7 +384,6 @@ public class Sale implements IIdentificable, Serializable {
 
     /**
      * Verifica se esta finalizado e lança exceçao
-     * @throws SaleIsFinalizedException Sale is Finalized Exception
      */
     private void cheakFinalizer() throws SaleIsFinalizedException {
         if(finalizer){

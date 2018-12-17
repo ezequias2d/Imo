@@ -30,6 +30,7 @@ public class ScheduleEvent implements IIdentificable, Serializable {
      * @param hour Hour
      * @param minutes Minutes
      * @param time Time
+     * @param day Day
      */
     public ScheduleEvent(String text, int hour, int minutes, DeltaTime time, ScheduleDay day) throws HourNotExistException {
         checkIfTimeExists(hour, minutes);
@@ -47,6 +48,8 @@ public class ScheduleEvent implements IIdentificable, Serializable {
     /**
      * Event of Calendar
      * @param text desciption of event
+     * @param identity Identity
+     * @param day Day
      */
     public ScheduleEvent(String text,String identity, ScheduleDay day) {
         this.text = text;
@@ -93,7 +96,7 @@ public class ScheduleEvent implements IIdentificable, Serializable {
 
     /**
      * Retorna o dia mascado com esse evento
-     * @return
+     * @return Day of event
      */
     public Day getDay(){
         return day;

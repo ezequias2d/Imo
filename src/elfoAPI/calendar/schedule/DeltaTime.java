@@ -69,7 +69,7 @@ public class DeltaTime implements Serializable {
 
     /**
      * Formata intevalo no formato padrao de hora "horas:minutos"
-     * @return
+     * @return String format of deltaTime
      */
     @Override
     public String toString(){
@@ -78,7 +78,7 @@ public class DeltaTime implements Serializable {
 
     /**
      * Compara equivalencia
-     * @param object
+     * @param object Object
      * @return if equals
      */
     @Override

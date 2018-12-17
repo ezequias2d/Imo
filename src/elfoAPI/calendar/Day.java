@@ -47,7 +47,7 @@ public class Day implements Serializable, Cloneable {
 
     /**
      * Formata em String a data
-     * @return
+     * @return Day in String
      */
     public String toString(){
         return String.format("%d/%d/%d",day,month,year);
@@ -79,7 +79,7 @@ public class Day implements Serializable, Cloneable {
 
     /**
      * Retorna dia na semana(0 a 6)
-     * @return
+     * @return Day of Week
      */
     public int getWeekDay(){
         return weekDay;

@@ -139,6 +139,14 @@ public class ImoController implements Initializable {
     @FXML
     private SeparatorMenuItem typesSeparatorMenuItem;
 
+    @FXML
+    private Button saleReportAproved30DaysButton;
+    @FXML
+    private Button saleReportPending30DaysButton;
+    @FXML
+    private Button saleReportPendingButton;
+    @FXML
+    private Button saleReportAprovedButton;
     //Sale Screen
     @FXML
     private Button saleDeleteButton;
@@ -194,6 +202,10 @@ public class ImoController implements Initializable {
         typesMenuItem.setVisible(false);
         typesSeparatorMenuItem.setVisible(false);
         deleteMenuItem.setVisible(false);
+        saleReportAproved30DaysButton.setVisible(false);
+        saleReportPendingButton.setVisible(false);
+        saleReportAprovedButton.setVisible(false);
+        saleReportPending30DaysButton.setVisible(false);
     }
 
     /**
@@ -206,23 +218,20 @@ public class ImoController implements Initializable {
 
         //Cria evento para botao F5 do teclado(atualizar)
         KeyCombination f5KeyCombination = new KeyCodeCombination(KeyCode.F5);
-        Runnable f5Command = new Runnable() {
-            @Override
-            public void run() {
-                updateSearch();
-                if(imobily.isRealEstateBroker() || imobily.isManager()){
-                    User userSelected = userTableView.getSelectionModel().getSelectedItem();
-                    if(userSelected != null){
-                        loadSales(imobily.getSales(userSelected));
-                    }
-                    loadUsers(imobily.getUsers());
-                }else{
-                    loadSales(imobily.getSales(imobily.getLoadedAccount()));
+        Runnable f5Command = () -> {
+            updateSearch();
+            if(imobily.isRealEstateBroker() || imobily.isManager()){
+                User userSelected = userTableView.getSelectionModel().getSelectedItem();
+                if(userSelected != null){
+                    loadSales(imobily.getSales(userSelected));
                 }
-                Sale saleSelected = saleTableView.getSelectionModel().getSelectedItem();
-                if(saleSelected != null){
-                    loadSubSales(saleSelected.getSubSales());
-                }
+                loadUsers(imobily.getUsers());
+            }else{
+                loadSales(imobily.getSales(imobily.getLoadedAccount()));
+            }
+            Sale saleSelected = saleTableView.getSelectionModel().getSelectedItem();
+            if(saleSelected != null){
+                loadSubSales(saleSelected.getSubSales());
             }
         };
         mainScene.getAccelerators().put(f5KeyCombination,f5Command);
@@ -250,6 +259,10 @@ public class ImoController implements Initializable {
         typesMenuItem.setVisible(true);
         typesSeparatorMenuItem.setVisible(true);
         deleteMenuItem.setVisible(true);
+        saleReportAproved30DaysButton.setVisible(true);
+        saleReportPendingButton.setVisible(true);
+        saleReportAprovedButton.setVisible(true);
+        saleReportPending30DaysButton.setVisible(true);
     }
     /**
      * Seta controle Imobily
@@ -888,8 +901,8 @@ public class ImoController implements Initializable {
         Sale selectedSale = saleTableView.getSelectionModel().getSelectedItem();
         if(selectedSale != null){
             try {
-                imobily.deleteSale(selectedSale);
-            } catch (DataCannotBeAccessedException e) {
+                imobily.deleteSale(selectedSale,userInputFX.getPassword("ADM1 Password"));
+            } catch (DataCannotBeAccessedException | UserInvalidPermissionException e) {
                 userInputFX.showMessage(e.getClass().getName(),e.getClass().getName(),e.getMessage());
             }
         }

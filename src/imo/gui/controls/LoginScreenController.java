@@ -4,7 +4,6 @@ import elfoAPI.exception.data.DataCannotBeAccessedException;
 import elfoAPI.exception.user.UserInvalidException;
 import elfoAPI.exception.user.UserIsRegistredException;
 import elfoAPI.users.User;
-import elfoAPI.users.UserController;
 import elfoAPI.users.UserTools;
 import imo.Imobily;
 import imo.Run;
@@ -41,20 +40,12 @@ public class LoginScreenController implements Initializable {
     private PasswordField passwordSigInTextField;
 
 
-    private UserController userController;
-
     private Run run;
 
     private UserInputFX userInputFX;
 
     private Imobily imobily;
 
-    /**
-     * Construtor
-     */
-    public LoginScreenController(){
-        userController = UserController.getInstance();
-    }
 
     /**
      * Evento do botao logOn
@@ -101,14 +92,14 @@ public class LoginScreenController implements Initializable {
     @FXML
     private void sigIn(){
         String fullName = fullNameTextField.getText();
-        int[] cpf = UserTools.stringToCpf(cpfSigInTextField.getText());
+        String cpf = cpfSigInTextField.getText();
         String firstName = UserTools.getFirstName(fullName);
         firstName = userInputFX.getText("First Name",firstName);
         String lastName = userInputFX.getText("Last Name",UserTools.getLastName(fullName));
         String password = passwordSigInTextField.getText();
         if(password.equals(userInputFX.getPassword("Confirm the Password"))){
             try {
-                userController.registerNewUser(fullName,cpf,password,firstName,lastName, User.LEVEL_NORMAL);
+                imobily.register(fullName,cpf,password,firstName,lastName, User.LEVEL_NORMAL);
                 userInputFX.showMessage("User Registered", "Information from the user " + firstName + " " + lastName, "The user is registered!");
                 resetText();
             } catch (UserIsRegistredException | UserInvalidException | DataCannotBeAccessedException e) {

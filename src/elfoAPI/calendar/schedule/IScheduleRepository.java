@@ -18,7 +18,6 @@ public interface IScheduleRepository {
      * Pega Schedule por um identificador
      * @param identity Identificador
      * @return Schedule of Identity
-     * @throws DataCannotBeAccessedException
      */
     public abstract Schedule get(String identity) throws DataCannotBeAccessedException;
 
@@ -27,7 +26,6 @@ public interface IScheduleRepository {
      * @param identity Identity
      * @param year Year
      * @return Schedule
-     * @throws DataCannotBeAccessedException
      */
     public abstract Schedule get(String identity, int year) throws DataCannotBeAccessedException;
 
@@ -35,13 +33,11 @@ public interface IScheduleRepository {
      * Remove Schedule do repositorio
      * @param object Schedule
      * @return If remove
-     * @throws DataCannotBeAccessedException
      */
     public abstract boolean remove(Schedule object) throws DataCannotBeAccessedException;
 
     /**
      * Update repository
-     * @throws DataCannotBeAccessedException
      */
     public void update() throws DataCannotBeAccessedException;
 }

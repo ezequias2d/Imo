@@ -1,12 +1,14 @@
 package elfoAPI.sale;
 
 import elfoAPI.calendar.CalendarTools;
+import elfoAPI.data.IRepositorio;
 import elfoAPI.exception.calendar.EventInvalidException;
 import elfoAPI.exception.calendar.InvalidCalendarDateException;
 import elfoAPI.exception.data.DataCannotBeAccessedException;
 import elfoAPI.exception.sale.MonthsForRentOrFinanceInvalidException;
 import elfoAPI.exception.sale.ProductNotAvaliableException;
 import elfoAPI.exception.sale.SaleIsFinalizedException;
+import elfoAPI.exception.user.permission.UserInvalidPermissionException;
 import elfoAPI.users.User;
 import elfoAPI.users.UserController;
 
@@ -22,7 +24,7 @@ import java.util.Collections;
  */
 public class SaleController {
     private static SaleController saleController;
-    private SaleRepository saleRepository;
+    private ISaleRepository saleRepository;
     private UserController userController;
     private int saleCount;
     private int[] today;
@@ -60,7 +62,7 @@ public class SaleController {
 
     /**
      * Seta repositorio de produtos
-     * @param sellableRepository
+     * @param sellableRepository Sellable Repository
      */
     public void setSellableRepository(ISellableRepository sellableRepository){
         saleRepository.setSellableRepository(sellableRepository);
@@ -111,39 +113,12 @@ public class SaleController {
 
     /**
      * Deleta uma Sale
+     * @param adm1Password  ADM1 Password
      * @param sale Sale
      */
-    public void deleteSale(Sale sale) throws DataCannotBeAccessedException {
+    public void deleteSale(Sale sale, String adm1Password) throws DataCannotBeAccessedException, UserInvalidPermissionException {
+        userController.getPermission(adm1Password,User.LEVEL_ADM1);
         saleRepository.remove(sale);
-    }
-
-    /**
-     * Pega compras de um CPF
-     * @param cpf Cpf
-     * @return ArrayList with sales of CPF user
-     */
-    public ArrayList<Sale> getSalesOfCpf(int[] cpf){
-        ArrayList<Sale> out = new ArrayList<Sale>();
-        for(Sale s: saleRepository.toArray()){
-            if(s.isCpfBuyer(cpf)){
-                out.add(s);
-            }
-        }
-        return out;
-    }
-
-    /**
-     * Pega uma compra por codigo
-     * @param code Sale Code
-     * @return Sale of Code or Null (if no exist)
-     */
-    public Sale getSaleOfCode(String code){
-        for (Sale s: saleRepository.toArray()) {
-            if(s.getIdentity().equals(code)){
-                return s;
-            }
-        }
-        return null;
     }
 
     /**

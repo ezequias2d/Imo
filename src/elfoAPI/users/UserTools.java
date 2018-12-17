@@ -52,7 +52,8 @@ public class UserTools {
 
     /**
         Calculates remainder according to the Brazilian cpf validation rules
-     @param rest Valor para calcular resto
+        @param rest Valor para calcular resto
+        @return Resto
      */
     static public int processRest(int rest){
         if(rest < 2){

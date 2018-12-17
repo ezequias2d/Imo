@@ -13,6 +13,7 @@ public class DeltaNumber implements Serializable, Cloneable {
     private final int deltaNull;
     private double min;
     private double max;
+
     public DeltaNumber(){
         this(-1,-1);
     }
